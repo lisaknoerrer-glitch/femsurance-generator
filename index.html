@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FemSurance Content-Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pink: #E8197A;
+    --pink-light: #fde8f3;
+    --pink-mid: #f5a0cc;
+    --pink-dark: #b81160;
+    --pink-deep: #8a0d48;
+    --purple: #6B3FA0;
+    --purple-dark: #4a2570;
+    --text: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-tertiary: #9a9a9a;
+    --bg: #fdfcfb;
+    --bg-surface: #f9f5f3;
+    --border: rgba(0,0,0,0.1);
+    --border-light: rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,25,122,0.09) 0%, rgba(107,63,160,0.05) 50%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(107,63,160,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+  /* Header */
+  header { margin-bottom: 3rem; }
+  .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+  .logo-mark {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    display: flex; align-items: center;
+    justify-content: center;
+  }
+  .brand { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); letter-spacing: -0.01em; }
+  .brand span { color: var(--pink); }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  h1 em { color: var(--pink); font-style: italic; }
+  .tagline { font-size: 15px; color: var(--text-secondary); line-height: 1.6; max-width: 480px; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border-light); margin: 2rem 0; }
+
+  /* Sections */
+  .section { margin-bottom: 2rem; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 10px;
+  }
+
+  /* Textarea */
+  textarea {
+    width: 100%; padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.7;
+    color: var(--text); background: white;
+    border: 1px solid var(--border); border-radius: 12px;
+    resize: vertical; outline: none; transition: border 0.2s;
+    min-height: 140px;
+  }
+  textarea::placeholder { color: var(--text-tertiary); }
+  textarea:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(232,25,122,0.08); }
+
+  /* Theme cards */
+  .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .theme-card {
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    cursor: pointer; transition: all 0.18s;
+    background: white; position: relative; overflow: hidden;
+  }
+  .theme-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: var(--pink); transform: scaleX(0);
+    transform-origin: left; transition: transform 0.2s;
+  }
+  .theme-card:hover { border-color: var(--pink-mid); transform: translateY(-1px); }
+  .theme-card:hover::before { transform: scaleX(1); }
+  .theme-card.selected { border-color: var(--pink); background: var(--pink-light); }
+  .theme-card.selected::before { transform: scaleX(1); }
+  .theme-icon { font-size: 18px; margin-bottom: 6px; }
+  .theme-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .theme-card.selected .theme-name { color: var(--pink-dark); }
+  .theme-desc { font-size: 11px; color: var(--text-tertiary); line-height: 1.5; }
+  .theme-card.selected .theme-desc { color: var(--pink-deep); }
+
+  /* Count selector */
+  .count-row { display: flex; gap: 8px; }
+  .count-btn {
+    width: 44px; height: 44px; border: 1px solid var(--border);
+    border-radius: 10px; background: white; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    cursor: pointer; transition: all 0.15s; font-weight: 400;
+  }
+  .count-btn:hover { border-color: var(--pink-mid); }
+  .count-btn.active {
+    border-color: var(--pink); background: var(--pink);
+    color: white; font-weight: 500;
+  }
+
+  /* API Key */
+  .api-row { display: flex; gap: 8px; align-items: center; }
+  input[type="password"] {
+    flex: 1; padding: 10px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--text); background: white;
+    border: 1px solid var(--border); border-radius: 10px;
+    outline: none; transition: border 0.2s;
+  }
+  input[type="password"]:focus { border-color: var(--pink); }
+  .save-btn {
+    padding: 10px 16px; background: var(--bg-surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .save-btn:hover { border-color: var(--border); background: white; color: var(--text); }
+  .api-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; }
+
+  /* Generate button */
+  .generate-btn {
+    width: 100%; padding: 16px; font-family: 'DM Serif Display', serif;
+    font-size: 18px; letter-spacing: 0.01em;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    border: none; border-radius: 14px;
+    cursor: pointer; transition: all 0.2s;
+    position: relative; overflow: hidden;
+    margin-top: 2rem;
+  }
+  .generate-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0); transition: background 0.2s;
+  }
+  .generate-btn:hover { background: linear-gradient(135deg, var(--pink-dark), var(--purple-dark)); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,25,122,0.28); }
+  .generate-btn:active { transform: translateY(0); }
+  .generate-btn:disabled { background: #ddd; color: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Output */
+  .output-section { margin-top: 3rem; display: none; }
+  .output-section.visible { display: block; }
+
+  .output-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .output-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+  .copy-btn {
+    padding: 8px 16px; border: 1px solid var(--border);
+    border-radius: 8px; background: white; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-secondary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  .output-box {
+    background: white; border: 1px solid var(--border);
+    border-radius: 14px; padding: 2rem;
+    font-size: 14px; line-height: 1.8; color: var(--text);
+    white-space: pre-wrap; font-family: 'DM Sans', sans-serif;
+    min-height: 200px;
+  }
+
+  /* Loading state */
+  .loading-bar {
+    height: 2px; background: var(--border-light);
+    border-radius: 2px; margin-bottom: 1rem; overflow: hidden; display: none;
+  }
+  .loading-bar.active { display: block; }
+  .loading-bar-inner {
+    height: 100%; width: 30%;
+    background: var(--pink);
+    animation: slide 1.2s ease-in-out infinite;
+  }
+  @keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+  }
+
+  .status-text { font-size: 13px; color: var(--text-tertiary); margin-bottom: 1rem; font-style: italic; }
+
+  /* Error */
+  .error-box {
+    background: #fff5f5; border: 1px solid #f0c0c0;
+    border-radius: 12px; padding: 1rem 1.25rem;
+    font-size: 13px; color: #c0392b; display: none;
+    margin-top: 1rem;
+  }
+  .error-box.visible { display: block; }
+
+  @media (max-width: 500px) {
+    .page { padding: 2rem 1.25rem 4rem; }
+    .theme-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo-row">
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="9" r="6.5" stroke="white" stroke-width="2"/>
+          <line x1="10" y1="15.5" x2="10" y2="21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="7" y1="18.5" x2="13" y2="18.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand"><span style="color:var(--pink);">FEM</span><span style="color:var(--purple);">SURANCE</span></div>
+    </div>
+    <h1>Content-<em>Ideen</em><br>Generator</h1>
+    <p class="tagline">Aus deinem Referenzmaterial entstehen strukturierte Social-Media-Outlines – warm, klar und empowernd.</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- API Key -->
+  <div class="section">
+    <div class="section-label">Anthropic API-Schlüssel</div>
+    <div class="api-row">
+      <input type="password" id="api-key" placeholder="sk-ant-..." />
+      <button class="save-btn" onclick="saveKey()">Speichern</button>
+    </div>
+    <p class="api-hint">Wird nur in deinem Browser gespeichert. Nie an Dritte weitergegeben.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Material -->
+  <div class="section">
+    <div class="section-label">Dein Referenzmaterial</div>
+    <textarea id="material" placeholder="Füge hier deinen Text ein – Artikel, Notizen, Journaleinträge, Beobachtungen aus dem Alltag...&#10;&#10;Je konkreter dein Input, desto treffender die Outlines."></textarea>
+  </div>
+
+  <!-- Theme -->
+  <div class="section">
+    <div class="section-label">Themenwelt</div>
+    <div class="theme-grid">
+      <div class="theme-card" data-theme="Business & Vertrieb" onclick="selectTheme(this)">
+        <div class="theme-icon">💼</div>
+        <div class="theme-name">Business & Vertrieb</div>
+        <div class="theme-desc">Strukturen · Kundinnen · Systeme</div>
+      </div>
+      <div class="theme-card" data-theme="Marketing & Sichtbarkeit" onclick="selectTheme(this)">
+        <div class="theme-icon">✨</div>
+        <div class="theme-name">Marketing & Sichtbarkeit</div>
+        <div class="theme-desc">Branding · Social Media · Mut</div>
+      </div>
+      <div class="theme-card" data-theme="Fachliche Weiterbildung" onclick="selectTheme(this)">
+        <div class="theme-icon">📚</div>
+        <div class="theme-name">Fachliche Weiterbildung</div>
+        <div class="theme-desc">Expertise · Kompetenz · Branche</div>
+      </div>
+      <div class="theme-card" data-theme="Persönlichkeitsentwicklung" onclick="selectTheme(this)">
+        <div class="theme-icon">🌱</div>
+        <div class="theme-name">Persönlichkeitsentwicklung</div>
+        <div class="theme-desc">Mindset · Selbstvertrauen · Empowerment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Count -->
+  <div class="section">
+    <div class="section-label">Anzahl der Outlines</div>
+    <div class="count-row">
+      <button class="count-btn" onclick="selectCount(this, 3)">3</button>
+      <button class="count-btn active" onclick="selectCount(this, 5)">5</button>
+      <button class="count-btn" onclick="selectCount(this, 7)">7</button>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="gen-btn" onclick="generate()">Outlines generieren</button>
+
+  <div class="error-box" id="error-box"></div>
+
+  <!-- Output -->
+  <div class="output-section" id="output-section">
+    <div class="divider" style="margin-top: 0;"></div>
+    <div class="output-header">
+      <div class="output-title">Deine Outlines</div>
+      <button class="copy-btn" onclick="copyOutput()">Kopieren</button>
+    </div>
+    <div class="loading-bar" id="loading-bar"><div class="loading-bar-inner"></div></div>
+    <div class="status-text" id="status-text"></div>
+    <div class="output-box" id="output-box"></div>
+  </div>
+
+</div>
+
+<script>
+  let selectedTheme = '';
+  let selectedCount = 5;
+
+  // Load saved API key
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('fs_api_key');
+    if (saved) document.getElementById('api-key').value = saved;
+  });
+
+  function saveKey() {
+    const key = document.getElementById('api-key').value.trim();
+    if (key) { localStorage.setItem('fs_api_key', key); showStatus('API-Schlüssel gespeichert ✓'); }
+  }
+
+  function selectTheme(el) {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedTheme = el.dataset.theme;
+  }
+
+  function selectCount(el, n) {
+    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedCount = n;
+  }
+
+  function showStatus(msg) {
+    document.getElementById('status-text').textContent = msg;
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('error-box');
+    box.textContent = msg;
+    box.classList.add('visible');
+  }
+
+  function hideError() {
+    document.getElementById('error-box').classList.remove('visible');
+  }
+
+  function copyOutput() {
+    const text = document.getElementById('output-box').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Kopiert ✓';
+      setTimeout(() => btn.textContent = 'Kopieren', 2000);
+    });
+  }
+
+  async function generate() {
+    const apiKey = document.getElementById('api-key').value.trim();
+    const material = document.getElementById('material').value.trim();
+
+    hideError();
+
+    if (!apiKey) { showError('Bitte gib deinen Anthropic API-Schlüssel ein.'); return; }
+    if (!material) { showError('Bitte gib dein Referenzmaterial ein.'); return; }
+    if (!selectedTheme) { showError('Bitte wähle eine Themenwelt aus.'); return; }
+
+    const btn = document.getElementById('gen-btn');
+    btn.disabled = true;
+    btn.textContent = 'Wird generiert...';
+
+    const outputSection = document.getElementById('output-section');
+    const outputBox = document.getElementById('output-box');
+    const loadingBar = document.getElementById('loading-bar');
+
+    outputSection.classList.add('visible');
+    loadingBar.classList.add('active');
+    outputBox.textContent = '';
+    showStatus('Claude analysiert dein Material...');
+
+    const systemPrompt = `Du bist der FemSurance Content-Ideen-Generator – eine KI, die aus Referenzmaterial inspirierende, tiefgründige und emotional resonante Social-Media-Post-Outlines erstellt.
+Dein Stil ist warm, klar, intelligent und empowernd.
+Zielgruppe: Frauen, die finanzielle Unabhängigkeit, Selbstvertrauen und berufliche Stärke entwickeln wollen.
+
+Du schreibst keine fertigen Posts, sondern strukturierte Outlines, aus denen später Posts entstehen.
+
+Für jede Outline verwendest du exakt dieses Format:
+
+POST OUTLINE [N]
+Themenwelt: [Name]
+
+Kernparadox
+[Zentrale Erkenntnis oder Wahrheit]
+
+Reformuliert:
+• Lang – [Storyhafte Version]
+• Mittel – [Prägnante Erkenntnis]
+• Kurz – [Social-tauglich]
+
+Schlüsselzitate
+• "[Zitat 1]"
+• "[Zitat 2]"
+
+Transformation
+[Zweifel → Erkenntnis → Selbstbestimmung]
+
+Alltagsprobleme
+• [Problem 1]
+• [Problem 2]
+• [Problem 3]
+
+Beispiele
+• [Beispiel 1]
+• [Beispiel 2]
+
+Einwände / Zweifel
+• "[Ich würde ja, aber…]"
+• "[Das klingt gut, doch…]"
+
+Aspirationsaussage
+[Wie fühlt sich die neue, selbstbewusste Version an?]
+
+Handlungsschritte
+1. [Schritt 1]
+2. [Schritt 2]
+3. [Schritt 3]
+
+Große Idee
+[1–2 Sätze, die die Kernaussage zusammenfassen]
+
+Abschließende Erkenntnis
+[Kurzer, emotionaler Schlusssatz]
+
+---
+
+Tonalität: direkte Ansprache (Du), aktiv & ermutigend, Emotion + Klarheit, authentische Metaphern aus Natur / Licht / Raum.`;
+
+    const userPrompt = `Hier ist mein Referenzmaterial:\n\n${material}\n\nThemenwelt: ${selectedTheme}\nBitte entwickle daraus ${selectedCount} strukturierte Social-Media-Outlines im FemSurance-Stil.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError('API-Fehler: ' + (data.error?.message || response.status));
+        return;
+      }
+
+      const text = data.content?.map(b => b.text || '').join('') || '';
+      outputBox.textContent = text;
+      loadingBar.classList.remove('active');
+      showStatus('✓ ' + selectedCount + ' Outlines erstellt – ' + new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}));
+
+    } catch (err) {
+      showError('Verbindungsfehler: ' + err.message);
+      loadingBar.classList.remove('active');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Outlines generieren';
+    }
+  }
+</script>
+</body>
+</html>
