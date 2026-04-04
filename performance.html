@@ -545,24 +545,29 @@ body {
   <div class="pp-modal-overlay" id="ppModal">
     <div class="pp-modal">
       <h3 id="ppModalTitle">Post-Performance</h3>
-      <div class="pp-row">
-        <div class="pp-field"><label>Impressions</label><input id="ppd_impressions"></div>
-        <div class="pp-field"><label>Individuelle Impressions</label><input id="ppd_ind_impressions"></div>
-        <div class="pp-field"><label>Engagements</label><input id="ppd_engagements"></div>
-      </div>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:10px 0 6px;">Organisches Engagement</div>
       <div class="pp-row">
         <div class="pp-field"><label>Reaktionen</label><input id="ppd_reaktionen"></div>
         <div class="pp-field"><label>Kommentare</label><input id="ppd_kommentare"></div>
         <div class="pp-field"><label>Direkt geteilte Beiträge</label><input id="ppd_shares"></div>
       </div>
       <div class="pp-row">
-        <div class="pp-field"><label>Klicks</label><input id="ppd_klicks"></div>
+        <div class="pp-field"><label>Engagements</label><input id="ppd_engagements"></div>
         <div class="pp-field"><label>Engagement-Rate %</label><input id="ppd_eng_rate" readonly style="background:var(--bg-secondary);"></div>
-        <div class="pp-field"><label>CTR %</label><input id="ppd_ctr" readonly style="background:var(--bg-secondary);"></div>
+        <div class="pp-field"><label>Klicks</label><input id="ppd_klicks"></div>
       </div>
       <div class="pp-row">
-        <div class="pp-field"><label>Gewonnene Follower</label><input id="ppd_follower"></div>
-        <div class="pp-field"><label>Seitenbesucher durch Beitrag</label><input id="ppd_besucher"></div>
+        <div class="pp-field"><label>Click-Through-Rate %</label><input id="ppd_ctr" readonly style="background:var(--bg-secondary);"></div>
+      </div>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organische Aktivitäten auf der Seite</div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Mit diesem Beitrag generierte Seitenbesucher:innen</label><input id="ppd_besucher"></div>
+        <div class="pp-field"><label>Mit diesem Beitrag gewonnene Follower:innen</label><input id="ppd_follower"></div>
+      </div>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organisches Auffinden</div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Impressions</label><input id="ppd_impressions"></div>
+        <div class="pp-field"><label>Individuelle Impressions</label><input id="ppd_ind_impressions"></div>
       </div>
       <div class="pp-modal-actions">
         <button class="pp-save" id="ppSave">Speichern</button>

@@ -1336,17 +1336,20 @@ if (histForTP.length && histForTP[0].top_posts) {
 // ══════════ BLOCK 2: Post-Performance ══════════
 const PP_FIELDS = [
   { key: 'titel', label: 'Post-Titel', wide: true },
-  { key: 'impressions', label: 'Impressions' },
-  { key: 'ind_impressions', label: 'Individuelle Impressions' },
+  { section: 'Organisches Engagement' },
+  { key: 'reaktionen', label: 'Reaktionen' },
+  { key: 'kommentare', label: 'Kommentare' },
+  { key: 'shares', label: 'Direkt geteilte Beiträge' },
   { key: 'engagements', label: 'Engagements' },
   { key: 'eng_rate', label: 'Engagement-Rate %' },
   { key: 'klicks', label: 'Klicks' },
   { key: 'ctr', label: 'Click-Through-Rate %' },
-  { key: 'reaktionen', label: 'Reaktionen' },
-  { key: 'kommentare', label: 'Kommentare' },
-  { key: 'shares', label: 'Direkt geteilte Beiträge' },
-  { key: 'follower', label: 'Gewonnene Follower:innen durch Beitrag' },
-  { key: 'besucher', label: 'Seitenbesucher:innen durch Beitrag' },
+  { section: 'Organische Aktivitäten auf der Seite' },
+  { key: 'besucher', label: 'Mit diesem Beitrag generierte Seitenbesucher:innen' },
+  { key: 'follower', label: 'Mit diesem Beitrag gewonnene Follower:innen' },
+  { section: 'Organisches Auffinden' },
+  { key: 'impressions', label: 'Impressions' },
+  { key: 'ind_impressions', label: 'Individuelle Impressions' },
 ];
 
 let b2Posts = load('fem_wp_b2_posts', []);
@@ -1360,9 +1363,19 @@ function renderB2Posts() {
     header.innerHTML = `<span class="b2p-arrow">▼</span><span class="b2p-title">${post.titel || `Post ${i + 1}`}</span><button class="b2p-remove" data-idx="${i}">&times;</button>`;
     const body = document.createElement('div');
     body.className = 'b2-post-body';
-    body.innerHTML = `<div class="b2-kpi-grid">${PP_FIELDS.map(f =>
-      `<div class="b2-kpi-field" ${f.wide ? 'style="grid-column:1/-1;"' : ''}><label>${f.label}</label><input value="${post[f.key] || ''}" data-pi="${i}" data-pk="${f.key}"></div>`
-    ).join('')}</div>`;
+    let html = '';
+    let inGrid = false;
+    PP_FIELDS.forEach(f => {
+      if (f.section) {
+        if (inGrid) { html += '</div>'; inGrid = false; }
+        html += `<div class="b2-section" style="font-size:10px; margin:8px 0 4px; padding-top:6px;">${f.section}</div>`;
+      } else {
+        if (!inGrid) { html += '<div class="b2-kpi-grid">'; inGrid = true; }
+        html += `<div class="b2-kpi-field" ${f.wide ? 'style="grid-column:1/-1;"' : ''}><label>${f.label}</label><input value="${post[f.key] || ''}" data-pi="${i}" data-pk="${f.key}"></div>`;
+      }
+    });
+    if (inGrid) html += '</div>';
+    body.innerHTML = html;
     header.addEventListener('click', e => {
       if (e.target.closest('.b2p-remove')) return;
       header.classList.toggle('open');
@@ -1412,12 +1425,9 @@ function saveB2PostPerformance() {
       const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
       const match = cards.find(c => c.col === 'publish' && c.title && c.title.includes(p.titel.trim()));
       const key = match ? String(match.id) : 'title_' + p.titel.trim();
-      perf[key] = {
-        impressions: p.impressions || '', ind_impressions: p.ind_impressions || '',
-        engagements: p.engagements || '', reaktionen: p.reaktionen || '',
-        kommentare: p.kommentare || '', shares: p.shares || '',
-        klicks: p.klicks || '', follower: p.follower || '', besucher: p.besucher || ''
-      };
+      const entry = {};
+      PP_FIELDS.forEach(f => { if (f.key && p[f.key]) entry[f.key] = p[f.key]; });
+      perf[key] = entry;
     }
   });
   localStorage.setItem('fem_post_performance', JSON.stringify(perf));
