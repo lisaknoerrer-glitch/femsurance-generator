@@ -597,24 +597,11 @@ textarea { resize: vertical; line-height: 1.6; }
         </div>
       </div>
 
-      <!-- BLOCK 6: Events & Kontakte -->
+      <!-- BLOCK 6: Notizen & Kontext -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">6</span> Events &amp; Kontakte <span class="info-tip" data-tip="Eigene Events, Interviews oder Personen die du diese Woche kontaktiert hast. Fließt in die Wochenauswertung ein.">ℹ️</span></div>
+        <div class="block-title"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span></div>
         <div class="field">
-          <label class="field-label">Events / Interviews diese Woche</label>
-          <textarea id="b6Events" rows="4" placeholder="z. B. Webinar am Mittwoch, Interview mit..."></textarea>
-        </div>
-        <div class="field">
-          <label class="field-label">Personen kontaktiert</label>
-          <textarea id="b6Contacts" rows="4" placeholder="Name, Kontext, Ergebnis..."></textarea>
-        </div>
-        <div class="checkbox-row">
-          <input type="checkbox" id="b6Newsletter">
-          <label for="b6Newsletter">Newsletter-Crossover</label>
-        </div>
-        <div class="field" id="b6NewsletterField" style="display:none;">
-          <label class="field-label">Newsletter-Details</label>
-          <textarea id="b6NewsletterText" rows="3" placeholder="Welcher Newsletter, Thema, Termin..."></textarea>
+          <textarea id="b6Text" rows="8" placeholder="Was ist diese Woche noch relevant? Events, Interviews, Personen kontaktiert, Newsletter-Aktionen, Besonderheiten, Ideen..."></textarea>
         </div>
       </div>
 
@@ -1233,32 +1220,21 @@ if (b5.text) {
   document.getElementById('b5Text').value = parts.join('\n\n');
 }
 
-// ══════════ BLOCK 6: Events & Contacts ══════════
-const b6Newsletter = document.getElementById('b6Newsletter');
-const b6Field = document.getElementById('b6NewsletterField');
-
-b6Newsletter.addEventListener('change', () => {
-  b6Field.style.display = b6Newsletter.checked ? 'block' : 'none';
-  saveBlock6();
+// ══════════ BLOCK 6: Notizen & Kontext ══════════
+document.getElementById('b6Text').addEventListener('input', () => {
+  save('fem_wp_block6', { text: document.getElementById('b6Text').value });
 });
-
-function saveBlock6() {
-  save('fem_wp_block6', {
-    events: document.getElementById('b6Events').value,
-    contacts: document.getElementById('b6Contacts').value,
-    newsletter: b6Newsletter.checked,
-    newsletterText: document.getElementById('b6NewsletterText').value
-  });
-}
-['b6Events', 'b6Contacts', 'b6NewsletterText'].forEach(id => {
-  document.getElementById(id).addEventListener('input', saveBlock6);
-});
-
 const b6 = load('fem_wp_block6', {});
-if (b6.events) document.getElementById('b6Events').value = b6.events;
-if (b6.contacts) document.getElementById('b6Contacts').value = b6.contacts;
-if (b6.newsletter) { b6Newsletter.checked = true; b6Field.style.display = 'block'; }
-if (b6.newsletterText) document.getElementById('b6NewsletterText').value = b6.newsletterText;
+if (b6.text) {
+  document.getElementById('b6Text').value = b6.text;
+} else {
+  // Migration: merge old fields
+  const parts = [];
+  if (b6.events) parts.push('Events: ' + b6.events);
+  if (b6.contacts) parts.push('Kontakte: ' + b6.contacts);
+  if (b6.newsletter && b6.newsletterText) parts.push('Newsletter: ' + b6.newsletterText);
+  if (parts.length) document.getElementById('b6Text').value = parts.join('\n\n');
+}
 
 // ══════════ BLOCK 7: Lernstand ══════════
 const b7Ta = document.getElementById('b7Lernstand');
@@ -1371,15 +1347,8 @@ function collectPrompt() {
   if (b5Text) parts.push(`## Branchenbeobachtung & Wettbewerber\n${b5Text}`);
 
   // Block 6
-  const events = document.getElementById('b6Events').value.trim();
-  const contacts = document.getElementById('b6Contacts').value.trim();
-  const nl = document.getElementById('b6Newsletter').checked;
-  const nlText = document.getElementById('b6NewsletterText').value.trim();
-  const b6Parts = [];
-  if (events) b6Parts.push(`Events/Interviews: ${events}`);
-  if (contacts) b6Parts.push(`Kontakte: ${contacts}`);
-  if (nl && nlText) b6Parts.push(`Newsletter-Crossover: ${nlText}`);
-  if (b6Parts.length) parts.push(`## Events & Kontakte\n${b6Parts.join('\n')}`);
+  const b6Text = document.getElementById('b6Text').value.trim();
+  if (b6Text) parts.push(`## Notizen & Kontext\n${b6Text}`);
 
   // Block 7
   const lernstand = document.getElementById('b7Lernstand').value.trim();
