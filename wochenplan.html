@@ -588,41 +588,12 @@ textarea { resize: vertical; line-height: 1.6; }
         <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
       </div>
 
-      <!-- BLOCK 5: Branchenthemen -->
+      <!-- BLOCK 5: Branchenbeobachtung -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Trage hier ein was Wettbewerber diese Woche gepostet haben — VWheute, Versicherungsbote etc. Claude berücksichtigt das bei der Content-Planung.">ℹ️</span></div>
-        <div id="b5Sections">
-          <div class="collapsible-header" data-target="b5_vwheute">
-            <span class="collapsible-title">VWheute</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_vwheute">
-            <textarea rows="4" data-key="vwheute" placeholder="Relevante Artikel / Themen von VWheute..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_vbote">
-            <span class="collapsible-title">Versicherungsbote</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_vbote">
-            <textarea rows="4" data-key="versicherungsbote" placeholder="Relevante Artikel / Themen vom Versicherungsbote..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_female">
-            <span class="collapsible-title">Female Finance &amp; Frau Finanzen</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_female">
-            <textarea rows="4" data-key="femalefinance" placeholder="Themen aus Female Finance / Frau Finanzen..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_sonstige">
-            <span class="collapsible-title">Sonstige Branchenthemen</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_sonstige">
-            <textarea rows="4" data-key="sonstige" placeholder="Weitere relevante Branchenthemen..."></textarea>
-          </div>
+        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span></div>
+        <div class="field">
+          <label class="field-label">Branchenbeobachtung &amp; Wettbewerber</label>
+          <textarea id="b5Text" rows="15" placeholder="Einfach alles reinkopieren was du diese Woche gefunden hast — Posts, Artikel, Kommentare, Follower-Zahlen. Kein bestimmtes Format nötig."></textarea>
         </div>
       </div>
 
@@ -1245,29 +1216,22 @@ document.getElementById('btnAddUrl').addEventListener('click', () => {
 });
 renderUrls();
 
-// ══════════ BLOCK 5: Collapsible Sections ══════════
-document.querySelectorAll('.collapsible-header').forEach(h => {
-  h.addEventListener('click', () => {
-    h.classList.toggle('open');
-    document.getElementById(h.dataset.target).classList.toggle('open');
-  });
+// ══════════ BLOCK 5: Branchenbeobachtung ══════════
+document.getElementById('b5Text').addEventListener('input', () => {
+  save('fem_wp_block5', { text: document.getElementById('b5Text').value });
 });
-
-function saveBlock5() {
-  const data = {};
-  document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-    data[ta.dataset.key] = ta.value;
-  });
-  save('fem_wp_block5', data);
-}
-document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-  ta.addEventListener('input', saveBlock5);
-});
-
 const b5 = load('fem_wp_block5', {});
-document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-  if (b5[ta.dataset.key]) ta.value = b5[ta.dataset.key];
-});
+// Migration: old multi-field format → merge into single text
+if (b5.text) {
+  document.getElementById('b5Text').value = b5.text;
+} else if (b5.vwheute || b5.versicherungsbote || b5.femalefinance || b5.sonstige) {
+  const parts = [];
+  if (b5.vwheute) parts.push('VWheute:\n' + b5.vwheute);
+  if (b5.versicherungsbote) parts.push('Versicherungsbote:\n' + b5.versicherungsbote);
+  if (b5.femalefinance) parts.push('Female Finance:\n' + b5.femalefinance);
+  if (b5.sonstige) parts.push('Sonstige:\n' + b5.sonstige);
+  document.getElementById('b5Text').value = parts.join('\n\n');
+}
 
 // ══════════ BLOCK 6: Events & Contacts ══════════
 const b6Newsletter = document.getElementById('b6Newsletter');
@@ -1403,13 +1367,8 @@ function collectPrompt() {
   }
 
   // Block 5
-  const b5Data = load('fem_wp_block5', {});
-  const b5Parts = [];
-  if (b5Data.vwheute) b5Parts.push(`VWheute: ${b5Data.vwheute}`);
-  if (b5Data.versicherungsbote) b5Parts.push(`Versicherungsbote: ${b5Data.versicherungsbote}`);
-  if (b5Data.femalefinance) b5Parts.push(`Female Finance & Frau Finanzen: ${b5Data.femalefinance}`);
-  if (b5Data.sonstige) b5Parts.push(`Sonstige: ${b5Data.sonstige}`);
-  if (b5Parts.length) parts.push(`## Branchenthemen\n${b5Parts.join('\n')}`);
+  const b5Text = document.getElementById('b5Text').value.trim();
+  if (b5Text) parts.push(`## Branchenbeobachtung & Wettbewerber\n${b5Text}`);
 
   // Block 6
   const events = document.getElementById('b6Events').value.trim();
