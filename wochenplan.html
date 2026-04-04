@@ -591,10 +591,9 @@ textarea { resize: vertical; line-height: 1.6; }
           <div class="b2-kpi-field"><label>Neue Follower:innen via Premium-Einladung</label><input data-b2="follower_premium"></div>
         </div>
 
-        <div class="b2-section">Sichtbarkeit</div>
+        <div class="b2-section">Seiten-Suche (letzte 7 Tage)</div>
         <div class="b2-kpi-grid">
-          <div class="b2-kpi-field"><label>Suchanzeigen 7T</label><input data-b2="search_anzeigen"></div>
-          <div class="b2-kpi-field"><label>Veränderung %</label><input data-b2="search_change"></div>
+          <div class="b2-kpi-field"><label>Seitensuchen (letzte 7 Tage)</label><input data-b2="search_seitensuchen"></div>
         </div>
 
         <div class="b2-section">Top-Posts</div>
@@ -917,7 +916,7 @@ Gib ausschließlich valides JSON zurück:
 {
   "posts": [{ "titel": "", "datum": "", "impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "reaktionen": 0, "kommentare": 0 }],
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
-  "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
+  "search_summary": { "seitensuchen": 0 },
   "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
   "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "premium_einladung": 0 },
   "top_posts": [{ "titel": "", "impressions": 0, "engagement_rate_pct": 0 }],
@@ -1148,8 +1147,8 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       if (merged.follower_summary.premium_einladung) b2Auto.follower_premium = merged.follower_summary.premium_einladung;
     }
     if (merged.search_summary) {
-      if (merged.search_summary.suchanzeigen) b2Auto.search_anzeigen = merged.search_summary.suchanzeigen;
-      if (merged.search_summary.change_pct) b2Auto.search_change = merged.search_summary.change_pct;
+      if (merged.search_summary.seitensuchen) b2Auto.search_seitensuchen = merged.search_summary.seitensuchen;
+      else if (merged.search_summary.suchanzeigen) b2Auto.search_seitensuchen = merged.search_summary.suchanzeigen;
     }
     if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
 
@@ -1194,6 +1193,12 @@ function renderExtractResults(a) {
         ${field('Seitenaufrufe','seitenaufrufe','visitor_summary',vs.seitenaufrufe)}
         ${field('Individuelle Besucher:innen','individuelle_besucher','visitor_summary',vs.individuelle_besucher)}
         ${field('Klicks auf eigenen Button','button_klicks','visitor_summary',vs.button_klicks)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Seiten-Suche (letzte 7 Tage)</div>
+      <div class="er-grid">
+        ${field('Seitensuchen','seitensuchen','search_summary',ss.seitensuchen || ss.suchanzeigen)}
       </div>
     </div>
     <div class="er-section">
@@ -1278,8 +1283,7 @@ document.getElementById('b2LoadLast').addEventListener('click', () => {
     site_reaktionen: last.site?.reaktionen ?? last.content_summary?.reaktionen ?? '',
     site_kommentare: last.site?.kommentare ?? last.content_summary?.kommentare ?? '',
     site_shares: last.site?.shares ?? last.content_summary?.shares ?? '',
-    search_anzeigen: last.search?.suchanzeigen ?? last.search_summary?.suchanzeigen ?? '',
-    search_change: last.search?.change_pct ?? last.search_summary?.change_pct ?? '',
+    search_seitensuchen: last.search?.seitensuchen ?? last.search_summary?.seitensuchen ?? last.search?.suchanzeigen ?? last.search_summary?.suchanzeigen ?? '',
     visitor_aufrufe: last.visitor?.seitenaufrufe ?? last.visitor_summary?.seitenaufrufe ?? '',
     visitor_unique: last.visitor?.individuelle_besucher ?? last.visitor_summary?.individuelle_besucher ?? '',
     visitor_button_klicks: last.visitor?.button_klicks ?? last.visitor_summary?.button_klicks ?? '',
@@ -1534,7 +1538,7 @@ function collectPrompt() {
     const v = b2data;
     lines.push(`Post: Impressions ${v.post_impressions||'–'}, Indiv. ${v.post_ind_impressions||'–'}, Engagements ${v.post_engagements||'–'}, Eng-Rate ${v.post_eng_rate||'–'}%, Klicks ${v.post_klicks||'–'}, CTR ${v.post_ctr||'–'}%, Reaktionen ${v.post_reaktionen||'–'}, Kommentare ${v.post_kommentare||'–'}, Shares ${v.post_shares||'–'}`);
     lines.push(`Inhalte (letzte 30 Tage): Impressions ${v.site_impressions||'–'}, Reaktionen ${v.site_reaktionen||'–'}, Kommentare ${v.site_kommentare||'–'}, Direkt geteilte Beiträge ${v.site_shares||'–'}`);
-    lines.push(`Suche 7T: Suchanzeigen ${v.search_anzeigen||'–'}, Veränderung ${v.search_change||'–'}%`);
+    lines.push(`Seiten-Suche (letzte 7 Tage): Seitensuchen ${v.search_seitensuchen||'–'}`);
     lines.push(`Besucher:innen: Seitenaufrufe ${v.visitor_aufrufe||'–'}, Individuelle Besucher:innen ${v.visitor_unique||'–'}, Klicks auf eigenen Button ${v.visitor_button_klicks||'–'}`);
     lines.push(`Follower:innen: insgesamt ${v.follower_gesamt||'–'}, neue (30 Tage) ${v.follower_neu||'–'}, via Premium-Einladung ${v.follower_premium||'–'}`);
     // Top posts from history

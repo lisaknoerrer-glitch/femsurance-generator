@@ -322,10 +322,9 @@ body {
         <div class="kpi-field"><label>Direkt geteilte Beiträge (letzte 30 Tage)</label><input id="kf_site_shares" data-s="site" data-k="shares"></div>
       </div>
 
-      <div class="kpi-section-title">Suche (7 Tage)</div>
+      <div class="kpi-section-title">Seiten-Suche (letzte 7 Tage)</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Suchanzeigen</label><input id="kf_search_anzeigen" data-s="search" data-k="suchanzeigen"></div>
-        <div class="kpi-field"><label>Veränderung %</label><input id="kf_search_change" data-s="search" data-k="change_pct"></div>
+        <div class="kpi-field"><label>Seitensuchen (letzte 7 Tage)</label><input id="kf_search_seitensuchen" data-s="search" data-k="seitensuchen"></div>
       </div>
 
       <div class="kpi-section-title">Besucher:innen</div>
@@ -827,7 +826,7 @@ Gib valides JSON zurück:
 {
   "post_analytics": { "impressions": 0, "individuelle_impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "ctr_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0 },
-  "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
+  "search_summary": { "seitensuchen": 0 },
   "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
   "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "premium_einladung": 0 },
   "top_posts": [{ "titel": "", "datum": "", "impressions": 0, "engagement_rate_pct": 0 }]
@@ -968,8 +967,8 @@ const KPI_DEFS = [
   { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
   { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
   { key: 'follower_premium', label: 'Via Premium-Einladung', defaultTarget: 5, paths: ['follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
-  { section: 'Sichtbarkeit' },
-  { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
+  { section: 'Seiten-Suche (letzte 7 Tage)' },
+  { key: 'search_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['search.seitensuchen', 'search_summary.seitensuchen', 'search.suchanzeigen', 'search_summary.suchanzeigen', 'search_seitensuchen'] },
 ];
 
 function getNestedVal(obj, path) {
