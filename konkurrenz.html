@@ -308,9 +308,9 @@ function renderTable() {
     if (acc.isFem) {
       tr.innerHTML = `
         <td class="comp-name-cell">FemSurance</td>
-        <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers" style="font-weight:700;"></td>
-        <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
-        <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
+        <td><input type="number" id="femFollower" value="${parseInt(acc.followers) || femFollowers}" data-i="${i}" data-field="followers" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+        <td><input type="text" value="${acc.engagement || '5.4'}" data-i="${i}" data-field="engagement" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+        <td><input type="number" value="${acc.postsWeek || '4'}" data-i="${i}" data-field="postsWeek" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
         <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
         <td></td>
       `;
@@ -347,7 +347,18 @@ document.getElementById('compBody').addEventListener('input', e => {
     const field = e.target.dataset.field;
     accounts[i][field] = e.target.value;
     saveAccounts(accounts);
-    // Re-render to update comparison
+
+    // If FemSurance follower changed, update hero immediately
+    if (accounts[i].isFem && field === 'followers') {
+      const current = parseInt(e.target.value) || 0;
+      const pct = Math.min((current / femGoal) * 100, 100);
+      const remaining = Math.max(femGoal - current, 0);
+      document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
+      document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
+      document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+    }
+
+    // Re-render to update comparison columns (debounced)
     clearTimeout(window._renderTimer);
     window._renderTimer = setTimeout(renderTable, 600);
   }
