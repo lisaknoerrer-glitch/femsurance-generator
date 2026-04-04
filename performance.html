@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --fem-pink: #E91E8C;
@@ -172,6 +173,43 @@ body {
 }
 .btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
 .btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
+
+/* ── KPI Center ── */
+.kpi-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+.kpi-toggle .kpi-arrow { font-size:12px; color:var(--text-secondary); transition:transform 0.2s; }
+.kpi-toggle.open .kpi-arrow { transform:rotate(180deg); }
+.kpi-body { display:none; margin-top:14px; }
+.kpi-body.open { display:block; }
+.kpi-ss-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:10px; }
+.kpi-ss { background:var(--bg-secondary); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:8px 4px; text-align:center; cursor:pointer; transition:all 0.15s; font-size:10px; }
+.kpi-ss:hover { border-color:var(--fem-pink); }
+.kpi-ss.has-file { border-style:solid; border-color:var(--fem-pink); }
+.kpi-ss img { max-width:100%; max-height:40px; border-radius:3px; margin-top:4px; }
+.kpi-ss .kpi-ss-label { font-weight:600; color:var(--text-secondary); margin-bottom:2px; }
+.kpi-upload-row { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+.kpi-upload-btn { padding:7px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; color:var(--text-secondary); transition:all 0.2s; }
+.kpi-upload-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.kpi-upload-btn.has-file { border-style:solid; border-color:var(--fem-pink); color:var(--fem-pink); font-weight:600; }
+.kpi-extract { display:block; width:100%; padding:9px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:12px; }
+.kpi-extract:hover { opacity:0.9; }
+.kpi-extract:disabled { opacity:0.5; cursor:not-allowed; }
+.kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.kpi-field label { display:block; font-size:10px; color:var(--text-secondary); margin-bottom:2px; }
+.kpi-field input { width:100%; padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
+.kpi-field input:focus { outline:none; border-color:var(--fem-pink); }
+.kpi-section-title { font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; letter-spacing:0.03em; margin:10px 0 6px; padding-top:8px; border-top:1px solid var(--border); }
+.kpi-section-title:first-of-type { border-top:none; padding-top:0; }
+.kpi-save-row { display:flex; gap:8px; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+.kpi-save-row input { padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.kpi-save-row input:focus { outline:none; border-color:var(--fem-pink); }
+.kpi-save-btn { padding:8px 20px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.kpi-save-btn:hover { opacity:0.9; }
+.kpi-history { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+.kpi-history-card { background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px 12px; font-size:11px; }
+.kpi-history-card .kpi-hw { font-weight:700; color:var(--text-primary); margin-bottom:4px; font-size:12px; }
+.kpi-history-card .kpi-hv { color:var(--text-secondary); line-height:1.5; }
+.kpi-history-card .kpi-hv strong { color:var(--fem-pink); }
+.extract-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a; margin-left:6px; }
 </style>
 </head>
 <body>
@@ -213,6 +251,77 @@ body {
   <div class="page-header fade-up">
     <h1><em>FemSurance</em> Performance</h1>
     <div class="header-meta">LinkedIn Analytics · KW 14</div>
+  </div>
+
+  <!-- KPI-Center -->
+  <div class="card fade-up">
+    <div class="kpi-toggle" id="kpiToggle">
+      <div class="card-title" style="margin-bottom:0;">📊 KPIs erfassen &amp; speichern</div>
+      <span class="kpi-arrow">▼</span>
+    </div>
+    <div class="kpi-body" id="kpiBody">
+
+      <!-- Upload area -->
+      <div class="kpi-ss-grid" id="kpiSSGrid"></div>
+      <div class="kpi-upload-row">
+        <button class="kpi-upload-btn" id="kpiExportBtn">📁 LinkedIn Export (CSV/XLSX)</button>
+        <input type="file" id="kpiExportFile" accept=".csv,.xlsx,.xls" style="display:none;">
+        <span id="kpiExportName" style="font-size:11px; color:var(--text-secondary);"></span>
+      </div>
+      <button class="kpi-extract" id="kpiExtractBtn">📊 KPIs extrahieren</button>
+
+      <!-- Editable KPI fields -->
+      <div class="kpi-section-title">Post-Ebene</div>
+      <div class="kpi-grid">
+        <div class="kpi-field"><label>Impressions</label><input id="kf_post_impressions" data-s="post" data-k="impressions"></div>
+        <div class="kpi-field"><label>Indiv. Impressions</label><input id="kf_post_ind_impressions" data-s="post" data-k="individuelle_impressions"></div>
+        <div class="kpi-field"><label>Engagements</label><input id="kf_post_engagements" data-s="post" data-k="engagements"></div>
+        <div class="kpi-field"><label>Engagement-Rate %</label><input id="kf_post_eng_rate" data-s="post" data-k="engagement_rate_pct"></div>
+        <div class="kpi-field"><label>Klicks</label><input id="kf_post_klicks" data-s="post" data-k="klicks"></div>
+        <div class="kpi-field"><label>CTR %</label><input id="kf_post_ctr" data-s="post" data-k="ctr_pct"></div>
+        <div class="kpi-field"><label>Reaktionen</label><input id="kf_post_reaktionen" data-s="post" data-k="reaktionen"></div>
+        <div class="kpi-field"><label>Kommentare</label><input id="kf_post_kommentare" data-s="post" data-k="kommentare"></div>
+        <div class="kpi-field"><label>Shares</label><input id="kf_post_shares" data-s="post" data-k="shares"></div>
+      </div>
+
+      <div class="kpi-section-title">Seite (30 Tage)</div>
+      <div class="kpi-grid">
+        <div class="kpi-field"><label>Impressions</label><input id="kf_site_impressions" data-s="site" data-k="impressions"></div>
+        <div class="kpi-field"><label>Engagement-Rate %</label><input id="kf_site_eng_rate" data-s="site" data-k="engagement_rate_pct"></div>
+      </div>
+
+      <div class="kpi-section-title">Suche (7 Tage)</div>
+      <div class="kpi-grid">
+        <div class="kpi-field"><label>Suchanzeigen</label><input id="kf_search_anzeigen" data-s="search" data-k="suchanzeigen"></div>
+        <div class="kpi-field"><label>Veränderung %</label><input id="kf_search_change" data-s="search" data-k="change_pct"></div>
+      </div>
+
+      <div class="kpi-section-title">Besucher (30 Tage)</div>
+      <div class="kpi-grid">
+        <div class="kpi-field"><label>Seitenaufrufe</label><input id="kf_visitor_aufrufe" data-s="visitor" data-k="seitenaufrufe"></div>
+        <div class="kpi-field"><label>Individuelle Besucher</label><input id="kf_visitor_unique" data-s="visitor" data-k="individuelle_besucher"></div>
+      </div>
+
+      <div class="kpi-section-title">Follower</div>
+      <div class="kpi-grid">
+        <div class="kpi-field"><label>Gesamt</label><input id="kf_follower_gesamt" data-s="follower" data-k="follower_gesamt"></div>
+        <div class="kpi-field"><label>Neue (30 Tage)</label><input id="kf_follower_neu" data-s="follower" data-k="neue_follower"></div>
+        <div class="kpi-field"><label>Veränderung %</label><input id="kf_follower_change" data-s="follower" data-k="change_pct"></div>
+      </div>
+
+      <div class="kpi-section-title">Top-Posts</div>
+      <div id="kpiTopPosts"></div>
+
+      <!-- Save -->
+      <div class="kpi-save-row">
+        <input type="number" id="kpiKw" placeholder="KW" style="width:60px;">
+        <input type="text" id="kpiRange" placeholder="z. B. 31.03. – 04.04." style="flex:1;">
+        <button class="kpi-save-btn" id="kpiSaveBtn">💾 Woche speichern</button>
+      </div>
+
+      <!-- History -->
+      <div class="kpi-history" id="kpiHistory"></div>
+    </div>
   </div>
 
   <!-- Reichweiten-Ziele (3 Spalten) -->
@@ -545,6 +654,270 @@ try {
   updateBlock(gm, gg, 'perfGruppeVal', 'perfGruppeGoalVal', 'perfGruppeFill', 'perfGruppeDiff', 'Mitglieder');
   updateBlock(wm, wg, 'perfWhatsappVal', 'perfWhatsappGoalVal', 'perfWhatsappFill', 'perfWhatsappDiff', 'Mitglieder');
 } catch (e) {}
+
+// ══════════ KPI CENTER ══════════
+const PERF_API_KEY = typeof ANTHROPIC_API_KEY !== 'undefined' ? ANTHROPIC_API_KEY : 'DEIN_API_KEY_HIER';
+
+// Toggle
+document.getElementById('kpiToggle').addEventListener('click', () => {
+  document.getElementById('kpiToggle').classList.toggle('open');
+  document.getElementById('kpiBody').classList.toggle('open');
+});
+
+// ── Screenshot slots ──
+const KPI_SS_CATS = ['Beitrag', 'Seite', 'Besucher', 'Follower', 'Top-Posts'];
+let kpiScreenshots = [];
+
+function renderKpiSS() {
+  const g = document.getElementById('kpiSSGrid');
+  g.innerHTML = '';
+  KPI_SS_CATS.forEach(cat => {
+    const ex = kpiScreenshots.find(s => s.category === cat);
+    const d = document.createElement('div');
+    d.className = 'kpi-ss' + (ex ? ' has-file' : '');
+    d.innerHTML = ex
+      ? `<div class="kpi-ss-label">${cat}</div><img src="${ex.image}" alt="${cat}">`
+      : `<div class="kpi-ss-label">${cat}</div><div style="opacity:0.5">📷</div>`;
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/png,image/jpeg'; fi.style.display = 'none';
+    d.appendChild(fi);
+    d.addEventListener('click', () => fi.click());
+    fi.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const idx = kpiScreenshots.findIndex(s => s.category === cat);
+        const entry = { category: cat, image: ev.target.result, imageType: file.type };
+        if (idx >= 0) kpiScreenshots[idx] = entry; else kpiScreenshots.push(entry);
+        renderKpiSS();
+      };
+      reader.readAsDataURL(file);
+    });
+    g.appendChild(d);
+  });
+}
+renderKpiSS();
+
+// ── Export file ──
+let kpiExportData = null;
+document.getElementById('kpiExportBtn').addEventListener('click', () => document.getElementById('kpiExportFile').click());
+document.getElementById('kpiExportFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  document.getElementById('kpiExportName').textContent = file.name;
+  document.getElementById('kpiExportBtn').classList.add('has-file');
+
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const text = ev.target.result;
+      const sep = text.includes(';') ? ';' : ',';
+      const lines = text.split('\n').filter(l => l.trim());
+      kpiExportData = { headers: lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, '')), rows: lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, ''))) };
+    };
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const wb = XLSX.read(ev.target.result, { type: 'array' });
+        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+        kpiExportData = { headers: (json[0]||[]).map(String), rows: json.slice(1).map(r => r.map(c => c != null ? String(c) : '')) };
+      } catch (err) { alert('XLSX-Fehler: ' + err.message); }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+});
+
+// ── KPI field helpers ──
+function getKpiValues() {
+  const v = {};
+  document.querySelectorAll('#kpiBody input[data-s]').forEach(inp => {
+    const s = inp.dataset.s, k = inp.dataset.k;
+    if (!v[s]) v[s] = {};
+    v[s][k] = inp.value;
+  });
+  // Top posts
+  v.top_posts = [];
+  document.querySelectorAll('.kpi-tp-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    v.top_posts.push({ titel: inputs[0]?.value || '', datum: inputs[1]?.value || '', impressions: inputs[2]?.value || '', engagement_rate_pct: inputs[3]?.value || '' });
+  });
+  return v;
+}
+
+function setKpiValues(data) {
+  if (!data) return;
+  const map = { post_analytics: 'post', content_summary: 'site', search_summary: 'search', visitor_summary: 'visitor', follower_summary: 'follower' };
+  // Also handle flat keys
+  const mapped = {};
+  for (const [srcKey, tgtKey] of Object.entries(map)) {
+    if (data[srcKey]) mapped[tgtKey] = data[srcKey];
+  }
+  // Direct keys (post, site, etc.)
+  ['post','site','search','visitor','follower'].forEach(s => { if (data[s]) mapped[s] = data[s]; });
+
+  for (const [s, obj] of Object.entries(mapped)) {
+    for (const [k, val] of Object.entries(obj)) {
+      const inp = document.querySelector(`#kpiBody input[data-s="${s}"][data-k="${k}"]`);
+      if (inp) inp.value = val ?? '';
+    }
+  }
+  // Top posts
+  const tp = data.top_posts || [];
+  renderTopPosts(tp);
+}
+
+function renderTopPosts(list) {
+  const container = document.getElementById('kpiTopPosts');
+  container.innerHTML = '';
+  (list.length ? list : [{}]).forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'kpi-tp-row';
+    row.style.cssText = 'display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:6px; margin-bottom:6px;';
+    row.innerHTML = `
+      <div class="kpi-field"><label>Titel</label><input value="${p.titel || ''}"></div>
+      <div class="kpi-field"><label>Datum</label><input value="${p.datum || ''}"></div>
+      <div class="kpi-field"><label>Impressions</label><input value="${p.impressions || ''}"></div>
+      <div class="kpi-field"><label>Eng. %</label><input value="${p.engagement_rate_pct || ''}"></div>
+    `;
+    container.appendChild(row);
+  });
+  // Add row button
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ Top-Post';
+  addBtn.style.cssText = 'padding:4px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-size:11px; color:var(--text-secondary); font-family:inherit;';
+  addBtn.addEventListener('click', () => { list.push({}); renderTopPosts(list); });
+  container.appendChild(addBtn);
+}
+renderTopPosts([]);
+
+// ── Extract ──
+const KPI_EXTRACT_PROMPT = `Du analysierst LinkedIn-Screenshots einer Unternehmensseite (FemSurance). Extrahiere nur sichtbare Kennzahlen. Erfinde keine Zahlen.
+
+Gib valides JSON zurück:
+{
+  "post_analytics": { "impressions": 0, "individuelle_impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "ctr_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
+  "content_summary": { "impressions": 0, "engagement_rate_pct": 0 },
+  "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
+  "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0 },
+  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "top_posts": [{ "titel": "", "datum": "", "impressions": 0, "engagement_rate_pct": 0 }]
+}`;
+
+document.getElementById('kpiExtractBtn').addEventListener('click', async () => {
+  const hasScreenshots = kpiScreenshots.length > 0;
+  const hasExport = kpiExportData && kpiExportData.rows && kpiExportData.rows.length > 0;
+  if (!hasScreenshots && !hasExport) { alert('Bitte Screenshots oder Export-Datei bereitstellen.'); return; }
+
+  const btn = document.getElementById('kpiExtractBtn');
+  btn.disabled = true;
+  btn.textContent = 'Wird extrahiert...';
+
+  try {
+    let result = {};
+
+    if (hasScreenshots) {
+      const userContent = [{ type: 'text', text: 'Analysiere diese LinkedIn-Screenshots.' }];
+      kpiScreenshots.forEach(s => {
+        userContent.push({ type: 'image', source: { type: 'base64', media_type: s.imageType || 'image/png', data: s.image.split(',')[1] } });
+      });
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': PERF_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: KPI_EXTRACT_PROMPT, messages: [{ role: 'user', content: userContent }] })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      let js = data.content[0].text.trim();
+      if (js.startsWith('```')) js = js.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+      result = JSON.parse(js);
+    }
+
+    if (hasExport) {
+      // Simple extraction from tabular data
+      const h = kpiExportData.headers.map(s => s.toLowerCase());
+      kpiExportData.rows.forEach(row => {
+        const obj = {}; h.forEach((k, i) => { obj[k] = row[i] || ''; });
+        const post = {};
+        for (const [k, v] of Object.entries(obj)) {
+          if (k.includes('titel') || k.includes('title')) post.titel = v;
+          if (k.includes('datum') || k.includes('date')) post.datum = v;
+          if (k.includes('impression')) post.impressions = parseInt(v) || 0;
+          if (k.includes('engagement') && k.includes('rate')) post.engagement_rate_pct = parseFloat(v) || 0;
+        }
+        if (post.titel || post.impressions) {
+          if (!result.top_posts) result.top_posts = [];
+          result.top_posts.push(post);
+        }
+      });
+    }
+
+    setKpiValues(result);
+    btn.innerHTML = '📊 KPIs extrahieren<span class="extract-badge">✓ Extrahiert</span>';
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = '📊 KPIs extrahieren';
+  }
+  btn.disabled = false;
+});
+
+// ── Save week ──
+document.getElementById('kpiSaveBtn').addEventListener('click', () => {
+  const kwVal = document.getElementById('kpiKw').value || 'XX';
+  const range = document.getElementById('kpiRange').value || '';
+  const year = new Date().getFullYear();
+  const key = `KW${kwVal}_${year}`;
+  const values = getKpiValues();
+  values.kw = kwVal;
+  values.range = range;
+  values.savedAt = new Date().toISOString();
+
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const existIdx = history.findIndex(h => h.kw === kwVal && h.savedAt?.startsWith(String(year)));
+  if (existIdx >= 0) history[existIdx] = values; else history.unshift(values);
+  if (history.length > 20) history.length = 20;
+  localStorage.setItem('fem_performance_history', JSON.stringify(history));
+
+  const btn = document.getElementById('kpiSaveBtn');
+  btn.textContent = 'Gespeichert ✓';
+  btn.style.background = '#16a34a';
+  setTimeout(() => { btn.textContent = '💾 Woche speichern'; btn.style.background = ''; }, 2000);
+  renderKpiHistory();
+});
+
+// ── History ──
+function renderKpiHistory() {
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const container = document.getElementById('kpiHistory');
+  container.innerHTML = '';
+  history.slice(0, 4).forEach(h => {
+    const card = document.createElement('div');
+    card.className = 'kpi-history-card';
+    const imp = h.post?.impressions || h.post_analytics?.impressions || '–';
+    const eng = h.post?.engagement_rate_pct || h.post_analytics?.engagement_rate_pct || '–';
+    const fol = h.follower?.follower_gesamt || h.follower_summary?.follower_gesamt || '–';
+    card.innerHTML = `
+      <div class="kpi-hw">KW ${h.kw}</div>
+      <div class="kpi-hv">
+        ${h.range ? h.range + '<br>' : ''}
+        Imp: <strong>${imp}</strong><br>
+        Eng: <strong>${eng}%</strong><br>
+        Follower: <strong>${fol}</strong>
+      </div>
+    `;
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => { setKpiValues(h); document.getElementById('kpiKw').value = h.kw || ''; document.getElementById('kpiRange').value = h.range || ''; });
+    container.appendChild(card);
+  });
+}
+renderKpiHistory();
+
+// Restore last analytics if available
+const kpiAnalytics = JSON.parse(localStorage.getItem('fem_wp_analytics') || 'null');
+if (kpiAnalytics) setKpiValues(kpiAnalytics);
 </script>
 </body>
 </html>
