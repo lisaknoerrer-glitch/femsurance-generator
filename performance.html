@@ -235,6 +235,46 @@ body {
   border-radius:4px; font-size:12px; font-family:inherit; text-align:center;
 }
 .kpi-track-table input:focus { outline:none; border-color:var(--fem-pink); }
+/* ── Post Performance Table ── */
+.pp-table { width:100%; border-collapse:collapse; font-size:12px; }
+.pp-table thead th {
+  text-align:left; padding:8px 8px; font-size:10px; font-weight:600;
+  color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em;
+  border-bottom:2px solid var(--border); white-space:nowrap;
+}
+.pp-table tbody td { padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.pp-table tbody tr:hover { background:var(--bg-secondary); }
+.pp-table .pp-title { font-weight:500; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; color:var(--fem-pink); }
+.pp-table .pp-title:hover { text-decoration:underline; }
+.pp-table input {
+  width:60px; padding:3px 5px; border:1px solid var(--border);
+  border-radius:3px; font-size:11px; font-family:inherit; text-align:center;
+}
+.pp-table input:focus { outline:none; border-color:var(--fem-pink); }
+.pp-badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; }
+.pp-badge-cp { background:var(--fem-pink-light); color:var(--fem-pink); }
+.pp-badge-gr { background:var(--fem-purple-light); color:var(--fem-purple); }
+.pp-badge-wa { background:var(--bg-secondary); color:var(--text-secondary); }
+.pp-eng { font-weight:600; font-size:11px; }
+.pp-eng.green { color:#16a34a; } .pp-eng.yellow { color:#a16207; } .pp-eng.red { color:#dc2626; }
+.pp-spark { width:50px; height:16px; }
+.pp-spark svg { width:100%; height:100%; }
+.pp-empty { padding:30px; text-align:center; color:var(--text-secondary); font-size:13px; }
+/* Post Detail Modal */
+.pp-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
+.pp-modal-overlay.open { display:flex; }
+.pp-modal { background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 20px 60px rgba(0,0,0,0.2); padding:24px 28px; width:520px; max-width:92vw; max-height:85vh; overflow-y:auto; }
+.pp-modal h3 { font-size:15px; font-weight:700; margin-bottom:14px; }
+.pp-modal .pp-field { margin-bottom:10px; }
+.pp-modal .pp-field label { display:block; font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:3px; }
+.pp-modal .pp-field input { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.pp-modal .pp-field input:focus { outline:none; border-color:var(--fem-pink); }
+.pp-modal .pp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.pp-modal-actions { display:flex; gap:8px; margin-top:16px; }
+.pp-modal-actions button { padding:9px 20px; border-radius:var(--radius-sm); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.pp-modal-actions .pp-save { border:none; background:var(--fem-pink); color:#fff; }
+.pp-modal-actions .pp-close { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
+
 .kpi-section-row td {
   padding:10px 10px 4px !important; font-size:10px !important; font-weight:600 !important;
   color:var(--fem-pink) !important; text-transform:uppercase; letter-spacing:0.03em;
@@ -314,29 +354,31 @@ body {
         <div class="kpi-field"><label>Shares</label><input id="kf_post_shares" data-s="post" data-k="shares"></div>
       </div>
 
-      <div class="kpi-section-title">Seite (30 Tage)</div>
+      <div class="kpi-section-title">Inhalte (letzte 30 Tage)</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Impressions</label><input id="kf_site_impressions" data-s="site" data-k="impressions"></div>
-        <div class="kpi-field"><label>Engagement-Rate %</label><input id="kf_site_eng_rate" data-s="site" data-k="engagement_rate_pct"></div>
+        <div class="kpi-field"><label>Impressions (letzte 30 Tage)</label><input id="kf_site_impressions" data-s="site" data-k="impressions"></div>
+        <div class="kpi-field"><label>Reaktionen (letzte 30 Tage)</label><input id="kf_site_reaktionen" data-s="site" data-k="reaktionen"></div>
+        <div class="kpi-field"><label>Kommentare (letzte 30 Tage)</label><input id="kf_site_kommentare" data-s="site" data-k="kommentare"></div>
+        <div class="kpi-field"><label>Direkt geteilte Beiträge (letzte 30 Tage)</label><input id="kf_site_shares" data-s="site" data-k="shares"></div>
       </div>
 
-      <div class="kpi-section-title">Suche (7 Tage)</div>
+      <div class="kpi-section-title">Seiten-Suche (letzte 7 Tage)</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Suchanzeigen</label><input id="kf_search_anzeigen" data-s="search" data-k="suchanzeigen"></div>
-        <div class="kpi-field"><label>Veränderung %</label><input id="kf_search_change" data-s="search" data-k="change_pct"></div>
+        <div class="kpi-field"><label>Seitensuchen (letzte 7 Tage)</label><input id="kf_search_seitensuchen" data-s="search" data-k="seitensuchen"></div>
       </div>
 
-      <div class="kpi-section-title">Besucher (30 Tage)</div>
+      <div class="kpi-section-title">Besucher:innen</div>
       <div class="kpi-grid">
         <div class="kpi-field"><label>Seitenaufrufe</label><input id="kf_visitor_aufrufe" data-s="visitor" data-k="seitenaufrufe"></div>
-        <div class="kpi-field"><label>Individuelle Besucher</label><input id="kf_visitor_unique" data-s="visitor" data-k="individuelle_besucher"></div>
+        <div class="kpi-field"><label>Individuelle Besucher:innen</label><input id="kf_visitor_unique" data-s="visitor" data-k="individuelle_besucher"></div>
+        <div class="kpi-field"><label>Klicks auf den eigenen Button</label><input id="kf_visitor_button" data-s="visitor" data-k="button_klicks"></div>
       </div>
 
-      <div class="kpi-section-title">Follower</div>
+      <div class="kpi-section-title">Follower:innen</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Gesamt</label><input id="kf_follower_gesamt" data-s="follower" data-k="follower_gesamt"></div>
-        <div class="kpi-field"><label>Neue (30 Tage)</label><input id="kf_follower_neu" data-s="follower" data-k="neue_follower"></div>
-        <div class="kpi-field"><label>Veränderung %</label><input id="kf_follower_change" data-s="follower" data-k="change_pct"></div>
+        <div class="kpi-field"><label>Follower:innen insgesamt</label><input id="kf_follower_gesamt" data-s="follower" data-k="follower_gesamt"></div>
+        <div class="kpi-field"><label>Neue Follower:innen (letzte 30 Tage)</label><input id="kf_follower_neu" data-s="follower" data-k="neue_follower"></div>
+        <div class="kpi-field"><label>Neue Follower:innen via Premium-Einladung</label><input id="kf_follower_premium" data-s="follower" data-k="premium_einladung"></div>
       </div>
 
       <div class="kpi-section-title">Top-Posts</div>
@@ -474,26 +516,63 @@ body {
     </div>
   </div>
 
-  <!-- Post-Tabelle -->
+  <!-- Letzte 20 Posts (aus Pipeline) -->
   <div class="card fade-up">
     <div class="card-title">Letzte 20 Posts</div>
     <div style="overflow-x:auto;">
-      <table class="post-table">
+      <table class="pp-table" id="ppTable">
         <thead>
           <tr>
             <th>Post</th>
-            <th>Datum</th>
             <th>Kanal</th>
-            <th>Reichweite</th>
-            <th>Likes</th>
+            <th>Datum</th>
+            <th>Impressions</th>
+            <th>Reaktionen</th>
             <th>Kommentare</th>
-            <th>Engagement</th>
+            <th>Shares</th>
+            <th>Eng. %</th>
+            <th>Klicks</th>
+            <th>CTR %</th>
             <th>Trend</th>
-            <th></th>
           </tr>
         </thead>
-        <tbody id="postTableBody"></tbody>
+        <tbody id="ppBody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Post Detail Modal -->
+  <div class="pp-modal-overlay" id="ppModal">
+    <div class="pp-modal">
+      <h3 id="ppModalTitle">Post-Performance</h3>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:10px 0 6px;">Organisches Engagement</div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Reaktionen</label><input id="ppd_reaktionen"></div>
+        <div class="pp-field"><label>Kommentare</label><input id="ppd_kommentare"></div>
+        <div class="pp-field"><label>Direkt geteilte Beiträge</label><input id="ppd_shares"></div>
+      </div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Engagements</label><input id="ppd_engagements"></div>
+        <div class="pp-field"><label>Engagement-Rate %</label><input id="ppd_eng_rate" readonly style="background:var(--bg-secondary);"></div>
+        <div class="pp-field"><label>Klicks</label><input id="ppd_klicks"></div>
+      </div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Click-Through-Rate %</label><input id="ppd_ctr" readonly style="background:var(--bg-secondary);"></div>
+      </div>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organische Aktivitäten auf der Seite</div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Mit diesem Beitrag generierte Seitenbesucher:innen</label><input id="ppd_besucher"></div>
+        <div class="pp-field"><label>Mit diesem Beitrag gewonnene Follower:innen</label><input id="ppd_follower"></div>
+      </div>
+      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organisches Auffinden</div>
+      <div class="pp-row">
+        <div class="pp-field"><label>Impressions</label><input id="ppd_impressions"></div>
+        <div class="pp-field"><label>Individuelle Impressions</label><input id="ppd_ind_impressions"></div>
+      </div>
+      <div class="pp-modal-actions">
+        <button class="pp-save" id="ppSave">Speichern</button>
+        <button class="pp-close" id="ppClose">Schließen</button>
+      </div>
     </div>
   </div>
 
@@ -583,63 +662,146 @@ setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', chartBaseWhatsa
 
 drawAllCharts(90);
 
-// ── Post Table ──
-const posts = [
-  { title: '5 Tipps für Maklerinnen im Vertrieb', date: '01.04.', ch: 'Company Page', reach: 1240, likes: 47, comments: 12, eng: 6.2 },
-  { title: 'Netzwerk-Studie: Ergebnisse 2026', date: '29.03.', ch: 'Company Page', reach: 980, likes: 38, comments: 8, eng: 5.1 },
-  { title: 'Female Leadership in der Versicherung', date: '27.03.', ch: 'Gruppe', reach: 870, likes: 32, comments: 15, eng: 5.8 },
-  { title: 'Interview: Zukunft der Maklerinnen', date: '25.03.', ch: 'Company Page', reach: 1120, likes: 41, comments: 9, eng: 4.9 },
-  { title: '3 Mythen über Frauen im Vertrieb', date: '22.03.', ch: 'Gruppe', reach: 760, likes: 28, comments: 6, eng: 4.2 },
-  { title: 'Karussell: Selfbranding-Tipps', date: '20.03.', ch: 'Company Page', reach: 1340, likes: 56, comments: 18, eng: 6.8 },
-  { title: 'Podcast-Recap: Diversität Talk', date: '18.03.', ch: 'Gruppe', reach: 620, likes: 22, comments: 5, eng: 3.9 },
-  { title: 'FemSurance Award Ankündigung', date: '15.03.', ch: 'Company Page', reach: 1560, likes: 68, comments: 22, eng: 7.1 },
-  { title: 'Vereinbarkeit: Best Practices', date: '13.03.', ch: 'Gruppe', reach: 710, likes: 30, comments: 11, eng: 5.4 },
-  { title: 'Zitat-Grafik: Empowerment #3', date: '11.03.', ch: 'Company Page', reach: 890, likes: 35, comments: 4, eng: 4.1 },
-  { title: 'WhatsApp-Tipp: Elevator Pitch', date: '10.03.', ch: 'WhatsApp', reach: 340, likes: 14, comments: 3, eng: 4.5 },
-  { title: 'Recruiting: Frauen gewinnen', date: '08.03.', ch: 'Company Page', reach: 1080, likes: 44, comments: 16, eng: 5.9 },
-  { title: 'Behind the Scenes: Redaktion', date: '06.03.', ch: 'Gruppe', reach: 540, likes: 19, comments: 7, eng: 4.0 },
-  { title: 'Infografik: Branchenvergleich', date: '04.03.', ch: 'Company Page', reach: 960, likes: 37, comments: 10, eng: 5.2 },
-  { title: 'Umfrage: Eure Themen für Q2', date: '01.03.', ch: 'Gruppe', reach: 480, likes: 16, comments: 24, eng: 6.5 },
-  { title: 'Video: Netzwerken auf Events', date: '27.02.', ch: 'Company Page', reach: 1180, likes: 52, comments: 14, eng: 5.7 },
-  { title: 'Gastbeitrag: Maklerin des Jahres', date: '25.02.', ch: 'Company Page', reach: 1420, likes: 61, comments: 19, eng: 6.3 },
-  { title: 'WhatsApp: Wochenrückblick KW 8', date: '24.02.', ch: 'WhatsApp', reach: 290, likes: 11, comments: 2, eng: 3.8 },
-  { title: 'Karussell: Female Recruiting 101', date: '22.02.', ch: 'Gruppe', reach: 690, likes: 26, comments: 8, eng: 4.6 },
-  { title: 'Reel: Ein Tag bei FemSurance', date: '20.02.', ch: 'Company Page', reach: 1050, likes: 43, comments: 11, eng: 5.3 },
-];
+// ── Post Performance Table (from Pipeline) ──
+let postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
 
-function miniSparkSVG() {
-  const pts = Array.from({length: 7}, () => Math.random());
-  const max = Math.max(...pts), min = Math.min(...pts);
-  const coords = pts.map((v, i) => `${i * 10},${18 - ((v - min) / (max - min || 1)) * 16}`).join(' ');
-  return `<svg viewBox="0 0 60 20" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="#E91E8C" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+function savePostPerf() {
+  localStorage.setItem('fem_post_performance', JSON.stringify(postPerf));
 }
 
-const tbody = document.getElementById('postTableBody');
-posts.forEach(p => {
-  const engClass = p.eng >= 5.5 ? 'engagement-high' : p.eng >= 4.0 ? 'engagement-mid' : 'engagement-low';
-  tbody.innerHTML += `<tr>
-    <td class="post-title-cell"><span class="post-title-text">${p.title}</span></td>
-    <td>${p.date}</td>
-    <td>${p.ch}</td>
-    <td>${p.reach.toLocaleString('de-DE')}</td>
-    <td>${p.likes}</td>
-    <td>${p.comments}</td>
-    <td><span class="engagement-badge ${engClass}">${p.eng.toFixed(1)} %</span></td>
-    <td><div class="mini-spark">${miniSparkSVG()}</div></td>
-    <td><button class="btn-to-pipeline" data-title="${p.title}" data-ch="${p.ch}">→ Pipeline</button></td>
-  </tr>`;
+function sparkSVG(val) {
+  const pts = Array.from({length: 7}, (_, i) => Math.max(0, (val || 0) * (0.7 + Math.sin(i) * 0.15 + Math.random() * 0.15)));
+  const max = Math.max(...pts, 1), min = Math.min(...pts);
+  const coords = pts.map((v, i) => `${i * 8},${14 - ((v - min) / (max - min || 1)) * 12}`).join(' ');
+  return `<svg viewBox="0 0 48 16" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="#E91E8C" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+}
+
+function renderPostTable() {
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline).slice(0, 20);
+  const tbody = document.getElementById('ppBody');
+
+  if (!published.length) {
+    tbody.innerHTML = `<tr><td colspan="11" class="pp-empty">Noch keine veröffentlichten Posts. Verschiebe Posts im Kanban zu „Veröffentlicht".</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = '';
+  published.forEach(card => {
+    // Check by card ID first, then by title match
+    let p = postPerf[card.id] || {};
+    if (!p.impressions) {
+      const titleKey = 'title_' + card.title;
+      if (postPerf[titleKey]) p = postPerf[titleKey];
+      // Also check partial title matches from wochenplan
+      for (const [k, v] of Object.entries(postPerf)) {
+        if (k.startsWith('title_') && card.title.includes(k.replace('title_', '')) && v.impressions) {
+          p = v; postPerf[card.id] = v; savePostPerf(); break;
+        }
+      }
+    }
+    const hasKPIs = !!(p.impressions || p.reaktionen || p.klicks);
+    const imp = parseFloat(p.impressions) || 0;
+    const reak = parseFloat(p.reaktionen) || 0;
+    const komm = parseFloat(p.kommentare) || 0;
+    const shares = parseFloat(p.shares) || 0;
+    const klicks = parseFloat(p.klicks) || 0;
+    const eng = imp > 0 ? Math.round((reak + komm + shares) / imp * 10000) / 100 : 0;
+    const ctr = imp > 0 ? Math.round(klicks / imp * 10000) / 100 : 0;
+    const engClass = eng >= 5 ? 'green' : eng >= 3 ? 'yellow' : 'red';
+    const badgeClass = card.format === 'Company Page' ? 'pp-badge-cp' : card.format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="pp-title" data-id="${card.id}">${card.title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
+      <td><span class="pp-badge ${badgeClass}">${card.format}</span></td>
+      <td>${card.due || '–'}</td>
+      <td><input value="${p.impressions || ''}" data-id="${card.id}" data-k="impressions"></td>
+      <td><input value="${p.reaktionen || ''}" data-id="${card.id}" data-k="reaktionen"></td>
+      <td><input value="${p.kommentare || ''}" data-id="${card.id}" data-k="kommentare"></td>
+      <td><input value="${p.shares || ''}" data-id="${card.id}" data-k="shares"></td>
+      <td><span class="pp-eng ${imp > 0 ? engClass : ''}">${imp > 0 ? eng.toFixed(1) + '%' : '–'}</span></td>
+      <td><input value="${p.klicks || ''}" data-id="${card.id}" data-k="klicks"></td>
+      <td>${imp > 0 ? ctr.toFixed(1) + '%' : '–'}</td>
+      <td><div class="pp-spark">${sparkSVG(imp)}</div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Save editable inputs
+document.getElementById('ppBody').addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT' && e.target.dataset.id) {
+    const id = e.target.dataset.id;
+    if (!postPerf[id]) postPerf[id] = {};
+    postPerf[id][e.target.dataset.k] = e.target.value;
+    savePostPerf();
+    // Debounce re-render for calculated fields
+    clearTimeout(window._ppTimer);
+    window._ppTimer = setTimeout(renderPostTable, 500);
+  }
 });
 
-// ── Send to Pipeline ──
-document.getElementById('postTableBody').addEventListener('click', e => {
-  const btn = e.target.closest('.btn-to-pipeline');
-  if (!btn) return;
-  const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
-  ideas.push({ title: btn.dataset.title, format: btn.dataset.ch });
-  localStorage.setItem('fem_pipeline_ideas', JSON.stringify(ideas));
-  btn.textContent = 'Gesendet!';
-  btn.classList.add('sent');
+// Title click → open modal
+let ppActiveId = null;
+document.getElementById('ppBody').addEventListener('click', e => {
+  const title = e.target.closest('.pp-title');
+  if (!title) return;
+  ppActiveId = title.dataset.id;
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const card = cards.find(c => String(c.id) === String(ppActiveId));
+  if (!card) return;
+  const p = postPerf[ppActiveId] || {};
+  document.getElementById('ppModalTitle').textContent = card.title;
+  ['impressions','ind_impressions','engagements','reaktionen','kommentare','shares','klicks','follower','besucher'].forEach(k => {
+    const el = document.getElementById('ppd_' + k);
+    if (el) el.value = p[k] || '';
+  });
+  // Calc
+  const imp = parseFloat(p.impressions) || 0;
+  const reak = parseFloat(p.reaktionen) || 0;
+  const komm = parseFloat(p.kommentare) || 0;
+  const sh = parseFloat(p.shares) || 0;
+  const kl = parseFloat(p.klicks) || 0;
+  document.getElementById('ppd_eng_rate').value = imp > 0 ? ((reak + komm + sh) / imp * 100).toFixed(2) : '';
+  document.getElementById('ppd_ctr').value = imp > 0 ? (kl / imp * 100).toFixed(2) : '';
+  document.getElementById('ppModal').classList.add('open');
 });
+
+// Recalc in modal on input
+['ppd_impressions','ppd_reaktionen','ppd_kommentare','ppd_shares','ppd_klicks'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    const imp = parseFloat(document.getElementById('ppd_impressions').value) || 0;
+    const r = parseFloat(document.getElementById('ppd_reaktionen').value) || 0;
+    const c = parseFloat(document.getElementById('ppd_kommentare').value) || 0;
+    const s = parseFloat(document.getElementById('ppd_shares').value) || 0;
+    const k = parseFloat(document.getElementById('ppd_klicks').value) || 0;
+    document.getElementById('ppd_eng_rate').value = imp > 0 ? ((r + c + s) / imp * 100).toFixed(2) : '';
+    document.getElementById('ppd_ctr').value = imp > 0 ? (k / imp * 100).toFixed(2) : '';
+  });
+});
+
+document.getElementById('ppSave').addEventListener('click', () => {
+  if (!ppActiveId) return;
+  if (!postPerf[ppActiveId]) postPerf[ppActiveId] = {};
+  const p = postPerf[ppActiveId];
+  ['impressions','ind_impressions','engagements','reaktionen','kommentare','shares','klicks','follower','besucher'].forEach(k => {
+    const el = document.getElementById('ppd_' + k);
+    if (el) p[k] = el.value;
+  });
+  savePostPerf();
+  document.getElementById('ppModal').classList.remove('open');
+  renderPostTable();
+});
+
+document.getElementById('ppClose').addEventListener('click', () => {
+  document.getElementById('ppModal').classList.remove('open');
+});
+document.getElementById('ppModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+renderPostTable();
 
 // ── Reichweiten-Ziel + Kanal-Blöcke from localStorage ──
 try {
@@ -824,9 +986,9 @@ Gib valides JSON zurück:
 {
   "post_analytics": { "impressions": 0, "individuelle_impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "ctr_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0 },
-  "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
-  "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0 },
-  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "search_summary": { "seitensuchen": 0 },
+  "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
+  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "premium_einladung": 0 },
   "top_posts": [{ "titel": "", "datum": "", "impressions": 0, "engagement_rate_pct": 0 }]
 }`;
 
@@ -952,13 +1114,21 @@ const KPI_DEFS = [
   { key: 'post_reaktionen', label: 'Reaktionen', defaultTarget: 50, paths: ['post.reaktionen', 'post_analytics.reaktionen', 'post_reaktionen'] },
   { key: 'post_kommentare', label: 'Kommentare', defaultTarget: 10, paths: ['post.kommentare', 'post_analytics.kommentare', 'post_kommentare'] },
   { key: 'post_shares', label: 'Shares', defaultTarget: 5, paths: ['post.shares', 'post_analytics.shares', 'post_shares'] },
-  { section: 'Seite' },
-  { key: 'site_impressions', label: 'Impressions 30 Tage', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
-  { key: 'site_eng_rate', label: 'Engagement-Rate 30T %', defaultTarget: 6, paths: ['site.engagement_rate_pct', 'content_summary.engagement_rate_pct', 'site_eng_rate'], pct: true },
-  { section: 'Sichtbarkeit & Funnel' },
-  { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
-  { key: 'visitor_aufrufe', label: 'Seitenaufrufe 30 Tage', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
-  { key: 'follower_neu', label: 'Neue Follower 30 Tage', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+  { section: 'Inhalte (letzte 30 Tage)' },
+  { key: 'site_impressions', label: 'Impressions (letzte 30 Tage)', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
+  { key: 'site_reaktionen', label: 'Reaktionen (letzte 30 Tage)', defaultTarget: 200, paths: ['site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
+  { key: 'site_kommentare', label: 'Kommentare (letzte 30 Tage)', defaultTarget: 30, paths: ['site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
+  { key: 'site_shares', label: 'Direkt geteilte Beiträge (letzte 30 Tage)', defaultTarget: 15, paths: ['site.shares', 'content_summary.shares', 'site_shares'] },
+  { section: 'Besucher:innen' },
+  { key: 'visitor_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
+  { key: 'visitor_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
+  { key: 'visitor_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
+  { section: 'Follower:innen' },
+  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
+  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+  { key: 'follower_premium', label: 'Via Premium-Einladung', defaultTarget: 5, paths: ['follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
+  { section: 'Seiten-Suche (letzte 7 Tage)' },
+  { key: 'search_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['search.seitensuchen', 'search_summary.seitensuchen', 'search.suchanzeigen', 'search_summary.suchanzeigen', 'search_seitensuchen'] },
 ];
 
 function getNestedVal(obj, path) {
