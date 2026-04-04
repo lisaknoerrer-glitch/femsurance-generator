@@ -163,6 +163,15 @@ body {
 .engagement-high { background: #dcfce7; color: #16a34a; }
 .engagement-mid  { background: #fef9c3; color: #a16207; }
 .engagement-low  { background: var(--bg-secondary); color: var(--text-secondary); }
+.btn-to-pipeline {
+  padding: 4px 10px; border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 11px;
+  font-weight: 600; color: var(--fem-pink); transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
+.btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -280,6 +289,7 @@ body {
             <th>Kommentare</th>
             <th>Engagement</th>
             <th>Trend</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="postTableBody"></tbody>
@@ -392,7 +402,19 @@ posts.forEach(p => {
     <td>${p.comments}</td>
     <td><span class="engagement-badge ${engClass}">${p.eng.toFixed(1)} %</span></td>
     <td><div class="mini-spark">${miniSparkSVG()}</div></td>
+    <td><button class="btn-to-pipeline" data-title="${p.title}" data-ch="${p.ch}">→ Pipeline</button></td>
   </tr>`;
+});
+
+// ── Send to Pipeline ──
+document.getElementById('postTableBody').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-to-pipeline');
+  if (!btn) return;
+  const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
+  ideas.push({ title: btn.dataset.title, format: btn.dataset.ch });
+  localStorage.setItem('fem_pipeline_ideas', JSON.stringify(ideas));
+  btn.textContent = 'Gesendet!';
+  btn.classList.add('sent');
 });
 </script>
 </body>

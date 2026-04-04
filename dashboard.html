@@ -536,19 +536,19 @@ body {
   <!-- Header -->
   <div class="page-header fade-up">
     <h1><em>FemSurance</em> LinkedIn Dashboard</h1>
-    <div class="header-meta">Heute, 4. April 2026 · KW 14</div>
+    <div class="header-meta" id="headerMeta">Heute, 4. April 2026 · KW 14</div>
   </div>
 
   <!-- ── Heute Banner ── -->
   <div class="banner fade-up">
     <div class="banner-item">
       <div class="label">Geplante LinkedIn-Posts heute</div>
-      <div class="value">3</div>
+      <div class="value" id="dashPlanned">3</div>
       <div class="sub">Nächster Post um 12:00 Uhr</div>
     </div>
     <div class="banner-item">
       <div class="label">Offene Redaktionsaufgaben</div>
-      <div class="value">7</div>
+      <div class="value" id="dashTasks">7</div>
       <div class="sub">2 mit hoher Priorität</div>
     </div>
     <div class="banner-item">
@@ -629,7 +629,7 @@ body {
       <div class="kanban-col">
         <div class="kanban-col-header">
           <span class="kanban-col-title">Ideen</span>
-          <span class="kanban-count">3</span>
+          <span class="kanban-count" id="dashIdeen">3</span>
         </div>
         <div class="kanban-card">
           Podcast-Zusammenfassung: Diversität in der Versicherung
@@ -649,7 +649,7 @@ body {
       <div class="kanban-col">
         <div class="kanban-col-header">
           <span class="kanban-col-title">Entwurf</span>
-          <span class="kanban-count">2</span>
+          <span class="kanban-count" id="dashEntwurf">2</span>
         </div>
         <div class="kanban-card">
           Interview: Frauen in der Versicherungsbranche
@@ -665,7 +665,7 @@ body {
       <div class="kanban-col">
         <div class="kanban-col-header">
           <span class="kanban-col-title">Review</span>
-          <span class="kanban-count">2</span>
+          <span class="kanban-count" id="dashReview">2</span>
         </div>
         <div class="kanban-card">
           Beitrag: Netzwerk-Studie Ergebnisse
@@ -681,7 +681,7 @@ body {
       <div class="kanban-col">
         <div class="kanban-col-header">
           <span class="kanban-col-title">Geplant</span>
-          <span class="kanban-count">2</span>
+          <span class="kanban-count" id="dashGeplant">2</span>
         </div>
         <div class="kanban-card">
           Post: FemSurance Award Rückblick
@@ -697,7 +697,7 @@ body {
       <div class="kanban-col">
         <div class="kanban-col-header">
           <span class="kanban-col-title">Veröffentlicht</span>
-          <span class="kanban-count">2</span>
+          <span class="kanban-count" id="dashPublish">2</span>
         </div>
         <div class="kanban-card">
           5 Tipps für Maklerinnen im Vertrieb
@@ -745,5 +745,53 @@ body {
 
 </main>
 
+<script>
+// ── Load cached data from localStorage ──
+(function() {
+  // Record refresh timestamp
+  const now = new Date();
+  localStorage.setItem('fem_last_refresh', now.toISOString());
+  const meta = document.getElementById('headerMeta');
+  const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const months = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const kw = Math.ceil(((now - new Date(now.getFullYear(),0,1)) / 86400000 + new Date(now.getFullYear(),0,1).getDay() + 1) / 7);
+  meta.textContent = `Heute, ${now.getDate()}. ${months[now.getMonth()]} ${now.getFullYear()} · KW ${kw}`;
+
+  // Pipeline board data
+  try {
+    const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+    if (cards.length) {
+      const count = col => cards.filter(c => c.col === col).length;
+      const ideen = count('ideen'), entwurf = count('entwurf'), review = count('review'), geplant = count('geplant'), publish = count('publish');
+      document.getElementById('dashIdeen').textContent = ideen;
+      document.getElementById('dashEntwurf').textContent = entwurf;
+      document.getElementById('dashReview').textContent = review;
+      document.getElementById('dashGeplant').textContent = geplant;
+      document.getElementById('dashPublish').textContent = publish;
+      // Update banner: planned = geplant, tasks = ideen + entwurf + review
+      document.getElementById('dashPlanned').textContent = geplant;
+      document.getElementById('dashTasks').textContent = ideen + entwurf + review;
+    }
+  } catch (e) {}
+
+  // Konkurrenz follower data
+  try {
+    const accounts = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '[]');
+    const fem = accounts.find(a => a.isFem);
+    if (fem && fem.followers) {
+      const f = parseInt(fem.followers);
+      if (f > 0) {
+        document.querySelectorAll('.perf-value')[0].textContent = f.toLocaleString('de-DE');
+        document.querySelector('.goal-current .goal-value').textContent = f.toLocaleString('de-DE');
+        const goal = 2500;
+        const pct = Math.min((f / goal) * 100, 100);
+        const remaining = Math.max(goal - f, 0);
+        document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
+        document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+      }
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

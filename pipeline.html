@@ -352,7 +352,7 @@ Trenne die drei Varianten mit --- auf einer eigenen Zeile.
 Schreibe ausschließlich auf Deutsch.`;
 
 // ── Card Data ──
-const cards = [
+const defaultCards = [
   { id: 1,  col: 'ideen',    title: 'Podcast-Recap: Diversität in der Versicherung', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '10.04.', body: '' },
   { id: 2,  col: 'ideen',    title: 'Infografik: Frauen in Führung 2026',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 1', due: '12.04.', body: '' },
   { id: 3,  col: 'ideen',    title: 'Umfrage: Welches Thema interessiert euch?',     format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 2', due: '14.04.', body: '' },
@@ -365,6 +365,42 @@ const cards = [
   { id: 10, col: 'publish',  title: '5 Tipps für Maklerinnen im Vertrieb',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 1', due: '01.04.', body: '' },
   { id: 11, col: 'publish',  title: 'Reel: Behind the Scenes FemSurance',            format: 'WhatsApp',     tag: 'tag-gray',   assignee: 'Name 3', due: '30.03.', body: '' },
 ];
+
+// ── Persistence ──
+function loadCards() {
+  try {
+    const stored = localStorage.getItem('fem_pipeline_board');
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(defaultCards));
+}
+function saveCards() {
+  localStorage.setItem('fem_pipeline_board', JSON.stringify(cards));
+}
+function importPipelineIdeas() {
+  try {
+    const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
+    if (!ideas.length) return;
+    const maxId = Math.max(...cards.map(c => c.id), 0);
+    ideas.forEach((idea, i) => {
+      cards.push({
+        id: maxId + i + 1,
+        col: 'ideen',
+        title: idea.title || idea,
+        format: idea.format || 'Company Page',
+        tag: idea.format === 'Gruppe' ? 'tag-purple' : idea.format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+        assignee: idea.assignee || 'Offen',
+        due: idea.due || '',
+        body: ''
+      });
+    });
+    localStorage.removeItem('fem_pipeline_ideas');
+    saveCards();
+  } catch (e) {}
+}
+
+const cards = loadCards();
+importPipelineIdeas();
 
 const colDefs = [
   { id: 'ideen',   label: 'Ideen' },
@@ -455,6 +491,7 @@ function renderBoard() {
         document.getElementById('scheduleModal').classList.add('open');
       } else {
         card.col = col.id;
+        saveCards();
         renderBoard();
       }
     });
@@ -472,6 +509,7 @@ document.querySelectorAll('.slot-btn').forEach(btn => {
       pendingCard.col = 'geplant';
       pendingCard.slot = btn.dataset.slot;
       pendingCard = null;
+      saveCards();
       document.getElementById('scheduleModal').classList.remove('open');
       renderBoard();
     }

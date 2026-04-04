@@ -182,6 +182,15 @@ body {
 .outline-points {
   font-size: 12.5px; color: var(--text-secondary); line-height: 1.6;
 }
+.btn-to-pipeline {
+  display: inline-block; margin-top: 8px;
+  padding: 5px 14px; border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 11.5px;
+  font-weight: 600; color: var(--fem-pink); transition: all 0.2s;
+}
+.btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
+.btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -409,9 +418,21 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
       <div class="outline-num">Outline ${i + 1}</div>
       <div class="outline-hook">${hook}</div>
       <div class="outline-points">${pts.map(p => '• ' + p).join('<br>')}</div>
+      <button class="btn-to-pipeline" data-title="${hook.replace(/"/g, '&quot;')}">→ Zur Pipeline</button>
     `;
     container.appendChild(el);
   }
+});
+
+// ── Send to Pipeline ──
+document.getElementById('outlineResults').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-to-pipeline');
+  if (!btn) return;
+  const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
+  ideas.push({ title: btn.dataset.title, format: 'Company Page' });
+  localStorage.setItem('fem_pipeline_ideas', JSON.stringify(ideas));
+  btn.textContent = 'Gesendet!';
+  btn.classList.add('sent');
 });
 </script>
 </body>
