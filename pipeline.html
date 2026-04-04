@@ -547,8 +547,22 @@ body {
       <input type="url" id="cmUrl" placeholder="https://asscompact.de/...">
     </div>
     <div class="cm-field">
-      <div class="cm-label">Notizen / Ideen / Stichpunkte (optional)</div>
-      <textarea id="cmNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
+      <div class="cm-label">Referenzmaterial / Ideen / Zitate</div>
+      <textarea id="cmRefmaterial" rows="5" placeholder="z. B. Kernaussagen, Zitate, Statistiken, Stichpunkte..."></textarea>
+    </div>
+    <div class="cm-field">
+      <div class="cm-label">Themenwelt</div>
+      <select id="cmThemenwelt">
+        <option value="Alle 4">Alle 4</option>
+        <option value="Business & Vertrieb">Business &amp; Vertrieb</option>
+        <option value="Marketing & Sichtbarkeit">Marketing &amp; Sichtbarkeit</option>
+        <option value="Fachliche Weiterbildung">Fachliche Weiterbildung</option>
+        <option value="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</option>
+      </select>
+    </div>
+    <div class="cm-field" id="cmOutlineField" style="display:none;">
+      <div class="cm-label">Outline</div>
+      <textarea id="cmOutline" rows="8"></textarea>
     </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
@@ -558,26 +572,6 @@ body {
       <button class="btn-save-modal" id="cmSave">Speichern</button>
       <button class="btn-close-modal" id="cmClose">Schließen</button>
       <button class="btn-delete-modal" id="cmDelete">🗑 Karte löschen</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ Generate Prep Modal ══════════ -->
-<div class="gen-prep-overlay" id="genPrepModal">
-  <div class="gen-prep">
-    <h3 id="genPrepTitle">Post generieren</h3>
-    <div class="gen-prep-sub">Optionale Zusatzinfos für bessere Ergebnisse</div>
-    <div class="gp-field">
-      <div class="gp-label">Artikel-URL (optional)</div>
-      <input type="url" id="genPrepUrl" placeholder="https://asscompact.de/...">
-    </div>
-    <div class="gp-field">
-      <div class="gp-label">Zusätzliche Notizen (optional)</div>
-      <textarea id="genPrepNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
-    </div>
-    <div class="gen-prep-btns">
-      <button class="btn-gen-go" id="genPrepGo">Generieren</button>
-      <button class="btn-gen-cancel" id="genPrepCancel">Abbrechen</button>
     </div>
   </div>
 </div>
@@ -598,9 +592,33 @@ body {
 // ── Config ──
 const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
 
+const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
+
+Themenwelten:
+1. Business & Vertrieb - klar, lösungsorientiert, strategisch
+2. Marketing & Sichtbarkeit - inspirierend, mutig, menschlich
+3. Fachliche Weiterbildung - ruhig, vertrauensvoll, sachlich
+4. Persönlichkeitsentwicklung - reflektiert, warm, emotional
+
+Für jede Outline:
+- Kernparadox
+- Reformuliert (Lang / Mittel / Kurz)
+- Schlüsselzitate
+- Transformation (Zweifel → Erkenntnis → Selbstbestimmung)
+- Alltagsprobleme (3)
+- Beispiele (2)
+- Einwände / Zweifel
+- Aspirationsaussage
+- Handlungsschritte (3)
+- Große Idee
+- Abschließende Erkenntnis
+
+Am Ende: Analyse-Notizen mit Themen, Sprachmuster, Empfehlung.
+Direkte Du-Ansprache. Warm, klar, empowernd. Keine Floskeln.`;
+
 const POST_SYSTEM_PROMPT = `Du bist ein LinkedIn-Content-Experte für FemSurance (Visibility. Network. Impact.), eine Initiative von AssCompact / bbg Betriebsberatungs GmbH für Frauen in der Versicherungsbranche.
 
-Erstelle für jedes Thema DREI Post-Varianten:
+Erstelle aus der gegebenen Outline DREI Post-Varianten:
 
 1. **Company Page Post** (1000–1500 Zeichen):
    - Professioneller Ton, Thought-Leadership-Stil
@@ -704,101 +722,81 @@ function buildPlatformCounters(text) {
   </div>`;
 }
 
-// ── Generate posts via Anthropic API ──
-let pendingGenCardId = null;
-let pendingGenBtnEl = null;
-
-function generatePosts(cardId, btnEl) {
-  const card = cards.find(c => c.id === cardId);
-  if (!card) return;
-  pendingGenCardId = cardId;
-  pendingGenBtnEl = btnEl;
-  document.getElementById('genPrepTitle').textContent = `Post generieren: ${card.title}`;
-  document.getElementById('genPrepUrl').value = card.url || '';
-  document.getElementById('genPrepNotes').value = card.notes || '';
-  document.getElementById('genPrepModal').classList.add('open');
+// ── Fetch article helper ──
+async function fetchArticleText(url) {
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const resp = await fetch(proxyUrl);
+    if (resp.ok) {
+      const html = await resp.text();
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return (tmp.textContent || tmp.innerText || '').substring(0, 3000).trim();
+    }
+  } catch {}
+  return null;
 }
 
-document.getElementById('genPrepCancel').addEventListener('click', () => {
-  document.getElementById('genPrepModal').classList.remove('open');
-  pendingGenCardId = null;
-  pendingGenBtnEl = null;
-});
-document.getElementById('genPrepModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('open');
-    pendingGenCardId = null;
-    pendingGenBtnEl = null;
+// ── Call Anthropic API ──
+async function callAnthropic(systemPrompt, userPrompt, maxTokens) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens || 3000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
+  });
+  if (!resp.ok) {
+    const errBody = await resp.text();
+    throw new Error('API-Fehler: ' + resp.status + ' – ' + errBody);
   }
-});
+  const data = await resp.json();
+  return data.content[0].text;
+}
 
-document.getElementById('genPrepGo').addEventListener('click', async () => {
-  const card = cards.find(c => c.id === pendingGenCardId);
-  const btnEl = pendingGenBtnEl;
-  if (!card || !btnEl) return;
+// ── Step 1: Generate Outline ──
+async function generateOutline(cardId, btnEl) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
 
-  const notes = document.getElementById('genPrepNotes').value.trim();
-  const url = document.getElementById('genPrepUrl').value.trim();
-  document.getElementById('genPrepModal').classList.remove('open');
-
-  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
   btnEl.classList.add('loading');
   btnEl.disabled = true;
 
   try {
-    // Build prompt
+    // Build prompt from card data
     let userPrompt = `Thema: ${card.title}`;
-    if (notes) userPrompt += `\n\nReferenzmaterial / Notizen:\n${notes}`;
+    if (card.themenwelt && card.themenwelt !== 'Alle 4') {
+      userPrompt += `\nThemenwelt: ${card.themenwelt}`;
+    }
+    if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
 
     // Fetch article if URL provided
-    if (url) {
+    if (card.url) {
       btnEl.textContent = 'ARTIKEL WIRD GELADEN...';
-      try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const articleResp = await fetch(proxyUrl);
-        if (articleResp.ok) {
-          let articleText = await articleResp.text();
-          // Strip HTML tags to get plain text
-          const tmp = document.createElement('div');
-          tmp.innerHTML = articleText;
-          articleText = tmp.textContent || tmp.innerText || '';
-          // Limit to first 3000 chars
-          articleText = articleText.substring(0, 3000).trim();
-          if (articleText) {
-            userPrompt += `\n\nArtikel-Inhalt (${url}):\n${articleText}`;
-          }
-        }
-      } catch (fetchErr) {
-        userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${url}]`;
+      const articleText = await fetchArticleText(card.url);
+      if (articleText) {
+        userPrompt += `\n\nArtikel-Inhalt (${card.url}):\n${articleText}`;
+      } else {
+        userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${card.url}]`;
       }
-      btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+      btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
     }
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2048,
-        system: POST_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
+    const resultText = await callAnthropic(OUTLINE_SYSTEM_PROMPT, userPrompt, 3000);
 
-    if (!resp.ok) {
-      const errBody = await resp.text();
-      throw new Error('API-Fehler: ' + resp.status + ' – ' + errBody);
-    }
+    // Save outline to card and show result
+    card.outline = resultText;
+    saveCards();
 
-    const data = await resp.json();
-    const resultText = data.content[0].text;
-
-    // Insert textarea + counters + save button after the button
     const wrapper = btnEl.parentElement;
     const genArea = document.createElement('div');
     genArea.className = 'gen-result-area';
@@ -806,45 +804,99 @@ document.getElementById('genPrepGo').addEventListener('click', async () => {
     const ta = document.createElement('textarea');
     ta.className = 'gen-textarea';
     ta.value = resultText;
+    ta.addEventListener('input', () => { card.outline = ta.value; saveCards(); });
     genArea.appendChild(ta);
 
-    const countersDiv = document.createElement('div');
-    countersDiv.innerHTML = buildPlatformCounters(resultText);
-    genArea.appendChild(countersDiv.firstElementChild);
-
-    // Update counters on edit
-    ta.addEventListener('input', () => {
-      const pc = genArea.querySelector('.platform-counters');
-      if (pc) {
-        const newCounters = document.createElement('div');
-        newCounters.innerHTML = buildPlatformCounters(ta.value);
-        pc.replaceWith(newCounters.firstElementChild);
-      }
-    });
-
+    // Save outline + move to Entwurf
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn-save-draft';
-    saveBtn.textContent = 'Speichern & als Entwurf';
-    saveBtn.addEventListener('click', (e) => {
+    saveBtn.textContent = 'Outline speichern & als Entwurf';
+    saveBtn.addEventListener('click', e => {
       e.stopPropagation();
-      card.body = ta.value;
+      card.outline = ta.value;
       card.col = 'entwurf';
       saveCards();
       renderBoard();
     });
     genArea.appendChild(saveBtn);
 
-    // Remove old generate button and add result
+    // Step 2 button: Post generieren (from outline)
+    const postBtn = document.createElement('button');
+    postBtn.className = 'btn-generate';
+    postBtn.style.marginTop = '8px';
+    postBtn.textContent = 'Post generieren';
+    postBtn.addEventListener('click', async e => {
+      e.stopPropagation();
+      await generatePostFromOutline(card, ta.value, postBtn, genArea);
+    });
+    genArea.appendChild(postBtn);
+
     btnEl.style.display = 'none';
     wrapper.appendChild(genArea);
 
   } catch (err) {
     alert('Fehler beim Generieren: ' + err.message);
+    btnEl.textContent = 'Entwurf generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
+
+// ── Step 2: Generate Post from Outline ──
+async function generatePostFromOutline(card, outlineText, btnEl, genArea) {
+  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const userPrompt = `Thema: ${card.title}\n\nOutline:\n${outlineText}`;
+    const resultText = await callAnthropic(POST_SYSTEM_PROMPT, userPrompt, 2048);
+
+    // Replace outline textarea with post textarea + counters
+    const oldTa = genArea.querySelector('.gen-textarea');
+    if (oldTa) oldTa.remove();
+    const oldCounters = genArea.querySelector('.platform-counters');
+    if (oldCounters) oldCounters.remove();
+
+    const ta = document.createElement('textarea');
+    ta.className = 'gen-textarea';
+    ta.value = resultText;
+    genArea.insertBefore(ta, genArea.firstChild);
+
+    const countersDiv = document.createElement('div');
+    countersDiv.innerHTML = buildPlatformCounters(resultText);
+    ta.after(countersDiv.firstElementChild);
+
+    ta.addEventListener('input', () => {
+      const pc = genArea.querySelector('.platform-counters');
+      if (pc) {
+        const nc = document.createElement('div');
+        nc.innerHTML = buildPlatformCounters(ta.value);
+        pc.replaceWith(nc.firstElementChild);
+      }
+    });
+
+    // Update save button to save body
+    const saveBtn = genArea.querySelector('.btn-save-draft');
+    if (saveBtn) {
+      saveBtn.textContent = 'Post speichern & als Entwurf';
+      saveBtn.onclick = e => {
+        e.stopPropagation();
+        card.body = ta.value;
+        card.col = 'entwurf';
+        saveCards();
+        renderBoard();
+      };
+    }
+    btnEl.style.display = 'none';
+
+  } catch (err) {
+    alert('Fehler: ' + err.message);
     btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
   }
-});
+}
 
 // ── Render Board ──
 function renderBoard() {
@@ -880,7 +932,7 @@ function renderBoard() {
 
       // Generate button for Ideen column
       const generateBtn = (col.id === 'ideen') ?
-        `<button class="btn-generate" data-card-id="${card.id}">Post generieren</button>` : '';
+        `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>` : '';
 
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
@@ -900,7 +952,7 @@ function renderBoard() {
         if (btn) {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            generatePosts(card.id, btn);
+            generateOutline(card.id, btn);
           });
         }
       }
@@ -1039,11 +1091,23 @@ function openCardModal(cardId) {
   document.getElementById('cmAssignee').value = card.assignee || '';
   document.getElementById('cmDue').value = card.due || '';
   document.getElementById('cmUrl').value = card.url || '';
-  document.getElementById('cmNotes').value = card.notes || '';
+  document.getElementById('cmRefmaterial').value = card.refmaterial || '';
+  document.getElementById('cmThemenwelt').value = card.themenwelt || 'Alle 4';
 
   // Badge
   const badgeClass = formatTagClass(card.format);
   document.getElementById('cmBadge').innerHTML = `<span class="cm-badge ${badgeClass}">${card.format}</span>`;
+
+  // Outline
+  const outlineField = document.getElementById('cmOutlineField');
+  const outlineTa = document.getElementById('cmOutline');
+  if (card.outline) {
+    outlineField.style.display = 'block';
+    outlineTa.value = card.outline;
+  } else {
+    outlineField.style.display = 'none';
+    outlineTa.value = '';
+  }
 
   // Body
   const bodyField = document.getElementById('cmBodyField');
@@ -1066,7 +1130,11 @@ document.getElementById('cmSave').addEventListener('click', () => {
   card.assignee = document.getElementById('cmAssignee').value.trim();
   card.due = document.getElementById('cmDue').value.trim();
   card.url = document.getElementById('cmUrl').value.trim();
-  card.notes = document.getElementById('cmNotes').value.trim();
+  card.refmaterial = document.getElementById('cmRefmaterial').value.trim();
+  card.themenwelt = document.getElementById('cmThemenwelt').value;
+  if (document.getElementById('cmOutlineField').style.display !== 'none') {
+    card.outline = document.getElementById('cmOutline').value;
+  }
   if (document.getElementById('cmBodyField').style.display !== 'none') {
     card.body = document.getElementById('cmBody').value;
   }
