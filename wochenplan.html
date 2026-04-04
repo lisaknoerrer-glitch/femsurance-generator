@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Wochenplan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C;
+  --fem-pink-light: #fce4f0;
+  --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED;
+  --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.04s; }
+.fade-up:nth-child(2) { animation-delay: 0.10s; }
+.fade-up:nth-child(3) { animation-delay: 0.16s; }
+.fade-up:nth-child(4) { animation-delay: 0.22s; }
+.fade-up:nth-child(5) { animation-delay: 0.28s; }
+.fade-up:nth-child(6) { animation-delay: 0.34s; }
+.fade-up:nth-child(7) { animation-delay: 0.40s; }
+.fade-up:nth-child(8) { animation-delay: 0.46s; }
+
+/* ── Left Navigation ── */
+.nav-left {
+  position: fixed; top: 0; left: 0;
+  width: 62px; height: 100vh;
+  background: var(--nav-bg);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  width: 34px; height: 34px; background: var(--fem-pink);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
+}
+.nav-links {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%; list-style: none;
+}
+.nav-links a {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-sm); margin: 0 6px;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--fem-pink); }
+.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+
+/* ── Layout ── */
+.main { margin-left: 62px; height: 100vh; display: flex; flex-direction: column; }
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 32px 0; margin-bottom: 20px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header h1 em { font-style: normal; color: var(--fem-pink); }
+.header-meta { font-size: 13px; color: var(--text-secondary); }
+
+.two-col {
+  display: flex; flex: 1; min-height: 0; gap: 0;
+}
+.col-left {
+  width: 60%; overflow-y: auto; padding: 0 32px 40px;
+}
+.col-right {
+  width: 40%; position: sticky; top: 0; height: calc(100vh - 80px);
+  border-left: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex; flex-direction: column;
+  padding: 24px;
+}
+
+/* ── Cards / Blocks ── */
+.block {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
+  padding: 20px 22px; margin-bottom: 16px;
+}
+.block-title {
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px;
+}
+.block-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--fem-pink); color: #fff;
+  font-size: 10px; font-weight: 700; margin-right: 6px;
+}
+
+/* ── Form Elements ── */
+label.field-label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 4px;
+}
+input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  color: var(--text-primary); background: var(--bg-card);
+  transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--fem-pink);
+}
+textarea { resize: vertical; line-height: 1.6; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+
+/* ── Drop Zone ── */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px 20px; text-align: center;
+  color: var(--text-secondary); font-size: 13px;
+  transition: all 0.2s; cursor: pointer;
+  margin-bottom: 12px;
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--fem-pink); background: var(--fem-pink-light);
+  color: var(--fem-pink);
+}
+.drop-zone .drop-icon { font-size: 28px; margin-bottom: 6px; display: block; opacity: 0.5; }
+.drop-zone .drop-label { font-weight: 500; }
+.drop-zone .drop-hint { font-size: 11px; margin-top: 4px; opacity: 0.7; }
+.drop-zone.has-file { border-style: solid; border-color: var(--fem-pink); }
+.drop-zone.has-file .drop-label { color: var(--fem-pink); font-weight: 600; }
+.drop-preview { max-width: 100%; max-height: 120px; border-radius: var(--radius-sm); margin-top: 8px; }
+
+/* ── URL rows ── */
+.url-row {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+}
+.url-row input { flex: 1; }
+.url-row input:first-child { flex: 1.5; }
+.btn-remove-row {
+  width: 30px; height: 30px; border: none; border-radius: var(--radius-sm);
+  background: none; color: var(--text-secondary); cursor: pointer;
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.btn-remove-row:hover { background: #fef2f2; color: #dc2626; }
+.btn-add-url {
+  padding: 6px 14px; border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); background: none;
+  cursor: pointer; font-family: inherit; font-size: 12px;
+  font-weight: 500; color: var(--text-secondary); transition: all 0.2s;
+}
+.btn-add-url:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+
+/* ── Collapsible ── */
+.collapsible-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; cursor: pointer; user-select: none;
+  border-bottom: 1px solid var(--border);
+}
+.collapsible-header:last-of-type { border-bottom: none; }
+.collapsible-title {
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+}
+.collapsible-arrow {
+  font-size: 12px; color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+.collapsible-header.open .collapsible-arrow { transform: rotate(180deg); }
+.collapsible-body {
+  display: none; padding: 10px 0 6px;
+}
+.collapsible-body.open { display: block; }
+
+/* ── Checkbox ── */
+.checkbox-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.checkbox-row input[type="checkbox"] {
+  width: 16px; height: 16px; accent-color: var(--fem-pink);
+}
+.checkbox-row label {
+  font-size: 13px; font-weight: 500; cursor: pointer;
+}
+
+/* ── Abstand calc ── */
+.calc-row {
+  display: flex; gap: 16px; margin-top: 10px;
+  padding: 10px 14px; background: var(--bg-secondary);
+  border-radius: var(--radius-sm); font-size: 12.5px;
+}
+.calc-item { color: var(--text-secondary); }
+.calc-item strong { color: var(--fem-pink); font-weight: 700; }
+
+/* ── Generate Button ── */
+.generate-section {
+  padding: 20px 0;
+}
+.btn-generate {
+  display: block; width: 100%;
+  padding: 14px 24px; border: none; border-radius: var(--radius-md);
+  background: var(--fem-pink);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+  letter-spacing: 0.01em;
+}
+.btn-generate:hover { opacity: 0.9; }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+.generate-hint {
+  text-align: center; font-size: 12px; color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+/* ── Right Panel ── */
+.output-placeholder {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); font-size: 14px;
+  border: 2px dashed var(--border); border-radius: var(--radius-md);
+}
+.col-right h3 {
+  font-size: 14px; font-weight: 600; margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+/* ── Scrollbar ── */
+.col-left::-webkit-scrollbar { width: 5px; }
+.col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ Left Navigation ══════════ -->
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Übersicht
+    </a>
+    <a href="performance.html">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Performance
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Pipeline
+    </a>
+    <a href="research.html">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Research
+    </a>
+    <a href="konkurrenz.html">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Konkurrenz
+    </a>
+    <a href="wochenplan.html" class="active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Wochenplan
+    </a>
+  </ul>
+</nav>
+
+<!-- ══════════ Main ══════════ -->
+<main class="main">
+
+  <div class="page-header fade-up">
+    <h1><em>FemSurance</em> Wochenplan-Generator</h1>
+    <div class="header-meta">Wöchentliche Content-Planung</div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- ════ LEFT PANEL ════ -->
+    <div class="col-left">
+
+      <!-- BLOCK 1: Screenshot + KW + Datum -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">1</span> Wochenstatistik</div>
+        <div class="drop-zone" id="dropZone">
+          <span class="drop-icon">📊</span>
+          <span class="drop-label">Screenshot Wochenstatistik hierher ziehen</span>
+          <span class="drop-hint">PNG oder JPG · max. 5 MB</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none">
+        <div class="row-2">
+          <div class="field">
+            <label class="field-label">KW</label>
+            <input type="number" id="b1Kw" min="1" max="53" placeholder="z. B. 14">
+          </div>
+          <div class="field">
+            <label class="field-label">Datum Montag</label>
+            <input type="date" id="b1Date">
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCK 2: LinkedIn Analytics -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">2</span> LinkedIn Analytics</div>
+        <div class="field">
+          <label class="field-label">Analytics-Export (Text einfügen)</label>
+          <textarea id="b2Analytics" rows="10" placeholder="LinkedIn Analytics-Daten hier einfügen..."></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Modus</label>
+          <select id="b2Mode">
+            <option value="Prompt-System">Prompt-System</option>
+            <option value="Redaktion">Redaktion</option>
+            <option value="Gemischt" selected>Gemischt</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- BLOCK 3: Follower-Ziel -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">3</span> Follower-Ziel</div>
+        <div class="row-2">
+          <div class="field">
+            <label class="field-label">FemSurance Follower aktuell</label>
+            <input type="number" id="b3Current" placeholder="z. B. 1847">
+          </div>
+          <div class="field">
+            <label class="field-label">Follower-Ziel</label>
+            <input type="number" id="b3Goal" placeholder="z. B. 2500">
+          </div>
+        </div>
+        <div class="calc-row" id="b3Calc">
+          <div class="calc-item">Abstand: <strong id="b3Diff">–</strong></div>
+          <div class="calc-item">Geschätzt: <strong id="b3Months">–</strong></div>
+        </div>
+      </div>
+
+      <!-- BLOCK 4: URLs -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">4</span> Referenz-URLs</div>
+        <div id="urlList"></div>
+        <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
+      </div>
+
+      <!-- BLOCK 5: Branchenthemen -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">5</span> Branchenthemen</div>
+        <div id="b5Sections">
+          <div class="collapsible-header" data-target="b5_vwheute">
+            <span class="collapsible-title">VWheute</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-body" id="b5_vwheute">
+            <textarea rows="4" data-key="vwheute" placeholder="Relevante Artikel / Themen von VWheute..."></textarea>
+          </div>
+
+          <div class="collapsible-header" data-target="b5_vbote">
+            <span class="collapsible-title">Versicherungsbote</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-body" id="b5_vbote">
+            <textarea rows="4" data-key="versicherungsbote" placeholder="Relevante Artikel / Themen vom Versicherungsbote..."></textarea>
+          </div>
+
+          <div class="collapsible-header" data-target="b5_female">
+            <span class="collapsible-title">Female Finance &amp; Frau Finanzen</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-body" id="b5_female">
+            <textarea rows="4" data-key="femalefinance" placeholder="Themen aus Female Finance / Frau Finanzen..."></textarea>
+          </div>
+
+          <div class="collapsible-header" data-target="b5_sonstige">
+            <span class="collapsible-title">Sonstige Branchenthemen</span>
+            <span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-body" id="b5_sonstige">
+            <textarea rows="4" data-key="sonstige" placeholder="Weitere relevante Branchenthemen..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCK 6: Events & Kontakte -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">6</span> Events &amp; Kontakte</div>
+        <div class="field">
+          <label class="field-label">Events / Interviews diese Woche</label>
+          <textarea id="b6Events" rows="4" placeholder="z. B. Webinar am Mittwoch, Interview mit..."></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Personen kontaktiert</label>
+          <textarea id="b6Contacts" rows="4" placeholder="Name, Kontext, Ergebnis..."></textarea>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="b6Newsletter">
+          <label for="b6Newsletter">Newsletter-Crossover</label>
+        </div>
+        <div class="field" id="b6NewsletterField" style="display:none;">
+          <label class="field-label">Newsletter-Details</label>
+          <textarea id="b6NewsletterText" rows="3" placeholder="Welcher Newsletter, Thema, Termin..."></textarea>
+        </div>
+      </div>
+
+      <!-- BLOCK 7: Lernstand -->
+      <div class="block fade-up">
+        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand</div>
+        <div class="field">
+          <textarea id="b7Lernstand" rows="8"></textarea>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="generate-section fade-up">
+        <button class="btn-generate" id="btnGenerate">▶ Wochenplan generieren</button>
+        <div class="generate-hint">Dauert ca. 60–90 Sekunden</div>
+      </div>
+
+    </div>
+
+    <!-- ════ RIGHT PANEL ════ -->
+    <div class="col-right">
+      <h3>Wochenplan-Output</h3>
+      <div class="output-placeholder" id="outputArea">
+        Output erscheint hier...
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+const DEFAULT_LERNSTAND = 'Stand: 04.04.2026 · FemSurance LinkedIn — Start der systematischen Bespielung. Initiative seit DKM 2023 aktiv. Kanäle: LinkedIn Company Page (Di/Do), Gruppe (Mi/Fr), WhatsApp (Mi 08:00). Ton: fachkundig, empowernd, praxisnah.';
+
+// ── Helpers ──
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+// ══════════ BLOCK 1: Screenshot + KW + Date ══════════
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+let uploadedImage = null;
+
+function handleFile(file) {
+  if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Datei zu groß (max. 5 MB)'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    uploadedImage = e.target.result;
+    dropZone.classList.add('has-file');
+    dropZone.innerHTML = `<span class="drop-label">${file.name}</span><img class="drop-preview" src="${uploadedImage}" alt="Preview">`;
+    saveBlock1();
+  };
+  reader.readAsDataURL(file);
+}
+
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+function saveBlock1() {
+  save('fem_wp_block1', {
+    kw: document.getElementById('b1Kw').value,
+    date: document.getElementById('b1Date').value,
+    image: uploadedImage
+  });
+}
+document.getElementById('b1Kw').addEventListener('input', saveBlock1);
+document.getElementById('b1Date').addEventListener('input', saveBlock1);
+
+// Restore
+const b1 = load('fem_wp_block1', {});
+if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
+if (b1.date) document.getElementById('b1Date').value = b1.date;
+if (b1.image) { uploadedImage = b1.image; dropZone.classList.add('has-file'); dropZone.innerHTML = `<span class="drop-label">Bild geladen</span><img class="drop-preview" src="${b1.image}" alt="Preview">`; }
+
+// ══════════ BLOCK 2: Analytics ══════════
+function saveBlock2() {
+  save('fem_wp_block2', {
+    analytics: document.getElementById('b2Analytics').value,
+    mode: document.getElementById('b2Mode').value
+  });
+}
+document.getElementById('b2Analytics').addEventListener('input', saveBlock2);
+document.getElementById('b2Mode').addEventListener('change', saveBlock2);
+
+const b2 = load('fem_wp_block2', {});
+if (b2.analytics) document.getElementById('b2Analytics').value = b2.analytics;
+if (b2.mode) document.getElementById('b2Mode').value = b2.mode;
+
+// ══════════ BLOCK 3: Follower-Ziel ══════════
+function calcFollower() {
+  const current = parseInt(document.getElementById('b3Current').value) || 0;
+  const goal = parseInt(document.getElementById('b3Goal').value) || 0;
+  const diff = Math.max(goal - current, 0);
+  document.getElementById('b3Diff').textContent = diff > 0 ? diff.toLocaleString('de-DE') + ' Follower' : '–';
+  // Estimate months: assume ~18 followers/week growth
+  if (diff > 0) {
+    const weeks = Math.ceil(diff / 18);
+    const months = Math.round(weeks / 4.3 * 10) / 10;
+    document.getElementById('b3Months').textContent = months + ' Monate bei ~18/Woche';
+  } else {
+    document.getElementById('b3Months').textContent = diff === 0 && goal > 0 ? 'Ziel erreicht!' : '–';
+  }
+  save('fem_wp_block3', { current, goal });
+}
+document.getElementById('b3Current').addEventListener('input', calcFollower);
+document.getElementById('b3Goal').addEventListener('input', calcFollower);
+
+const b3 = load('fem_wp_block3', {});
+if (b3.current) document.getElementById('b3Current').value = b3.current;
+if (b3.goal) document.getElementById('b3Goal').value = b3.goal;
+calcFollower();
+
+// ══════════ BLOCK 4: URLs ══════════
+let urls = load('fem_wp_block4', [
+  { url: '', title: '' },
+  { url: '', title: '' },
+  { url: '', title: '' }
+]);
+
+function renderUrls() {
+  const list = document.getElementById('urlList');
+  list.innerHTML = '';
+  urls.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'url-row';
+    row.innerHTML = `
+      <input type="url" value="${item.url}" placeholder="https://..." data-i="${i}" data-f="url">
+      <input type="text" value="${item.title}" placeholder="Titel (optional)" data-i="${i}" data-f="title">
+      <button class="btn-remove-row" data-i="${i}" title="Entfernen">&times;</button>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById('btnAddUrl').style.display = urls.length >= 10 ? 'none' : '';
+}
+
+document.getElementById('urlList').addEventListener('input', e => {
+  if (!e.target.dataset.i) return;
+  const i = parseInt(e.target.dataset.i);
+  urls[i][e.target.dataset.f] = e.target.value;
+  save('fem_wp_block4', urls);
+});
+document.getElementById('urlList').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-remove-row');
+  if (!btn) return;
+  urls.splice(parseInt(btn.dataset.i), 1);
+  save('fem_wp_block4', urls);
+  renderUrls();
+});
+document.getElementById('btnAddUrl').addEventListener('click', () => {
+  if (urls.length >= 10) return;
+  urls.push({ url: '', title: '' });
+  save('fem_wp_block4', urls);
+  renderUrls();
+});
+renderUrls();
+
+// ══════════ BLOCK 5: Collapsible Sections ══════════
+document.querySelectorAll('.collapsible-header').forEach(h => {
+  h.addEventListener('click', () => {
+    h.classList.toggle('open');
+    document.getElementById(h.dataset.target).classList.toggle('open');
+  });
+});
+
+function saveBlock5() {
+  const data = {};
+  document.querySelectorAll('#b5Sections textarea').forEach(ta => {
+    data[ta.dataset.key] = ta.value;
+  });
+  save('fem_wp_block5', data);
+}
+document.querySelectorAll('#b5Sections textarea').forEach(ta => {
+  ta.addEventListener('input', saveBlock5);
+});
+
+const b5 = load('fem_wp_block5', {});
+document.querySelectorAll('#b5Sections textarea').forEach(ta => {
+  if (b5[ta.dataset.key]) ta.value = b5[ta.dataset.key];
+});
+
+// ══════════ BLOCK 6: Events & Contacts ══════════
+const b6Newsletter = document.getElementById('b6Newsletter');
+const b6Field = document.getElementById('b6NewsletterField');
+
+b6Newsletter.addEventListener('change', () => {
+  b6Field.style.display = b6Newsletter.checked ? 'block' : 'none';
+  saveBlock6();
+});
+
+function saveBlock6() {
+  save('fem_wp_block6', {
+    events: document.getElementById('b6Events').value,
+    contacts: document.getElementById('b6Contacts').value,
+    newsletter: b6Newsletter.checked,
+    newsletterText: document.getElementById('b6NewsletterText').value
+  });
+}
+['b6Events', 'b6Contacts', 'b6NewsletterText'].forEach(id => {
+  document.getElementById(id).addEventListener('input', saveBlock6);
+});
+
+const b6 = load('fem_wp_block6', {});
+if (b6.events) document.getElementById('b6Events').value = b6.events;
+if (b6.contacts) document.getElementById('b6Contacts').value = b6.contacts;
+if (b6.newsletter) { b6Newsletter.checked = true; b6Field.style.display = 'block'; }
+if (b6.newsletterText) document.getElementById('b6NewsletterText').value = b6.newsletterText;
+
+// ══════════ BLOCK 7: Lernstand ══════════
+const b7Ta = document.getElementById('b7Lernstand');
+b7Ta.value = localStorage.getItem('fem_lernstand') || DEFAULT_LERNSTAND;
+b7Ta.addEventListener('input', () => {
+  localStorage.setItem('fem_lernstand', b7Ta.value);
+});
+
+// ══════════ GENERATE ══════════
+document.getElementById('btnGenerate').addEventListener('click', () => {
+  // Placeholder — will wire up API in next step
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = 'Wird generiert...';
+  document.getElementById('outputArea').textContent = 'Wochenplan wird generiert...';
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '▶ Wochenplan generieren';
+    document.getElementById('outputArea').textContent = 'Output erscheint hier...';
+  }, 2000);
+});
+</script>
+</body>
+</html>
