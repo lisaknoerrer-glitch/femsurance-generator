@@ -623,25 +623,60 @@ body {
   <!-- ── Kanal-Übersicht ── -->
   <div class="card fade-up" style="margin-bottom:22px;">
     <div class="card-title">Kanal-Übersicht</div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
-      <div style="text-align:center; padding:14px 0;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Company Page</div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0;">
+
+      <!-- Company Page -->
+      <div style="padding:16px 20px; text-align:center;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">LinkedIn Company Page</div>
         <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashCompanyFollower">–</div>
         <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Follower</div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Di &amp; Do 10:00 · <span id="dashCompanyPosts">–</span> Posts/Woche</div>
+        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
+          <span style="font-size:11px; color:var(--text-secondary);">Ziel</span>
+          <input type="number" id="dashCompanyGoal" placeholder="2500" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
+        </div>
+        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
+          <div id="dashCompanyBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
+        </div>
+        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="dashCompanyPct"></div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Di &amp; Do 10:00 · 2 Posts/Woche</div>
       </div>
-      <div style="text-align:center; padding:14px 0; border-left:1px solid var(--border); border-right:1px solid var(--border);">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Gruppe</div>
-        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashGruppeMembers">–</div>
+
+      <!-- Gruppe -->
+      <div style="padding:16px 20px; text-align:center; border-left:1px solid var(--border); border-right:1px solid var(--border);">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">LinkedIn Gruppe</div>
+        <div style="display:flex; align-items:center; gap:6px; justify-content:center;">
+          <input type="number" id="dashGruppeMembers" placeholder="0" style="width:80px; padding:3px 6px; border:1px solid var(--fem-pink); border-radius:4px; font-size:22px; font-weight:700; font-family:inherit; text-align:center; color:var(--fem-pink);">
+        </div>
         <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Mi &amp; Fr 10:00 · <span id="dashGruppePosts">–</span> Posts/Woche</div>
+        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
+          <span style="font-size:11px; color:var(--text-secondary);">Ziel</span>
+          <input type="number" id="dashGruppeGoal" placeholder="500" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
+        </div>
+        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
+          <div id="dashGruppeBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
+        </div>
+        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="dashGruppePct"></div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Mi &amp; Fr 10:00 · 2 Posts/Woche</div>
       </div>
-      <div style="text-align:center; padding:14px 0;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">WhatsApp Community</div>
-        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashWhatsappMembers">–</div>
+
+      <!-- WhatsApp -->
+      <div style="padding:16px 20px; text-align:center;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">WhatsApp Community</div>
+        <div style="display:flex; align-items:center; gap:6px; justify-content:center;">
+          <input type="number" id="dashWhatsappMembers" placeholder="0" style="width:80px; padding:3px 6px; border:1px solid var(--fem-pink); border-radius:4px; font-size:22px; font-weight:700; font-family:inherit; text-align:center; color:var(--fem-pink);">
+        </div>
         <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Mi 08:00 · <span id="dashWhatsappPosts">–</span> Posts/Woche</div>
+        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
+          <span style="font-size:11px; color:var(--text-secondary);">Ziel</span>
+          <input type="number" id="dashWhatsappGoal" placeholder="200" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
+        </div>
+        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
+          <div id="dashWhatsappBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
+        </div>
+        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="dashWhatsappPct"></div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Mi 08:00 · 1 Post/Woche</div>
       </div>
+
     </div>
   </div>
 
@@ -799,39 +834,82 @@ body {
     }
   } catch (e) {}
 
-  // Konkurrenz data — reads { femFollower, goal, gruppeMembers, whatsappMembers }
-  try {
-    const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-    let f, goal, gm, wm;
-    if (Array.isArray(raw)) {
-      const fem = raw.find(a => a.isFem);
-      f = fem ? parseInt(fem.followers) : 0;
-      goal = fem ? (parseInt(fem.goal) || 2500) : 2500;
-      gm = 0; wm = 0;
-    } else {
-      f = parseInt(raw.femFollower) || 0;
-      goal = parseInt(raw.goal) || 2500;
-      gm = parseInt(raw.gruppeMembers) || 0;
-      wm = parseInt(raw.whatsappMembers) || 0;
-    }
-    if (f > 0) {
-      document.querySelectorAll('.perf-value')[0].textContent = f.toLocaleString('de-DE');
-      document.querySelector('.goal-current .goal-value').textContent = f.toLocaleString('de-DE');
-      document.querySelector('.goal-target .goal-value').textContent = goal.toLocaleString('de-DE');
-      const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
-      const remaining = Math.max(goal - f, 0);
-      document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
-      document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
-    }
-    const gpw = Array.isArray(raw) ? 0 : (parseInt(raw.gruppePostsPerWeek) || 0);
-    const wpw = Array.isArray(raw) ? 0 : (parseInt(raw.whatsappPostsPerWeek) || 0);
-    document.getElementById('dashCompanyFollower').textContent = f > 0 ? f.toLocaleString('de-DE') : '–';
-    document.getElementById('dashGruppeMembers').textContent = gm > 0 ? gm.toLocaleString('de-DE') : '–';
-    document.getElementById('dashWhatsappMembers').textContent = wm > 0 ? wm.toLocaleString('de-DE') : '–';
-    document.getElementById('dashCompanyPosts').textContent = '2';
-    document.getElementById('dashGruppePosts').textContent = gpw > 0 ? gpw : '2';
-    document.getElementById('dashWhatsappPosts').textContent = wpw > 0 ? wpw : '1';
-  } catch (e) {}
+  // Konkurrenz data — reads { femFollower, goal, gruppeMembers, gruppeGoal, whatsappMembers, whatsappGoal, ... }
+  function loadKD() {
+    try {
+      const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+      if (Array.isArray(raw)) {
+        const fem = raw.find(a => a.isFem);
+        return { femFollower: fem ? parseInt(fem.followers) : 0, goal: fem ? (parseInt(fem.goal) || 2500) : 2500 };
+      }
+      return raw;
+    } catch { return {}; }
+  }
+  function saveKD(patch) {
+    const d = loadKD();
+    Object.assign(d, patch);
+    localStorage.setItem('fem_konkurrenz_data', JSON.stringify(d));
+  }
+  function pctBar(current, goal, barId, labelId) {
+    const c = parseInt(current) || 0, g = parseInt(goal) || 0;
+    const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
+    document.getElementById(barId).style.width = pct.toFixed(1) + '%';
+    document.getElementById(labelId).textContent = g > 0 ? `${pct.toFixed(1)} % erreicht` : '';
+  }
+
+  const kd = loadKD();
+  const f = parseInt(kd.femFollower) || 0;
+  const goal = parseInt(kd.goal) || 2500;
+  const gm = parseInt(kd.gruppeMembers) || 0;
+  const gg = parseInt(kd.gruppeGoal) || 0;
+  const wm = parseInt(kd.whatsappMembers) || 0;
+  const wg = parseInt(kd.whatsappGoal) || 0;
+
+  // Reichweiten-Ziel card
+  if (f > 0) {
+    document.querySelectorAll('.perf-value')[0].textContent = f.toLocaleString('de-DE');
+    document.querySelector('.goal-current .goal-value').textContent = f.toLocaleString('de-DE');
+    document.querySelector('.goal-target .goal-value').textContent = goal.toLocaleString('de-DE');
+    const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
+    const remaining = Math.max(goal - f, 0);
+    document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
+    document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+  }
+
+  // Kanal-Übersicht — populate
+  document.getElementById('dashCompanyFollower').textContent = f > 0 ? f.toLocaleString('de-DE') : '–';
+  document.getElementById('dashCompanyGoal').value = goal || '';
+  pctBar(f, goal, 'dashCompanyBar', 'dashCompanyPct');
+
+  document.getElementById('dashGruppeMembers').value = gm || '';
+  document.getElementById('dashGruppeGoal').value = gg || '';
+  pctBar(gm, gg, 'dashGruppeBar', 'dashGruppePct');
+
+  document.getElementById('dashWhatsappMembers').value = wm || '';
+  document.getElementById('dashWhatsappGoal').value = wg || '';
+  pctBar(wm, wg, 'dashWhatsappBar', 'dashWhatsappPct');
+
+  // Editable inputs — save on change
+  document.getElementById('dashCompanyGoal').addEventListener('input', e => {
+    saveKD({ goal: parseInt(e.target.value) || 0 });
+    pctBar(loadKD().femFollower, e.target.value, 'dashCompanyBar', 'dashCompanyPct');
+  });
+  document.getElementById('dashGruppeMembers').addEventListener('input', e => {
+    saveKD({ gruppeMembers: parseInt(e.target.value) || 0 });
+    pctBar(e.target.value, document.getElementById('dashGruppeGoal').value, 'dashGruppeBar', 'dashGruppePct');
+  });
+  document.getElementById('dashGruppeGoal').addEventListener('input', e => {
+    saveKD({ gruppeGoal: parseInt(e.target.value) || 0 });
+    pctBar(document.getElementById('dashGruppeMembers').value, e.target.value, 'dashGruppeBar', 'dashGruppePct');
+  });
+  document.getElementById('dashWhatsappMembers').addEventListener('input', e => {
+    saveKD({ whatsappMembers: parseInt(e.target.value) || 0 });
+    pctBar(e.target.value, document.getElementById('dashWhatsappGoal').value, 'dashWhatsappBar', 'dashWhatsappPct');
+  });
+  document.getElementById('dashWhatsappGoal').addEventListener('input', e => {
+    saveKD({ whatsappGoal: parseInt(e.target.value) || 0 });
+    pctBar(document.getElementById('dashWhatsappMembers').value, e.target.value, 'dashWhatsappBar', 'dashWhatsappPct');
+  });
 })();
 </script>
 </body>
