@@ -561,6 +561,8 @@ function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 let uploadedImage = null;
+let uploadedImageType = null;
+let uploadedImageName = null;
 
 function handleFile(file) {
   if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
@@ -568,6 +570,8 @@ function handleFile(file) {
   const reader = new FileReader();
   reader.onload = e => {
     uploadedImage = e.target.result;
+    uploadedImageType = file.type;
+    uploadedImageName = file.name;
     dropZone.classList.add('has-file');
     dropZone.innerHTML = `<span class="drop-label">${file.name}</span><img class="drop-preview" src="${uploadedImage}" alt="Preview">`;
     saveBlock1();
@@ -585,7 +589,9 @@ function saveBlock1() {
   save('fem_wp_block1', {
     kw: document.getElementById('b1Kw').value,
     date: document.getElementById('b1Date').value,
-    image: uploadedImage
+    image: uploadedImage,
+    imageType: uploadedImageType,
+    imageName: uploadedImageName
   });
 }
 document.getElementById('b1Kw').addEventListener('input', saveBlock1);
@@ -595,7 +601,7 @@ document.getElementById('b1Date').addEventListener('input', saveBlock1);
 const b1 = load('fem_wp_block1', {});
 if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
 if (b1.date) document.getElementById('b1Date').value = b1.date;
-if (b1.image) { uploadedImage = b1.image; dropZone.classList.add('has-file'); dropZone.innerHTML = `<span class="drop-label">Bild geladen</span><img class="drop-preview" src="${b1.image}" alt="Preview">`; }
+if (b1.image) { uploadedImage = b1.image; uploadedImageType = b1.imageType || 'image/png'; uploadedImageName = b1.imageName || 'screenshot'; dropZone.classList.add('has-file'); dropZone.innerHTML = `<span class="drop-label">${uploadedImageName}</span><img class="drop-preview" src="${b1.image}" alt="Preview">`; }
 
 // ══════════ BLOCK 2: Analytics ══════════
 function saveBlock2() {
@@ -835,6 +841,7 @@ function collectPrompt() {
   const kw = document.getElementById('b1Kw').value;
   const date = document.getElementById('b1Date').value;
   if (kw || date) parts.push(`## Kalenderwoche\nKW ${kw || '?'}, Montag: ${date || '?'}`);
+  if (uploadedImage) parts.push(`## Screenshot Wochenstatistik\nEin Screenshot der LinkedIn-Wochenstatistik wurde als Bild mitgesendet. Bitte analysiere die sichtbaren Kennzahlen (Reichweite, Impressionen, Engagement, Klicks, Follower-Entwicklung).`);
 
   // Block 2
   const analytics = document.getElementById('b2Analytics').value.trim();
@@ -880,22 +887,18 @@ function collectPrompt() {
 }
 
 // ══════════ SYSTEM PROMPT ══════════
-const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator. Analysiere die Wochendaten und erstelle:
+const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator.
 
-1. **Auswertung der vergangenen Woche** – Was lief gut, was kann verbessert werden
-2. **Posting-Plan für die kommende Woche:**
-   - Dienstag 10:00 – Company Page
-   - Mittwoch 08:00 – WhatsApp
-   - Mittwoch 10:00 – Gruppe
-   - Donnerstag 10:00 – Company Page
-   - Freitag 10:00 – Gruppe
-3. **Fünf Content-Outlines im FemSurance-Stil** – Jedes Outline enthält: Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis
-4. **Aktualisierten Lernstand** – Beginne mit "AKTUALISIERTER LERNSTAND:" auf einer eigenen Zeile
+Wenn ein Screenshot der Wochenstatistik mitgesendet wurde, analysiere ihn aktiv. Extrahiere daraus soweit sichtbar: Reichweite, Impressionen, Engagement, Klicks, Follower-Entwicklung, auffällige Trends. Falls Daten unleserlich sind, kennzeichne das kurz. Erfinde keine Zahlen.
+
+Erstelle auf Deutsch:
+1. Auswertung der vergangenen Woche (inkl. Screenshot-Analyse)
+2. Posting-Plan für die kommende Woche (Di 10:00 Company Page, Mi 08:00 WhatsApp, Mi 10:00 Gruppe, Do 10:00 Company Page, Fr 10:00 Gruppe)
+3. Fünf Content-Outlines im FemSurance-Stil (Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis)
+4. Aktualisierten Lernstand — beginne mit: AKTUALISIERTER LERNSTAND:
 
 Marke: FemSurance – Visibility. Network. Impact.
-Herausgeber: AssCompact / bbg Betriebsberatungs GmbH
-Stil: warm, empowernd, praxisnah, fachkundig.
-Schreibe ausschließlich auf Deutsch.`;
+Stil: warm, empowernd, praxisnah. Schreibe auf Deutsch.`;
 
 // ══════════ GENERATE ══════════
 document.getElementById('btnGenerate').addEventListener('click', async () => {
@@ -925,12 +928,25 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
-        system: WP_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify((() => {
+        const userContent = [{ type: 'text', text: prompt }];
+        if (uploadedImage) {
+          userContent.push({
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: uploadedImageType || 'image/png',
+              data: uploadedImage.split(',')[1]
+            }
+          });
+        }
+        return {
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4096,
+          system: WP_SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: userContent }]
+        };
+      })())
     });
 
     if (!resp.ok) {
