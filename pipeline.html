@@ -415,6 +415,46 @@ body {
   color: #dc2626; cursor: pointer; transition: all 0.2s;
 }
 .cm-actions .btn-delete-modal:hover { background: #fef2f2; }
+
+/* ── Generate Prep Modal ── */
+.gen-prep-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 550;
+  align-items: center; justify-content: center;
+}
+.gen-prep-overlay.open { display: flex; }
+.gen-prep {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  padding: 24px 28px; width: 440px; max-width: 92vw;
+}
+.gen-prep h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.gen-prep .gen-prep-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px; }
+.gen-prep .gp-field { margin-bottom: 12px; }
+.gen-prep .gp-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+.gen-prep textarea, .gen-prep input[type="url"] {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  color: var(--text-primary); transition: border-color 0.2s;
+}
+.gen-prep textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+.gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); }
+.gen-prep-btns { display: flex; gap: 8px; margin-top: 16px; }
+.gen-prep-btns .btn-gen-go {
+  padding: 9px 22px; border: none; border-radius: var(--radius-sm);
+  background: var(--fem-pink); color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.gen-prep-btns .btn-gen-go:hover { opacity: 0.9; }
+.gen-prep-btns .btn-gen-cancel {
+  padding: 9px 22px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  font-family: inherit; font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.2s;
+}
+.gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
 </style>
 </head>
 <body>
@@ -510,6 +550,26 @@ body {
       <button class="btn-save-modal" id="cmSave">Speichern</button>
       <button class="btn-close-modal" id="cmClose">Schließen</button>
       <button class="btn-delete-modal" id="cmDelete">🗑 Karte löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ Generate Prep Modal ══════════ -->
+<div class="gen-prep-overlay" id="genPrepModal">
+  <div class="gen-prep">
+    <h3 id="genPrepTitle">Post generieren</h3>
+    <div class="gen-prep-sub">Optionale Zusatzinfos für bessere Ergebnisse</div>
+    <div class="gp-field">
+      <div class="gp-label">Artikel-URL (optional)</div>
+      <input type="url" id="genPrepUrl" placeholder="https://asscompact.de/...">
+    </div>
+    <div class="gp-field">
+      <div class="gp-label">Zusätzliche Notizen (optional)</div>
+      <textarea id="genPrepNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
+    </div>
+    <div class="gen-prep-btns">
+      <button class="btn-gen-go" id="genPrepGo">Generieren</button>
+      <button class="btn-gen-cancel" id="genPrepCancel">Abbrechen</button>
     </div>
   </div>
 </div>
@@ -637,15 +697,75 @@ function buildPlatformCounters(text) {
 }
 
 // ── Generate posts via Anthropic API ──
-async function generatePosts(cardId, btnEl) {
+let pendingGenCardId = null;
+let pendingGenBtnEl = null;
+
+function generatePosts(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
   if (!card) return;
+  pendingGenCardId = cardId;
+  pendingGenBtnEl = btnEl;
+  document.getElementById('genPrepTitle').textContent = `Post generieren: ${card.title}`;
+  document.getElementById('genPrepNotes').value = '';
+  document.getElementById('genPrepUrl').value = '';
+  document.getElementById('genPrepModal').classList.add('open');
+}
+
+document.getElementById('genPrepCancel').addEventListener('click', () => {
+  document.getElementById('genPrepModal').classList.remove('open');
+  pendingGenCardId = null;
+  pendingGenBtnEl = null;
+});
+document.getElementById('genPrepModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('open');
+    pendingGenCardId = null;
+    pendingGenBtnEl = null;
+  }
+});
+
+document.getElementById('genPrepGo').addEventListener('click', async () => {
+  const card = cards.find(c => c.id === pendingGenCardId);
+  const btnEl = pendingGenBtnEl;
+  if (!card || !btnEl) return;
+
+  const notes = document.getElementById('genPrepNotes').value.trim();
+  const url = document.getElementById('genPrepUrl').value.trim();
+  document.getElementById('genPrepModal').classList.remove('open');
 
   btnEl.textContent = 'POSTS WERDEN GENERIERT...';
   btnEl.classList.add('loading');
   btnEl.disabled = true;
 
   try {
+    // Build prompt
+    let userPrompt = `Thema: ${card.title}`;
+    if (notes) userPrompt += `\n\nReferenzmaterial / Notizen:\n${notes}`;
+
+    // Fetch article if URL provided
+    if (url) {
+      btnEl.textContent = 'ARTIKEL WIRD GELADEN...';
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const articleResp = await fetch(proxyUrl);
+        if (articleResp.ok) {
+          let articleText = await articleResp.text();
+          // Strip HTML tags to get plain text
+          const tmp = document.createElement('div');
+          tmp.innerHTML = articleText;
+          articleText = tmp.textContent || tmp.innerText || '';
+          // Limit to first 3000 chars
+          articleText = articleText.substring(0, 3000).trim();
+          if (articleText) {
+            userPrompt += `\n\nArtikel-Inhalt (${url}):\n${articleText}`;
+          }
+        }
+      } catch (fetchErr) {
+        userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${url}]`;
+      }
+      btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+    }
+
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -658,7 +778,7 @@ async function generatePosts(cardId, btnEl) {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2048,
         system: POST_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: card.title }]
+        messages: [{ role: 'user', content: userPrompt }]
       })
     });
 
