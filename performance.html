@@ -210,6 +210,36 @@ body {
 .kpi-history-card .kpi-hv { color:var(--text-secondary); line-height:1.5; }
 .kpi-history-card .kpi-hv strong { color:var(--fem-pink); }
 .extract-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a; margin-left:6px; }
+
+/* ── KPI Tracking Table ── */
+.kpi-track-table { width:100%; border-collapse:collapse; font-size:12px; }
+.kpi-track-table thead th {
+  text-align:left; padding:8px 10px; font-size:10px; font-weight:600;
+  color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em;
+  border-bottom:2px solid var(--border); white-space:nowrap;
+}
+.kpi-track-table tbody td {
+  padding:7px 10px; border-bottom:1px solid var(--border); vertical-align:middle;
+}
+.kpi-track-table tbody tr:hover { background:var(--bg-secondary); }
+.kpi-track-table .kpi-name { font-weight:600; color:var(--text-primary); }
+.kpi-track-table .kpi-val { font-weight:700; font-size:13px; }
+.kpi-track-table .kpi-val.green { color:#16a34a; }
+.kpi-track-table .kpi-val.yellow { color:#a16207; }
+.kpi-track-table .kpi-val.red { color:#dc2626; }
+.kpi-track-table .kpi-best { color:#16a34a; font-size:11px; }
+.kpi-track-table .kpi-worst { color:#dc2626; font-size:11px; }
+.kpi-track-table .kpi-trend { font-size:14px; }
+.kpi-track-table input {
+  width:70px; padding:3px 6px; border:1px solid var(--border);
+  border-radius:4px; font-size:12px; font-family:inherit; text-align:center;
+}
+.kpi-track-table input:focus { outline:none; border-color:var(--fem-pink); }
+.kpi-section-row td {
+  padding:10px 10px 4px !important; font-size:10px !important; font-weight:600 !important;
+  color:var(--fem-pink) !important; text-transform:uppercase; letter-spacing:0.03em;
+  border-bottom:1px solid var(--fem-pink-light) !important; background:var(--bg-secondary);
+}
 </style>
 </head>
 <body>
@@ -424,30 +454,23 @@ body {
 
   </div>
 
-  <!-- Posting-Schedule -->
+  <!-- KPI-Tracking -->
   <div class="card fade-up">
-    <div class="card-title">Posting-Schedule</div>
-    <div class="schedule-grid">
-      <div class="schedule-item">
-        <div class="schedule-channel">Company Page</div>
-        <div class="schedule-times">
-          <strong>Dienstag</strong> 10:00 Uhr<br>
-          <strong>Donnerstag</strong> 10:00 Uhr
-        </div>
-      </div>
-      <div class="schedule-item">
-        <div class="schedule-channel">Gruppe</div>
-        <div class="schedule-times">
-          <strong>Mittwoch</strong> 10:00 Uhr<br>
-          <strong>Freitag</strong> 10:00 Uhr
-        </div>
-      </div>
-      <div class="schedule-item">
-        <div class="schedule-channel">WhatsApp</div>
-        <div class="schedule-times">
-          <strong>Mittwoch</strong> 08:00 Uhr
-        </div>
-      </div>
+    <div class="card-title">KPI-Tracking</div>
+    <div style="overflow-x:auto;">
+      <table class="kpi-track-table" id="kpiTrackTable">
+        <thead>
+          <tr>
+            <th>KPI</th>
+            <th>Aktuell</th>
+            <th>Ziel</th>
+            <th>Best</th>
+            <th>Worst</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody id="kpiTrackBody"></tbody>
+      </table>
     </div>
   </div>
 
@@ -918,6 +941,102 @@ renderKpiHistory();
 // Restore last analytics if available
 const kpiAnalytics = JSON.parse(localStorage.getItem('fem_wp_analytics') || 'null');
 if (kpiAnalytics) setKpiValues(kpiAnalytics);
+
+// ══════════ KPI TRACKING TABLE ══════════
+const KPI_DEFS = [
+  { section: 'Post-Ebene' },
+  { key: 'post_impressions', label: 'Impressions', defaultTarget: 2000, paths: ['post.impressions', 'post_analytics.impressions', 'post_impressions'] },
+  { key: 'post_eng_rate', label: 'Engagement-Rate %', defaultTarget: 5, paths: ['post.engagement_rate_pct', 'post_analytics.engagement_rate_pct', 'post_eng_rate'], pct: true },
+  { key: 'post_klicks', label: 'Klicks', defaultTarget: 100, paths: ['post.klicks', 'post_analytics.klicks', 'post_klicks'] },
+  { key: 'post_ctr', label: 'CTR %', defaultTarget: 5, paths: ['post.ctr_pct', 'post_analytics.ctr_pct', 'post_ctr'], pct: true },
+  { key: 'post_reaktionen', label: 'Reaktionen', defaultTarget: 50, paths: ['post.reaktionen', 'post_analytics.reaktionen', 'post_reaktionen'] },
+  { key: 'post_kommentare', label: 'Kommentare', defaultTarget: 10, paths: ['post.kommentare', 'post_analytics.kommentare', 'post_kommentare'] },
+  { key: 'post_shares', label: 'Shares', defaultTarget: 5, paths: ['post.shares', 'post_analytics.shares', 'post_shares'] },
+  { section: 'Seite' },
+  { key: 'site_impressions', label: 'Impressions 30 Tage', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
+  { key: 'site_eng_rate', label: 'Engagement-Rate 30T %', defaultTarget: 6, paths: ['site.engagement_rate_pct', 'content_summary.engagement_rate_pct', 'site_eng_rate'], pct: true },
+  { section: 'Sichtbarkeit & Funnel' },
+  { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
+  { key: 'visitor_aufrufe', label: 'Seitenaufrufe 30 Tage', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
+  { key: 'follower_neu', label: 'Neue Follower 30 Tage', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+];
+
+function getNestedVal(obj, path) {
+  const parts = path.split('.');
+  let v = obj;
+  for (const p of parts) { if (!v) return null; v = v[p]; }
+  return v != null ? parseFloat(v) || 0 : null;
+}
+
+function getValFromEntry(entry, paths) {
+  for (const p of paths) {
+    const v = getNestedVal(entry, p);
+    if (v !== null && v !== 0) return v;
+  }
+  return 0;
+}
+
+function renderKpiTrackingTable() {
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const targets = JSON.parse(localStorage.getItem('fem_kpi_targets') || '{}');
+  const latest = history[0] || {};
+  const prev = history[1] || {};
+  const tbody = document.getElementById('kpiTrackBody');
+  tbody.innerHTML = '';
+
+  KPI_DEFS.forEach(def => {
+    if (def.section) {
+      tbody.innerHTML += `<tr class="kpi-section-row"><td colspan="6">${def.section}</td></tr>`;
+      return;
+    }
+
+    const current = getValFromEntry(latest, def.paths);
+    const previous = getValFromEntry(prev, def.paths);
+    const target = parseFloat(targets[def.key]) || def.defaultTarget;
+
+    // Best / Worst from history
+    let best = 0, worst = Infinity;
+    history.forEach(h => {
+      const v = getValFromEntry(h, def.paths);
+      if (v > best) best = v;
+      if (v > 0 && v < worst) worst = v;
+    });
+    if (worst === Infinity) worst = 0;
+
+    // Color
+    let colorClass = 'red';
+    if (current >= target) colorClass = 'green';
+    else if (current >= target * 0.8) colorClass = 'yellow';
+
+    // Trend
+    let trend = '–';
+    if (previous > 0 && current > previous) trend = '<span style="color:#16a34a">↑</span>';
+    else if (previous > 0 && current < previous) trend = '<span style="color:#dc2626">↓</span>';
+    else if (previous > 0) trend = '<span style="color:var(--text-secondary)">→</span>';
+
+    const suffix = def.pct ? '%' : '';
+    const fmt = v => v > 0 ? (def.pct ? v.toFixed(1) : Math.round(v).toLocaleString('de-DE')) : '–';
+
+    tbody.innerHTML += `<tr>
+      <td class="kpi-name">${def.label}</td>
+      <td class="kpi-val ${colorClass}">${fmt(current)}${current > 0 ? suffix : ''}</td>
+      <td><input type="text" value="${target}" data-kpi="${def.key}"></td>
+      <td class="kpi-best">${fmt(best)}${best > 0 ? suffix : ''}</td>
+      <td class="kpi-worst">${fmt(worst)}${worst > 0 ? suffix : ''}</td>
+      <td class="kpi-trend">${trend}</td>
+    </tr>`;
+  });
+
+  // Save targets on edit
+  tbody.addEventListener('input', e => {
+    if (e.target.dataset.kpi) {
+      const t = JSON.parse(localStorage.getItem('fem_kpi_targets') || '{}');
+      t[e.target.dataset.kpi] = e.target.value;
+      localStorage.setItem('fem_kpi_targets', JSON.stringify(t));
+    }
+  });
+}
+renderKpiTrackingTable();
 </script>
 </body>
 </html>

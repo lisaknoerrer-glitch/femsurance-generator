@@ -412,6 +412,59 @@ textarea { resize: vertical; line-height: 1.6; }
 .btn-load-last:hover { background:var(--fem-pink); color:#fff; }
 .b2-top-posts { font-size:12px; color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
 .b2-top-posts strong { color:var(--text-primary); }
+/* Export file list */
+.export-file-item {
+  display:flex; align-items:center; gap:8px; padding:5px 8px;
+  background:var(--bg-secondary); border-radius:4px; margin-bottom:4px;
+  font-size:12px;
+}
+.export-file-item .efi-name { flex:1; font-weight:500; color:var(--text-primary); }
+.export-file-item .efi-rows { font-size:11px; color:var(--text-secondary); }
+.export-file-item .efi-remove {
+  width:22px; height:22px; border:none; border-radius:50%;
+  background:none; color:var(--text-secondary); cursor:pointer;
+  font-size:14px; display:flex; align-items:center; justify-content:center;
+}
+.export-file-item .efi-remove:hover { background:#fef2f2; color:#dc2626; }
+
+/* ── Tooltip ── */
+.info-tip {
+  position: relative; display: inline-flex; align-items: center;
+  margin-left: 6px; cursor: help;
+  font-size: 13px; color: var(--fem-pink); font-style: normal;
+}
+.info-tip::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content; max-width: 280px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary);
+  font-size: 12px; font-weight: 400; line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--border);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 50; white-space: normal;
+}
+.info-tip:hover::after { opacity: 1; }
+[data-tip] { position: relative; }
+[data-tip]::before {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content; max-width: 280px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary);
+  font-size: 12px; font-weight: 400; line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--border);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 50; white-space: normal;
+}
+[data-tip]:hover::before { opacity: 1; }
+.info-tip[data-tip]::before { display: none; }
 
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -465,7 +518,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 1: Datenquellen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">1</span> Datenquellen</div>
+        <div class="block-title"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span></div>
         <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
@@ -481,16 +534,15 @@ textarea { resize: vertical; line-height: 1.6; }
         <label class="field-label" style="margin-bottom:6px;">A) Screenshots (LinkedIn Analytics)</label>
         <div class="screenshot-slots" id="ssSlots"></div>
 
-        <!-- Part B: Export Upload -->
-        <label class="field-label" style="margin-top:14px; margin-bottom:6px;">B) LinkedIn Analytics Export (CSV/XLSX)</label>
+        <!-- Part B: Export Upload (multiple files) -->
+        <label class="field-label" style="margin-top:14px; margin-bottom:6px;">B) Analytics Export (CSV/XLSX) — mehrere Dateien möglich</label>
         <div class="drop-zone" id="exportDropZone" style="padding:16px; margin-bottom:0;">
           <span class="drop-label" id="exportLabel">CSV oder XLSX hierher ziehen</span>
-          <span class="drop-hint">.csv · .xlsx · .xls</span>
+          <span class="drop-hint">.csv · .xlsx · .xls · mehrere Dateien</span>
         </div>
-        <input type="file" id="exportFileInput" accept=".csv,.xlsx,.xls" style="display:none">
-        <div id="exportPreview" style="display:none; margin-top:8px; overflow-x:auto;">
-          <table style="width:100%; border-collapse:collapse; font-size:11px;" id="exportTable"></table>
-        </div>
+        <input type="file" id="exportFileInput" accept=".csv,.xlsx,.xls" multiple style="display:none">
+        <div id="exportFileList" style="margin-top:6px;"></div>
+        <div id="exportMappingStatus" style="display:none; font-size:11px; margin-top:6px; color:var(--text-secondary);"></div>
 
         <!-- Extract Button -->
         <button class="btn-extract" id="btnExtract">📊 Daten extrahieren</button>
@@ -499,7 +551,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 2: Performance-Daten -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">2</span> Performance-Daten</div>
+        <div class="block-title"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span></div>
         <button class="btn-load-last" id="b2LoadLast">📥 Letzte Woche übernehmen</button>
 
         <div class="b2-section">Post-Ebene</div>
@@ -542,7 +594,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 3: Follower-Ziel -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">3</span> Follower-Ziel</div>
+        <div class="block-title"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span></div>
         <div class="row-2">
           <div class="field">
             <label class="field-label">FemSurance Follower aktuell</label>
@@ -561,73 +613,31 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 4: URLs -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">4</span> Referenz-URLs</div>
+        <div class="block-title"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span></div>
         <div id="urlList"></div>
         <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
       </div>
 
-      <!-- BLOCK 5: Branchenthemen -->
+      <!-- BLOCK 5: Branchenbeobachtung -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">5</span> Branchenthemen</div>
-        <div id="b5Sections">
-          <div class="collapsible-header" data-target="b5_vwheute">
-            <span class="collapsible-title">VWheute</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_vwheute">
-            <textarea rows="4" data-key="vwheute" placeholder="Relevante Artikel / Themen von VWheute..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_vbote">
-            <span class="collapsible-title">Versicherungsbote</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_vbote">
-            <textarea rows="4" data-key="versicherungsbote" placeholder="Relevante Artikel / Themen vom Versicherungsbote..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_female">
-            <span class="collapsible-title">Female Finance &amp; Frau Finanzen</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_female">
-            <textarea rows="4" data-key="femalefinance" placeholder="Themen aus Female Finance / Frau Finanzen..."></textarea>
-          </div>
-
-          <div class="collapsible-header" data-target="b5_sonstige">
-            <span class="collapsible-title">Sonstige Branchenthemen</span>
-            <span class="collapsible-arrow">▼</span>
-          </div>
-          <div class="collapsible-body" id="b5_sonstige">
-            <textarea rows="4" data-key="sonstige" placeholder="Weitere relevante Branchenthemen..."></textarea>
-          </div>
+        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span></div>
+        <div class="field">
+          <label class="field-label">Branchenbeobachtung &amp; Wettbewerber</label>
+          <textarea id="b5Text" rows="15" placeholder="Einfach alles reinkopieren was du diese Woche gefunden hast — Posts, Artikel, Kommentare, Follower-Zahlen. Kein bestimmtes Format nötig."></textarea>
         </div>
       </div>
 
-      <!-- BLOCK 6: Events & Kontakte -->
+      <!-- BLOCK 6: Notizen & Kontext -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">6</span> Events &amp; Kontakte</div>
+        <div class="block-title"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span></div>
         <div class="field">
-          <label class="field-label">Events / Interviews diese Woche</label>
-          <textarea id="b6Events" rows="4" placeholder="z. B. Webinar am Mittwoch, Interview mit..."></textarea>
-        </div>
-        <div class="field">
-          <label class="field-label">Personen kontaktiert</label>
-          <textarea id="b6Contacts" rows="4" placeholder="Name, Kontext, Ergebnis..."></textarea>
-        </div>
-        <div class="checkbox-row">
-          <input type="checkbox" id="b6Newsletter">
-          <label for="b6Newsletter">Newsletter-Crossover</label>
-        </div>
-        <div class="field" id="b6NewsletterField" style="display:none;">
-          <label class="field-label">Newsletter-Details</label>
-          <textarea id="b6NewsletterText" rows="3" placeholder="Welcher Newsletter, Thema, Termin..."></textarea>
+          <textarea id="b6Text" rows="8" placeholder="Was ist diese Woche noch relevant? Events, Interviews, Personen kontaktiert, Newsletter-Aktionen, Besonderheiten, Ideen..."></textarea>
         </div>
       </div>
 
       <!-- BLOCK 7: Lernstand -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand</div>
+        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span></div>
         <div class="field">
           <textarea id="b7Lernstand" rows="8"></textarea>
         </div>
@@ -635,7 +645,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- Generate Button -->
       <div class="generate-section fade-up">
-        <button class="btn-generate" id="btnGenerate">▶ Wochenplan generieren</button>
+        <button class="btn-generate" id="btnGenerate" data-tip="Claude analysiert alle eingetragenen Daten und erstellt: 1. Auswertung der Vorwoche 2. Posting-Plan für die kommende Woche 3. Fünf Content-Outlines 4. Aktualisierten Lernstand. Dauert ca. 60–90 Sekunden.">▶ Wochenplan generieren</button>
         <div class="generate-hint">Dauert ca. 60–90 Sekunden</div>
       </div>
 
@@ -657,9 +667,9 @@ textarea { resize: vertical; line-height: 1.6; }
       <textarea class="output-textarea" id="outputArea" placeholder="Output erscheint hier..." readonly></textarea>
 
       <div class="output-actions">
-        <button class="btn-action" id="btnSave" disabled>💾 Speichern</button>
-        <button class="btn-action" id="btnCopy" disabled>📋 Kopieren</button>
-        <button class="btn-action" id="btnLernstand" disabled>🔄 Lernstand aktualisieren</button>
+        <button class="btn-action" id="btnSave" disabled data-tip="Speichert den generierten Wochenplan unter der eingetragenen KW. Du findest ihn danach im Archiv-Dropdown.">💾 Speichern</button>
+        <button class="btn-action" id="btnCopy" disabled data-tip="Kopiert den kompletten Wochenplan in die Zwischenablage — zum Einfügen in Notion, Word oder Email.">📋 Kopieren</button>
+        <button class="btn-action" id="btnLernstand" disabled data-tip="Extrahiert den neuen Lernstand aus dem Output und speichert ihn in Block 7. Beim nächsten Wochenplan weiß Claude dann was bereits gelernt wurde und baut darauf auf.">🔄 Lernstand aktualisieren</button>
       </div>
 
       <div class="archiv-section">
@@ -729,22 +739,27 @@ function handleSSFile(category, file) {
   reader.readAsDataURL(file);
 }
 
-// ── Part B: Export File ──
-let exportData = null; // parsed rows: [{ headers, rows }]
+// ── Part B: Export Files (multiple) ──
+let exportFiles = []; // [{ fileName, headers, rows, columnMap }]
 const exportDropZone = document.getElementById('exportDropZone');
 const exportFileInput = document.getElementById('exportFileInput');
 
 exportDropZone.addEventListener('click', () => exportFileInput.click());
 exportDropZone.addEventListener('dragover', e => { e.preventDefault(); exportDropZone.classList.add('drag-over'); });
 exportDropZone.addEventListener('dragleave', () => exportDropZone.classList.remove('drag-over'));
-exportDropZone.addEventListener('drop', e => { e.preventDefault(); exportDropZone.classList.remove('drag-over'); handleExportFile(e.dataTransfer.files[0]); });
-exportFileInput.addEventListener('change', e => handleExportFile(e.target.files[0]));
+exportDropZone.addEventListener('drop', e => {
+  e.preventDefault(); exportDropZone.classList.remove('drag-over');
+  Array.from(e.dataTransfer.files).forEach(f => addExportFile(f));
+});
+exportFileInput.addEventListener('change', e => {
+  Array.from(e.target.files).forEach(f => addExportFile(f));
+  e.target.value = '';
+});
 
-function handleExportFile(file) {
+function addExportFile(file) {
   if (!file) return;
   const ext = file.name.split('.').pop().toLowerCase();
-  document.getElementById('exportLabel').textContent = file.name;
-  exportDropZone.classList.add('has-file');
+  if (!['csv', 'xlsx', 'xls'].includes(ext)) return;
 
   if (ext === 'csv') {
     const reader = new FileReader();
@@ -754,13 +769,13 @@ function handleExportFile(file) {
       const lines = text.split('\n').filter(l => l.trim());
       const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
       const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
-      exportData = { headers, rows, fileName: file.name };
-      save('fem_wp_export_data', exportData);
-      renderExportPreview();
-      saveBlock1();
+      console.log(`Parsed ${file.name}: ${headers.length} Spalten, ${rows.length} Zeilen`);
+      exportFiles.push({ fileName: file.name, headers, rows, columnMap: null });
+      saveExportFiles();
+      renderExportFileList();
     };
     reader.readAsText(file, 'UTF-8');
-  } else if (['xlsx', 'xls'].includes(ext)) {
+  } else {
     const reader = new FileReader();
     reader.onload = e => {
       try {
@@ -769,31 +784,83 @@ function handleExportFile(file) {
         const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
         const headers = json[0] ? json[0].map(String) : [];
         const rows = json.slice(1).map(r => r.map(c => c != null ? String(c) : ''));
-        exportData = { headers, rows, fileName: file.name };
-        save('fem_wp_export_data', exportData);
-        renderExportPreview();
-        saveBlock1();
-      } catch (err) {
-        alert('XLSX-Fehler: ' + err.message);
-      }
+        console.log(`Parsed ${file.name}: ${headers.length} Spalten, ${rows.length} Zeilen`);
+        exportFiles.push({ fileName: file.name, headers, rows, columnMap: null });
+        saveExportFiles();
+        renderExportFileList();
+      } catch (err) { alert('XLSX-Fehler: ' + err.message); }
     };
     reader.readAsArrayBuffer(file);
   }
 }
 
-function renderExportPreview() {
-  if (!exportData || !exportData.rows.length) return;
-  const preview = document.getElementById('exportPreview');
-  const table = document.getElementById('exportTable');
-  preview.style.display = 'block';
-  const showRows = exportData.rows.slice(0, 5);
-  table.innerHTML = `
-    <thead><tr>${exportData.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-    <tbody>${showRows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
-  `;
-  if (exportData.rows.length > 5) {
-    table.innerHTML += `<tfoot><tr><td colspan="${exportData.headers.length}" style="text-align:center;font-size:10px;color:var(--text-secondary);padding:6px;">... und ${exportData.rows.length - 5} weitere Zeilen</td></tr></tfoot>`;
-  }
+function saveExportFiles() {
+  // Save metadata only (not full row data for large files — save headers + row count + columnMap)
+  save('fem_wp_export_files', exportFiles.map(f => ({
+    fileName: f.fileName, headers: f.headers,
+    rowCount: f.rows.length, columnMap: f.columnMap
+  })));
+  // Save full data for extraction
+  save('fem_wp_export_data', exportFiles);
+  exportDropZone.classList.toggle('has-file', exportFiles.length > 0);
+  document.getElementById('exportLabel').textContent = exportFiles.length
+    ? `${exportFiles.length} Datei${exportFiles.length > 1 ? 'en' : ''} geladen`
+    : 'CSV oder XLSX hierher ziehen';
+}
+
+function renderExportFileList() {
+  const container = document.getElementById('exportFileList');
+  container.innerHTML = '';
+  exportFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'export-file-item';
+    item.innerHTML = `
+      <span class="efi-name">📄 ${f.fileName}</span>
+      <span class="efi-rows">${f.rows.length} Zeilen</span>
+      <button class="efi-remove" data-idx="${i}" title="Entfernen">&times;</button>
+    `;
+    item.querySelector('.efi-remove').addEventListener('click', () => {
+      exportFiles.splice(i, 1);
+      saveExportFiles();
+      renderExportFileList();
+    });
+    container.appendChild(item);
+  });
+}
+
+async function detectColumnsForFile(fileData) {
+  const sampleRows = fileData.rows.slice(0, 5).map(row => {
+    const obj = {};
+    fileData.headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+    return obj;
+  });
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 512,
+      system: `Du bekommst Spaltennamen und Beispieldaten aus einer Excel/CSV-Datei.
+Ordne die Spalten den folgenden KPIs zu soweit möglich:
+impressions, clicks, reactions, comments, shares, engagement_rate, date, post_title
+Gib NUR valides JSON zurück: { "impressions": "Spaltenname", "clicks": "Spaltenname", ... }
+Wenn eine Spalte nicht zugeordnet werden kann, setze null.
+Wähle bevorzugt organische (nicht gesponserte) Spalten.`,
+      messages: [{ role: 'user', content: `Spalten: ${JSON.stringify(fileData.headers)}\n\nBeispieldaten:\n${JSON.stringify(sampleRows, null, 2)}` }]
+    })
+  });
+
+  if (!resp.ok) throw new Error('API ' + resp.status);
+  const data = await resp.json();
+  let jsonStr = data.content[0].text.trim();
+  if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+  return JSON.parse(jsonStr);
 }
 
 // ── Save / Restore Block 1 ──
@@ -813,18 +880,23 @@ if (b1.date) document.getElementById('b1Date').value = b1.date;
 // Restore screenshots
 const savedSS = load('fem_wp_screenshots', []);
 if (savedSS.length) screenshots = savedSS;
-// Migration: old format
 const oldB1 = load('fem_wp_block1', {});
 if (oldB1.screenshots && !savedSS.length) { screenshots = oldB1.screenshots; save('fem_wp_screenshots', screenshots); }
 if (oldB1.image && !savedSS.length) { screenshots = [{ category: 'Beitrag-Analyse', image: oldB1.image, imageType: oldB1.imageType || 'image/png', imageName: oldB1.imageName || 'screenshot' }]; save('fem_wp_screenshots', screenshots); }
 renderScreenshotSlots();
 
-// Restore export
-exportData = load('fem_wp_export_data', null);
-if (exportData) {
-  document.getElementById('exportLabel').textContent = exportData.fileName || 'Datei geladen';
+// Restore export files
+const savedExportFiles = load('fem_wp_export_data', null);
+if (Array.isArray(savedExportFiles) && savedExportFiles.length && savedExportFiles[0].fileName) {
+  exportFiles = savedExportFiles;
+  renderExportFileList();
   exportDropZone.classList.add('has-file');
-  renderExportPreview();
+  document.getElementById('exportLabel').textContent = `${exportFiles.length} Datei${exportFiles.length > 1 ? 'en' : ''} geladen`;
+} else if (savedExportFiles && savedExportFiles.headers) {
+  // Migration: old single-file format
+  exportFiles = [savedExportFiles];
+  saveExportFiles();
+  renderExportFileList();
 }
 
 // ══════════ EXTRACT / MERGE ANALYTICS ══════════
@@ -843,38 +915,96 @@ Gib ausschließlich valides JSON zurück:
   "unsicherheiten": []
 }`;
 
+function parseNum(v) {
+  return parseFloat(String(v || '').replace(/\./g, '').replace(',', '.').replace('%', '')) || 0;
+}
+
 function extractFromExport(data) {
   if (!data || !data.headers || !data.rows.length) return null;
-  const h = data.headers.map(s => s.toLowerCase());
-  const result = { posts: [], content_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
-  data.rows.forEach(row => {
-    const obj = {};
-    h.forEach((key, i) => { obj[key] = row[i] || ''; });
-    const post = {};
-    for (const [k, v] of Object.entries(obj)) {
-      if (k.includes('titel') || k.includes('title') || k.includes('post')) post.titel = v;
-      if (k.includes('datum') || k.includes('date')) post.datum = v;
-      if (k.includes('impression')) post.impressions = parseInt(v) || 0;
-      if (k.includes('engagement') && k.includes('rate')) post.engagement_rate_pct = parseFloat(v) || 0;
-      if (k.includes('klick') || k.includes('click')) post.klicks = parseInt(v) || 0;
-      if (k.includes('reaktion') || k.includes('reaction') || k.includes('like')) post.reaktionen = parseInt(v) || 0;
-      if (k.includes('kommentar') || k.includes('comment')) post.kommentare = parseInt(v) || 0;
+
+  // Use AI-detected mapping if available, otherwise try fuzzy fallback
+  const map = data.columnMap || {};
+  const colIdx = {};
+  const KPI_KEYS = ['impressions', 'clicks', 'reactions', 'comments', 'shares', 'engagement_rate', 'date', 'post_title'];
+
+  KPI_KEYS.forEach(kpi => {
+    const mappedName = map[kpi];
+    if (mappedName) {
+      const idx = data.headers.findIndex(h => h === mappedName);
+      if (idx >= 0) colIdx[kpi] = idx;
     }
-    if (post.titel || post.impressions) result.posts.push(post);
   });
+
+  // Fuzzy fallback for unmapped columns
+  if (Object.keys(colIdx).length < 3) {
+    const lower = data.headers.map(h => h.toLowerCase());
+    lower.forEach((h, i) => {
+      if (!colIdx.impressions && h.includes('impression') && !h.includes('gespons')) colIdx.impressions = i;
+      if (!colIdx.clicks && (h.includes('klick') || h.includes('click')) && !h.includes('gespons')) colIdx.clicks = i;
+      if (!colIdx.reactions && (h.includes('reaktion') || h.includes('reaction')) && !h.includes('gespons')) colIdx.reactions = i;
+      if (!colIdx.comments && (h.includes('kommentar') || h.includes('comment')) && !h.includes('gespons')) colIdx.comments = i;
+      if (!colIdx.shares && (h.includes('geteil') || h.includes('share')) && !h.includes('gespons')) colIdx.shares = i;
+      if (!colIdx.engagement_rate && h.includes('engagement') && h.includes('rate') && !h.includes('gespons')) colIdx.engagement_rate = i;
+      if (!colIdx.date && (h.includes('datum') || h === 'date')) colIdx.date = i;
+      if (!colIdx.post_title && (h.includes('titel') || h.includes('title'))) colIdx.post_title = i;
+    });
+  }
+
+  console.log('Column index mapping:', colIdx);
+
+  const result = { posts: [], content_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
+  let totals = { impressions: 0, clicks: 0, reactions: 0, comments: 0, shares: 0 };
+  let engRateSum = 0, engRateCount = 0;
+
+  data.rows.forEach(row => {
+    const imp = colIdx.impressions != null ? parseNum(row[colIdx.impressions]) : 0;
+    const clicks = colIdx.clicks != null ? parseNum(row[colIdx.clicks]) : 0;
+    const reactions = colIdx.reactions != null ? parseNum(row[colIdx.reactions]) : 0;
+    const comments = colIdx.comments != null ? parseNum(row[colIdx.comments]) : 0;
+    const shares = colIdx.shares != null ? parseNum(row[colIdx.shares]) : 0;
+    const engRate = colIdx.engagement_rate != null ? parseNum(row[colIdx.engagement_rate]) : 0;
+    const title = colIdx.post_title != null ? (row[colIdx.post_title] || '') : '';
+    const date = colIdx.date != null ? (row[colIdx.date] || '') : '';
+
+    totals.impressions += imp;
+    totals.clicks += clicks;
+    totals.reactions += reactions;
+    totals.comments += comments;
+    totals.shares += shares;
+    if (engRate > 0) { engRateSum += engRate; engRateCount++; }
+
+    if (imp > 0 || title) {
+      result.posts.push({
+        titel: title || date, datum: date,
+        impressions: Math.round(imp), klicks: Math.round(clicks),
+        reaktionen: Math.round(reactions), kommentare: Math.round(comments),
+        shares: Math.round(shares),
+        engagement_rate_pct: Math.round(engRate * 100) / 100
+      });
+    }
+  });
+
+  console.log('Export Totals:', totals, 'Avg Eng:', engRateCount ? (engRateSum / engRateCount).toFixed(2) : 0);
+
+  const avgEng = engRateCount > 0 ? Math.round((engRateSum / engRateCount) * 100) / 100 : 0;
+  result.content_summary = {
+    impressions: Math.round(totals.impressions),
+    engagement_rate_pct: avgEng,
+    reaktionen: Math.round(totals.reactions),
+    kommentare: Math.round(totals.comments),
+    shares: Math.round(totals.shares),
+    klicks: Math.round(totals.clicks)
+  };
   if (result.posts.length) {
     result.top_posts = [...result.posts].sort((a, b) => (b.impressions || 0) - (a.impressions || 0)).slice(0, 5);
-    const totalImp = result.posts.reduce((s, p) => s + (p.impressions || 0), 0);
-    const avgEng = result.posts.reduce((s, p) => s + (p.engagement_rate_pct || 0), 0) / result.posts.length;
-    result.content_summary = { impressions: totalImp, engagement_rate_pct: Math.round(avgEng * 100) / 100 };
   }
   return result;
 }
 
 document.getElementById('btnExtract').addEventListener('click', async () => {
   const hasScreenshots = screenshots.length > 0;
-  const hasExport = exportData && exportData.rows && exportData.rows.length > 0;
-  if (!hasScreenshots && !hasExport) { alert('Bitte Screenshots hochladen oder Export-Datei importieren.'); return; }
+  const hasExport = exportFiles.length > 0;
+  if (!hasScreenshots && !hasExport) { alert('Bitte Screenshots hochladen oder Export-Dateien importieren.'); return; }
 
   const btn = document.getElementById('btnExtract');
   btn.disabled = true;
@@ -883,14 +1013,60 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
   let merged = { posts: [], content_summary: {}, search_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
 
   try {
-    // 1. Extract from export file
+    // 1. Extract from export files (process each, merge)
+    let totalDatasets = 0;
     if (hasExport) {
-      const fromExport = extractFromExport(exportData);
-      if (fromExport) {
-        merged.posts = fromExport.posts;
-        merged.content_summary = fromExport.content_summary;
-        merged.top_posts = fromExport.top_posts;
+      const statusEl = document.getElementById('exportMappingStatus');
+      statusEl.style.display = 'block';
+
+      for (let fi = 0; fi < exportFiles.length; fi++) {
+        const ef = exportFiles[fi];
+        btn.textContent = `Datei ${fi + 1}/${exportFiles.length} wird analysiert...`;
+
+        // Detect columns via API if not already mapped
+        if (!ef.columnMap) {
+          try {
+            statusEl.innerHTML = `⏳ Spalten erkennen: ${ef.fileName}...`;
+            ef.columnMap = await detectColumnsForFile(ef);
+            console.log(`Mapping for ${ef.fileName}:`, ef.columnMap);
+          } catch (err) {
+            console.warn(`Column detection failed for ${ef.fileName}:`, err);
+            ef.columnMap = null;
+          }
+        }
+
+        const fromFile = extractFromExport(ef);
+        if (fromFile) {
+          merged.posts.push(...fromFile.posts);
+          totalDatasets += fromFile.posts.length;
+          // Merge content summary (sum up)
+          const cs = merged.content_summary;
+          const fs = fromFile.content_summary;
+          cs.impressions = (cs.impressions || 0) + (fs.impressions || 0);
+          cs.klicks = (cs.klicks || 0) + (fs.klicks || 0);
+          cs.reaktionen = (cs.reaktionen || 0) + (fs.reaktionen || 0);
+          cs.kommentare = (cs.kommentare || 0) + (fs.kommentare || 0);
+          cs.shares = (cs.shares || 0) + (fs.shares || 0);
+          // Engagement rate: weighted average later
+          cs._engSum = (cs._engSum || 0) + (fs.engagement_rate_pct || 0) * (fromFile.posts.length || 1);
+          cs._engCount = (cs._engCount || 0) + (fromFile.posts.length || 1);
+        }
       }
+
+      // Finalize averaged engagement rate
+      if (merged.content_summary._engCount > 0) {
+        merged.content_summary.engagement_rate_pct = Math.round((merged.content_summary._engSum / merged.content_summary._engCount) * 100) / 100;
+      }
+      delete merged.content_summary._engSum;
+      delete merged.content_summary._engCount;
+
+      // Build top posts from all files
+      merged.top_posts = [...merged.posts].sort((a, b) => (b.impressions || 0) - (a.impressions || 0)).slice(0, 5);
+
+      saveExportFiles();
+      const mappedCount = exportFiles.filter(f => f.columnMap).length;
+      statusEl.innerHTML = `<span class="extract-badge">✓ ${exportFiles.length} Dateien verarbeitet · ${totalDatasets} Datensätze erkannt</span>`;
+      btn.textContent = 'Wird extrahiert...';
     }
 
     // 2. Extract from screenshots via API
@@ -929,6 +1105,44 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
     localStorage.setItem('fem_wp_analytics', JSON.stringify(merged));
     renderExtractResults(merged);
+
+    // Auto-fill Block 3 from extracted follower data
+    const extractedFollower = parseInt(merged.follower_summary?.follower_gesamt) || 0;
+    if (extractedFollower > 0) {
+      document.getElementById('b3Current').value = extractedFollower;
+      calcFollower(); // saves to fem_wp_block3 + fem_konkurrenz_data
+    }
+
+    // Also auto-fill Block 2 performance fields from extraction
+    const b2Auto = {};
+    const cs = merged.content_summary || {};
+    // Post-level fields (from export totals)
+    if (cs.impressions) b2Auto.post_impressions = cs.impressions;
+    if (cs.engagement_rate_pct) b2Auto.post_eng_rate = cs.engagement_rate_pct;
+    if (cs.klicks) b2Auto.post_klicks = cs.klicks;
+    if (cs.reaktionen) b2Auto.post_reaktionen = cs.reaktionen;
+    if (cs.kommentare) b2Auto.post_kommentare = cs.kommentare;
+    if (cs.shares) b2Auto.post_shares = cs.shares;
+    // Site-level fields (same source for now)
+    if (cs.impressions) b2Auto.site_impressions = cs.impressions;
+    if (cs.engagement_rate_pct) b2Auto.site_eng_rate = cs.engagement_rate_pct;
+    if (cs.reaktionen) b2Auto.site_reaktionen = cs.reaktionen;
+    if (cs.kommentare) b2Auto.site_kommentare = cs.kommentare;
+    if (cs.shares) b2Auto.site_shares = cs.shares;
+    if (merged.visitor_summary) {
+      if (merged.visitor_summary.seitenaufrufe) b2Auto.visitor_aufrufe = merged.visitor_summary.seitenaufrufe;
+      if (merged.visitor_summary.individuelle_besucher) b2Auto.visitor_unique = merged.visitor_summary.individuelle_besucher;
+    }
+    if (merged.follower_summary) {
+      if (merged.follower_summary.follower_gesamt) b2Auto.follower_gesamt = merged.follower_summary.follower_gesamt;
+      if (merged.follower_summary.neue_follower) b2Auto.follower_neu = merged.follower_summary.neue_follower;
+    }
+    if (merged.search_summary) {
+      if (merged.search_summary.suchanzeigen) b2Auto.search_anzeigen = merged.search_summary.suchanzeigen;
+      if (merged.search_summary.change_pct) b2Auto.search_change = merged.search_summary.change_pct;
+    }
+    if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
+
     btn.textContent = '📊 Daten extrahieren';
     btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
 
@@ -1192,56 +1406,38 @@ document.getElementById('btnAddUrl').addEventListener('click', () => {
 });
 renderUrls();
 
-// ══════════ BLOCK 5: Collapsible Sections ══════════
-document.querySelectorAll('.collapsible-header').forEach(h => {
-  h.addEventListener('click', () => {
-    h.classList.toggle('open');
-    document.getElementById(h.dataset.target).classList.toggle('open');
-  });
+// ══════════ BLOCK 5: Branchenbeobachtung ══════════
+document.getElementById('b5Text').addEventListener('input', () => {
+  save('fem_wp_block5', { text: document.getElementById('b5Text').value });
 });
-
-function saveBlock5() {
-  const data = {};
-  document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-    data[ta.dataset.key] = ta.value;
-  });
-  save('fem_wp_block5', data);
-}
-document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-  ta.addEventListener('input', saveBlock5);
-});
-
 const b5 = load('fem_wp_block5', {});
-document.querySelectorAll('#b5Sections textarea').forEach(ta => {
-  if (b5[ta.dataset.key]) ta.value = b5[ta.dataset.key];
-});
-
-// ══════════ BLOCK 6: Events & Contacts ══════════
-const b6Newsletter = document.getElementById('b6Newsletter');
-const b6Field = document.getElementById('b6NewsletterField');
-
-b6Newsletter.addEventListener('change', () => {
-  b6Field.style.display = b6Newsletter.checked ? 'block' : 'none';
-  saveBlock6();
-});
-
-function saveBlock6() {
-  save('fem_wp_block6', {
-    events: document.getElementById('b6Events').value,
-    contacts: document.getElementById('b6Contacts').value,
-    newsletter: b6Newsletter.checked,
-    newsletterText: document.getElementById('b6NewsletterText').value
-  });
+// Migration: old multi-field format → merge into single text
+if (b5.text) {
+  document.getElementById('b5Text').value = b5.text;
+} else if (b5.vwheute || b5.versicherungsbote || b5.femalefinance || b5.sonstige) {
+  const parts = [];
+  if (b5.vwheute) parts.push('VWheute:\n' + b5.vwheute);
+  if (b5.versicherungsbote) parts.push('Versicherungsbote:\n' + b5.versicherungsbote);
+  if (b5.femalefinance) parts.push('Female Finance:\n' + b5.femalefinance);
+  if (b5.sonstige) parts.push('Sonstige:\n' + b5.sonstige);
+  document.getElementById('b5Text').value = parts.join('\n\n');
 }
-['b6Events', 'b6Contacts', 'b6NewsletterText'].forEach(id => {
-  document.getElementById(id).addEventListener('input', saveBlock6);
-});
 
+// ══════════ BLOCK 6: Notizen & Kontext ══════════
+document.getElementById('b6Text').addEventListener('input', () => {
+  save('fem_wp_block6', { text: document.getElementById('b6Text').value });
+});
 const b6 = load('fem_wp_block6', {});
-if (b6.events) document.getElementById('b6Events').value = b6.events;
-if (b6.contacts) document.getElementById('b6Contacts').value = b6.contacts;
-if (b6.newsletter) { b6Newsletter.checked = true; b6Field.style.display = 'block'; }
-if (b6.newsletterText) document.getElementById('b6NewsletterText').value = b6.newsletterText;
+if (b6.text) {
+  document.getElementById('b6Text').value = b6.text;
+} else {
+  // Migration: merge old fields
+  const parts = [];
+  if (b6.events) parts.push('Events: ' + b6.events);
+  if (b6.contacts) parts.push('Kontakte: ' + b6.contacts);
+  if (b6.newsletter && b6.newsletterText) parts.push('Newsletter: ' + b6.newsletterText);
+  if (parts.length) document.getElementById('b6Text').value = parts.join('\n\n');
+}
 
 // ══════════ BLOCK 7: Lernstand ══════════
 const b7Ta = document.getElementById('b7Lernstand');
@@ -1350,24 +1546,12 @@ function collectPrompt() {
   }
 
   // Block 5
-  const b5Data = load('fem_wp_block5', {});
-  const b5Parts = [];
-  if (b5Data.vwheute) b5Parts.push(`VWheute: ${b5Data.vwheute}`);
-  if (b5Data.versicherungsbote) b5Parts.push(`Versicherungsbote: ${b5Data.versicherungsbote}`);
-  if (b5Data.femalefinance) b5Parts.push(`Female Finance & Frau Finanzen: ${b5Data.femalefinance}`);
-  if (b5Data.sonstige) b5Parts.push(`Sonstige: ${b5Data.sonstige}`);
-  if (b5Parts.length) parts.push(`## Branchenthemen\n${b5Parts.join('\n')}`);
+  const b5Text = document.getElementById('b5Text').value.trim();
+  if (b5Text) parts.push(`## Branchenbeobachtung & Wettbewerber\n${b5Text}`);
 
   // Block 6
-  const events = document.getElementById('b6Events').value.trim();
-  const contacts = document.getElementById('b6Contacts').value.trim();
-  const nl = document.getElementById('b6Newsletter').checked;
-  const nlText = document.getElementById('b6NewsletterText').value.trim();
-  const b6Parts = [];
-  if (events) b6Parts.push(`Events/Interviews: ${events}`);
-  if (contacts) b6Parts.push(`Kontakte: ${contacts}`);
-  if (nl && nlText) b6Parts.push(`Newsletter-Crossover: ${nlText}`);
-  if (b6Parts.length) parts.push(`## Events & Kontakte\n${b6Parts.join('\n')}`);
+  const b6Text = document.getElementById('b6Text').value.trim();
+  if (b6Text) parts.push(`## Notizen & Kontext\n${b6Text}`);
 
   // Block 7
   const lernstand = document.getElementById('b7Lernstand').value.trim();
