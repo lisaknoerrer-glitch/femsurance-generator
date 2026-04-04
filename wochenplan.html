@@ -246,9 +246,83 @@ textarea { resize: vertical; line-height: 1.6; }
   border: 2px dashed var(--border); border-radius: var(--radius-md);
 }
 .col-right h3 {
-  font-size: 14px; font-weight: 600; margin-bottom: 16px;
+  font-size: 14px; font-weight: 600; margin-bottom: 12px;
   color: var(--text-primary);
 }
+
+/* Status */
+.status-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.status-dot.ready { background: var(--text-secondary); }
+.status-dot.loading { background: var(--fem-pink); animation: pulse 1s ease infinite; }
+.status-dot.done { background: #16a34a; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.status-text { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
+
+/* Progress bar */
+.progress-track {
+  width: 100%; height: 4px; background: var(--bg-secondary);
+  border-radius: 2px; overflow: hidden; margin-bottom: 14px;
+}
+.progress-fill {
+  height: 100%; width: 0%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
+  transition: width 0.4s ease;
+}
+@keyframes progressAnim {
+  0% { width: 5%; }
+  50% { width: 70%; }
+  90% { width: 88%; }
+  100% { width: 95%; }
+}
+.progress-fill.animating {
+  animation: progressAnim 70s ease-out forwards;
+}
+.progress-fill.complete { width: 100% !important; animation: none; transition: width 0.3s; }
+
+/* Output area */
+.output-textarea {
+  flex: 1; width: 100%; padding: 14px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: 'Courier New', monospace;
+  font-size: 12px; line-height: 1.65; color: var(--text-primary);
+  background: var(--bg-secondary); resize: none;
+  overflow-y: auto;
+}
+.output-textarea:focus { outline: none; border-color: var(--fem-pink); }
+.output-textarea::placeholder { color: var(--text-secondary); font-family: 'Inter', sans-serif; }
+
+/* Action buttons */
+.output-actions {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
+.btn-action {
+  padding: 7px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 12px;
+  font-weight: 600; color: var(--text-secondary);
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-action:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.btn-action.success { background: #dcfce7; color: #16a34a; border-color: #16a34a; }
+.btn-action:disabled { opacity: 0.4; pointer-events: none; }
+
+/* Archiv */
+.archiv-section { margin-top: 14px; }
+.archiv-section label {
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.03em;
+}
+.archiv-section select {
+  width: 100%; margin-top: 4px; padding: 7px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 12px; color: var(--text-primary);
+  background: var(--bg-card);
+}
+.archiv-section select:focus { outline: none; border-color: var(--fem-pink); }
 
 /* ── Scrollbar ── */
 .col-left::-webkit-scrollbar { width: 5px; }
@@ -443,8 +517,29 @@ textarea { resize: vertical; line-height: 1.6; }
     <!-- ════ RIGHT PANEL ════ -->
     <div class="col-right">
       <h3>Wochenplan-Output</h3>
-      <div class="output-placeholder" id="outputArea">
-        Output erscheint hier...
+
+      <div class="status-row">
+        <div class="status-dot ready" id="statusDot"></div>
+        <span class="status-text" id="statusText">Bereit</span>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <textarea class="output-textarea" id="outputArea" placeholder="Output erscheint hier..." readonly></textarea>
+
+      <div class="output-actions">
+        <button class="btn-action" id="btnSave" disabled>💾 Speichern</button>
+        <button class="btn-action" id="btnCopy" disabled>📋 Kopieren</button>
+        <button class="btn-action" id="btnLernstand" disabled>🔄 Lernstand aktualisieren</button>
+      </div>
+
+      <div class="archiv-section">
+        <label>Archiv (letzte 8 Pläne)</label>
+        <select id="archivSelect">
+          <option value="">— Gespeicherte Pläne —</option>
+        </select>
       </div>
     </div>
 
@@ -642,19 +737,233 @@ b7Ta.addEventListener('input', () => {
   localStorage.setItem('fem_lernstand', b7Ta.value);
 });
 
+// ══════════ OUTPUT PANEL STATE ══════════
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const progressFill = document.getElementById('progressFill');
+const outputArea = document.getElementById('outputArea');
+const btnSave = document.getElementById('btnSave');
+const btnCopy = document.getElementById('btnCopy');
+const btnLernstand = document.getElementById('btnLernstand');
+const archivSelect = document.getElementById('archivSelect');
+
+function setStatus(state) {
+  statusDot.className = 'status-dot ' + state;
+  if (state === 'ready') statusText.textContent = 'Bereit';
+  else if (state === 'loading') statusText.textContent = 'Wird generiert...';
+  else if (state === 'done') statusText.textContent = 'Fertig ✓';
+}
+
+function enableOutputButtons(on) {
+  btnSave.disabled = !on;
+  btnCopy.disabled = !on;
+  btnLernstand.disabled = !on;
+}
+
+// ══════════ ARCHIV ══════════
+function getArchivKeys() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith('fem_wochenplan_KW')) keys.push(k);
+  }
+  keys.sort().reverse();
+  return keys.slice(0, 8);
+}
+
+function renderArchiv() {
+  archivSelect.innerHTML = '<option value="">— Gespeicherte Pläne —</option>';
+  getArchivKeys().forEach(k => {
+    const label = k.replace('fem_wochenplan_', '').replace(/_/g, ' ');
+    archivSelect.innerHTML += `<option value="${k}">${label}</option>`;
+  });
+}
+renderArchiv();
+
+archivSelect.addEventListener('change', () => {
+  if (!archivSelect.value) return;
+  const data = localStorage.getItem(archivSelect.value);
+  if (data) {
+    outputArea.value = data;
+    outputArea.readOnly = false;
+    setStatus('done');
+    enableOutputButtons(true);
+  }
+});
+
+// ══════════ COLLECT ALL INPUTS ══════════
+function collectPrompt() {
+  const parts = [];
+
+  // Block 1
+  const kw = document.getElementById('b1Kw').value;
+  const date = document.getElementById('b1Date').value;
+  if (kw || date) parts.push(`## Kalenderwoche\nKW ${kw || '?'}, Montag: ${date || '?'}`);
+
+  // Block 2
+  const analytics = document.getElementById('b2Analytics').value.trim();
+  const mode = document.getElementById('b2Mode').value;
+  if (analytics) parts.push(`## LinkedIn Analytics (Modus: ${mode})\n${analytics}`);
+
+  // Block 3
+  const current = document.getElementById('b3Current').value;
+  const goal = document.getElementById('b3Goal').value;
+  if (current || goal) parts.push(`## Follower-Status\nAktuell: ${current || '?'} | Ziel: ${goal || '?'} | Abstand: ${Math.max((parseInt(goal)||0)-(parseInt(current)||0), 0)}`);
+
+  // Block 4
+  const urlEntries = urls.filter(u => u.url.trim());
+  if (urlEntries.length) {
+    parts.push(`## Referenz-URLs\n${urlEntries.map(u => `- ${u.url}${u.title ? ' (' + u.title + ')' : ''}`).join('\n')}`);
+  }
+
+  // Block 5
+  const b5Data = load('fem_wp_block5', {});
+  const b5Parts = [];
+  if (b5Data.vwheute) b5Parts.push(`VWheute: ${b5Data.vwheute}`);
+  if (b5Data.versicherungsbote) b5Parts.push(`Versicherungsbote: ${b5Data.versicherungsbote}`);
+  if (b5Data.femalefinance) b5Parts.push(`Female Finance & Frau Finanzen: ${b5Data.femalefinance}`);
+  if (b5Data.sonstige) b5Parts.push(`Sonstige: ${b5Data.sonstige}`);
+  if (b5Parts.length) parts.push(`## Branchenthemen\n${b5Parts.join('\n')}`);
+
+  // Block 6
+  const events = document.getElementById('b6Events').value.trim();
+  const contacts = document.getElementById('b6Contacts').value.trim();
+  const nl = document.getElementById('b6Newsletter').checked;
+  const nlText = document.getElementById('b6NewsletterText').value.trim();
+  const b6Parts = [];
+  if (events) b6Parts.push(`Events/Interviews: ${events}`);
+  if (contacts) b6Parts.push(`Kontakte: ${contacts}`);
+  if (nl && nlText) b6Parts.push(`Newsletter-Crossover: ${nlText}`);
+  if (b6Parts.length) parts.push(`## Events & Kontakte\n${b6Parts.join('\n')}`);
+
+  // Block 7
+  const lernstand = document.getElementById('b7Lernstand').value.trim();
+  if (lernstand) parts.push(`## Kumulierter Lernstand\n${lernstand}`);
+
+  return parts.join('\n\n');
+}
+
+// ══════════ SYSTEM PROMPT ══════════
+const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator. Analysiere die Wochendaten und erstelle:
+
+1. **Auswertung der vergangenen Woche** – Was lief gut, was kann verbessert werden
+2. **Posting-Plan für die kommende Woche:**
+   - Dienstag 10:00 – Company Page
+   - Mittwoch 08:00 – WhatsApp
+   - Mittwoch 10:00 – Gruppe
+   - Donnerstag 10:00 – Company Page
+   - Freitag 10:00 – Gruppe
+3. **Fünf Content-Outlines im FemSurance-Stil** – Jedes Outline enthält: Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis
+4. **Aktualisierten Lernstand** – Beginne mit "AKTUALISIERTER LERNSTAND:" auf einer eigenen Zeile
+
+Marke: FemSurance – Visibility. Network. Impact.
+Herausgeber: AssCompact / bbg Betriebsberatungs GmbH
+Stil: warm, empowernd, praxisnah, fachkundig.
+Schreibe ausschließlich auf Deutsch.`;
+
 // ══════════ GENERATE ══════════
-document.getElementById('btnGenerate').addEventListener('click', () => {
-  // Placeholder — will wire up API in next step
+document.getElementById('btnGenerate').addEventListener('click', async () => {
   const btn = document.getElementById('btnGenerate');
+  const prompt = collectPrompt();
+
+  if (!prompt.trim()) {
+    alert('Bitte mindestens ein Feld ausfüllen.');
+    return;
+  }
+
+  // UI: loading state
   btn.disabled = true;
   btn.textContent = 'Wird generiert...';
-  document.getElementById('outputArea').textContent = 'Wochenplan wird generiert...';
+  setStatus('loading');
+  enableOutputButtons(false);
+  outputArea.value = '';
+  outputArea.readOnly = true;
+  progressFill.className = 'progress-fill animating';
 
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.textContent = '▶ Wochenplan generieren';
-    document.getElementById('outputArea').textContent = 'Output erscheint hier...';
-  }, 2000);
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        system: WP_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      throw new Error(`API-Fehler ${resp.status}: ${errBody}`);
+    }
+
+    const data = await resp.json();
+    const result = data.content[0].text;
+
+    // UI: done
+    outputArea.value = result;
+    outputArea.readOnly = false;
+    progressFill.className = 'progress-fill complete';
+    setStatus('done');
+    enableOutputButtons(true);
+
+  } catch (err) {
+    setStatus('ready');
+    progressFill.className = 'progress-fill';
+    outputArea.value = 'Fehler: ' + err.message;
+    outputArea.readOnly = false;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '▶ Wochenplan generieren';
+});
+
+// ══════════ SAVE BUTTON ══════════
+btnSave.addEventListener('click', () => {
+  const kw = document.getElementById('b1Kw').value || 'XX';
+  const year = new Date().getFullYear();
+  const key = `fem_wochenplan_KW${kw}_${year}`;
+  localStorage.setItem(key, outputArea.value);
+  btnSave.textContent = 'Gespeichert ✓';
+  btnSave.classList.add('success');
+  renderArchiv();
+  setTimeout(() => { btnSave.textContent = '💾 Speichern'; btnSave.classList.remove('success'); }, 2000);
+});
+
+// ══════════ COPY BUTTON ══════════
+btnCopy.addEventListener('click', () => {
+  navigator.clipboard.writeText(outputArea.value).then(() => {
+    btnCopy.textContent = 'Kopiert ✓';
+    btnCopy.classList.add('success');
+    setTimeout(() => { btnCopy.textContent = '📋 Kopieren'; btnCopy.classList.remove('success'); }, 2000);
+  });
+});
+
+// ══════════ LERNSTAND UPDATE ══════════
+btnLernstand.addEventListener('click', () => {
+  const text = outputArea.value;
+  // Extract everything after "AKTUALISIERTER LERNSTAND:"
+  const marker = 'AKTUALISIERTER LERNSTAND:';
+  const idx = text.indexOf(marker);
+  let newLernstand;
+  if (idx !== -1) {
+    newLernstand = text.substring(idx + marker.length).trim();
+  } else {
+    // Fallback: take last ~500 chars as rough lernstand
+    newLernstand = text.slice(-500).trim();
+  }
+  if (newLernstand) {
+    localStorage.setItem('fem_lernstand', newLernstand);
+    document.getElementById('b7Lernstand').value = newLernstand;
+    btnLernstand.textContent = 'Lernstand aktualisiert ✓';
+    btnLernstand.classList.add('success');
+    setTimeout(() => { btnLernstand.textContent = '🔄 Lernstand aktualisieren'; btnLernstand.classList.remove('success'); }, 2500);
+  }
 });
 </script>
 </body>
