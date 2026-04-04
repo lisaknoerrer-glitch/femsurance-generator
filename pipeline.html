@@ -315,6 +315,43 @@ body {
   color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
+/* ── New Idea Button + Form ── */
+.btn-new-idea {
+  display: block; width: 100%; margin-top: 8px;
+  padding: 8px 12px; border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); background: none;
+  cursor: pointer; font-family: inherit; font-size: 12px;
+  font-weight: 600; color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.btn-new-idea:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.new-idea-form {
+  background: var(--bg-card); border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm); padding: 12px; margin-top: 8px;
+}
+.new-idea-form input, .new-idea-form select {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 4px; font-family: inherit; font-size: 12px;
+  color: var(--text-primary); margin-bottom: 8px;
+}
+.new-idea-form input:focus, .new-idea-form select:focus {
+  outline: none; border-color: var(--fem-pink);
+}
+.new-idea-btns { display: flex; gap: 6px; }
+.new-idea-btns button {
+  flex: 1; padding: 7px 10px; border-radius: 4px;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; transition: opacity 0.2s;
+}
+.new-idea-btns .btn-create {
+  background: var(--fem-pink); color: #fff;
+}
+.new-idea-btns .btn-create:hover { opacity: 0.9; }
+.new-idea-btns .btn-abort {
+  background: var(--bg-secondary); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.new-idea-btns .btn-abort:hover { background: var(--border); }
 </style>
 </head>
 <body>
@@ -685,6 +722,59 @@ function renderBoard() {
         renderBoard();
       }
     });
+
+    // "+ Neue Idee" button for Ideen column
+    if (col.id === 'ideen') {
+      const addBtn = document.createElement('button');
+      addBtn.className = 'btn-new-idea';
+      addBtn.textContent = '+ Neue Idee';
+      addBtn.addEventListener('click', () => {
+        addBtn.style.display = 'none';
+        const form = document.createElement('div');
+        form.className = 'new-idea-form';
+        form.innerHTML = `
+          <input type="text" placeholder="Titel" id="newIdeaTitle">
+          <select id="newIdeaFormat">
+            <option value="Company Page">Company Page</option>
+            <option value="Gruppe">Gruppe</option>
+            <option value="WhatsApp">WhatsApp</option>
+          </select>
+          <input type="date" id="newIdeaDate">
+          <div class="new-idea-btns">
+            <button class="btn-create">Erstellen</button>
+            <button class="btn-abort">Abbrechen</button>
+          </div>
+        `;
+        colEl.appendChild(form);
+        form.querySelector('#newIdeaTitle').focus();
+        form.querySelector('.btn-abort').addEventListener('click', () => {
+          form.remove();
+          addBtn.style.display = '';
+        });
+        form.querySelector('.btn-create').addEventListener('click', () => {
+          const title = form.querySelector('#newIdeaTitle').value.trim();
+          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = '#dc2626'; return; }
+          const format = form.querySelector('#newIdeaFormat').value;
+          const dateVal = form.querySelector('#newIdeaDate').value;
+          const due = dateVal ? dateVal.split('-').reverse().join('.').slice(0,6) : '';
+          const maxId = Math.max(...cards.map(c => c.id), 0);
+          cards.push({
+            id: maxId + 1,
+            col: 'ideen',
+            title: title,
+            format: format,
+            tag: format === 'Gruppe' ? 'tag-purple' : format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+            assignee: 'Offen',
+            due: due,
+            body: ''
+          });
+          saveCards();
+          renderBoard();
+        });
+      });
+      colEl.appendChild(addBtn);
+    }
+
     board.appendChild(colEl);
   });
 }
