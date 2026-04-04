@@ -260,7 +260,7 @@ body {
 <script>
 // ══════════ Shared data: { femFollower, goal, accounts } ══════════
 const STORAGE_KEY = 'fem_konkurrenz_data';
-const DEFAULTS = { femFollower: 1847, goal: 2500 };
+const DEFAULTS = { femFollower: 1847, goal: 2500, gruppeMembers: 0, gruppePostsPerWeek: 0, whatsappMembers: 0, whatsappPostsPerWeek: 0 };
 
 const defaultAccounts = [
   { name: '', followers: '', engagement: '', postsWeek: '' },
@@ -284,11 +284,15 @@ function loadData() {
       return {
         femFollower: d.femFollower ?? DEFAULTS.femFollower,
         goal: d.goal ?? DEFAULTS.goal,
+        gruppeMembers: d.gruppeMembers ?? DEFAULTS.gruppeMembers,
+        gruppePostsPerWeek: d.gruppePostsPerWeek ?? DEFAULTS.gruppePostsPerWeek,
+        whatsappMembers: d.whatsappMembers ?? DEFAULTS.whatsappMembers,
+        whatsappPostsPerWeek: d.whatsappPostsPerWeek ?? DEFAULTS.whatsappPostsPerWeek,
         accounts: d.accounts || JSON.parse(JSON.stringify(defaultAccounts))
       };
     }
   } catch (e) {}
-  return { femFollower: DEFAULTS.femFollower, goal: DEFAULTS.goal, accounts: JSON.parse(JSON.stringify(defaultAccounts)) };
+  return { ...DEFAULTS, accounts: JSON.parse(JSON.stringify(defaultAccounts)) };
 }
 
 function saveData(data) {
@@ -338,6 +342,34 @@ function renderTable() {
     tbody.appendChild(tr);
   }
 
+  // LinkedIn Gruppe row
+  {
+    const trG = document.createElement('tr');
+    trG.className = 'comp-highlight';
+    trG.innerHTML = `
+      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ LinkedIn Gruppe</td>
+      <td><input type="number" id="gruppeMembers" value="${data.gruppeMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+      <td colspan="2"><input type="number" id="gruppePostsPerWeek" value="${data.gruppePostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"> <span style="font-size:11px;color:var(--text-secondary)">Posts/Woche</span></td>
+      <td></td>
+      <td></td>
+    `;
+    tbody.appendChild(trG);
+  }
+
+  // WhatsApp Community row
+  {
+    const trW = document.createElement('tr');
+    trW.className = 'comp-highlight';
+    trW.innerHTML = `
+      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ WhatsApp Community</td>
+      <td><input type="number" id="whatsappMembers" value="${data.whatsappMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+      <td colspan="2"><input type="number" id="whatsappPostsPerWeek" value="${data.whatsappPostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"> <span style="font-size:11px;color:var(--text-secondary)">Posts/Woche</span></td>
+      <td></td>
+      <td></td>
+    `;
+    tbody.appendChild(trW);
+  }
+
   // Competitor rows
   data.accounts.forEach((acc, i) => {
     const followers = parseInt(acc.followers) || 0;
@@ -366,6 +398,24 @@ function renderTable() {
     updateHero(data.femFollower, data.goal);
     clearTimeout(window._renderTimer);
     window._renderTimer = setTimeout(renderTable, 600);
+  });
+
+  // Bind Gruppe inputs
+  ['gruppeMembers', 'gruppePostsPerWeek'].forEach(field => {
+    document.getElementById(field).addEventListener('input', e => {
+      const data = loadData();
+      data[field] = parseInt(e.target.value) || 0;
+      saveData(data);
+    });
+  });
+
+  // Bind WhatsApp inputs
+  ['whatsappMembers', 'whatsappPostsPerWeek'].forEach(field => {
+    document.getElementById(field).addEventListener('input', e => {
+      const data = loadData();
+      data[field] = parseInt(e.target.value) || 0;
+      saveData(data);
+    });
   });
 }
 
