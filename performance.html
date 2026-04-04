@@ -683,7 +683,19 @@ function renderPostTable() {
 
   tbody.innerHTML = '';
   published.forEach(card => {
-    const p = postPerf[card.id] || {};
+    // Check by card ID first, then by title match
+    let p = postPerf[card.id] || {};
+    if (!p.impressions) {
+      const titleKey = 'title_' + card.title;
+      if (postPerf[titleKey]) p = postPerf[titleKey];
+      // Also check partial title matches from wochenplan
+      for (const [k, v] of Object.entries(postPerf)) {
+        if (k.startsWith('title_') && card.title.includes(k.replace('title_', '')) && v.impressions) {
+          p = v; postPerf[card.id] = v; savePostPerf(); break;
+        }
+      }
+    }
+    const hasKPIs = !!(p.impressions || p.reaktionen || p.klicks);
     const imp = parseFloat(p.impressions) || 0;
     const reak = parseFloat(p.reaktionen) || 0;
     const komm = parseFloat(p.kommentare) || 0;
@@ -696,7 +708,7 @@ function renderPostTable() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="pp-title" data-id="${card.id}">${card.title}</span></td>
+      <td><span class="pp-title" data-id="${card.id}">${card.title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
       <td><span class="pp-badge ${badgeClass}">${card.format}</span></td>
       <td>${card.due || '–'}</td>
       <td><input value="${p.impressions || ''}" data-id="${card.id}" data-k="impressions"></td>

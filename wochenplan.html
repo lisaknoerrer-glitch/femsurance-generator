@@ -412,6 +412,18 @@ textarea { resize: vertical; line-height: 1.6; }
 .btn-load-last:hover { background:var(--fem-pink); color:#fff; }
 .b2-top-posts { font-size:12px; color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
 .b2-top-posts strong { color:var(--text-primary); }
+/* Post-Performance rows */
+.b2-post-header { display:flex; align-items:center; gap:8px; padding:8px 0; cursor:pointer; border-bottom:1px solid var(--border); user-select:none; }
+.b2-post-header:hover { color:var(--fem-pink); }
+.b2-post-header .b2p-arrow { font-size:11px; color:var(--text-secondary); transition:transform 0.2s; }
+.b2-post-header.open .b2p-arrow { transform:rotate(180deg); }
+.b2-post-header .b2p-title { flex:1; font-size:12.5px; font-weight:600; }
+.b2-post-header .b2p-remove { width:22px; height:22px; border:none; background:none; color:var(--text-secondary); cursor:pointer; font-size:14px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.b2-post-header .b2p-remove:hover { background:#fef2f2; color:#dc2626; }
+.b2-post-body { display:none; padding:8px 0; }
+.b2-post-body.open { display:block; }
+.btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
+.btn-add-post:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 /* Export file list */
 .export-file-item {
   display:flex; align-items:center; gap:8px; padding:5px 8px;
@@ -598,6 +610,10 @@ textarea { resize: vertical; line-height: 1.6; }
 
         <div class="b2-section">Top-Posts</div>
         <div class="b2-top-posts" id="b2TopPosts">–</div>
+
+        <div class="b2-section">Post-Performance (Organisches Engagement)</div>
+        <div id="b2PostPerf"></div>
+        <button class="btn-add-post" id="b2AddPost">+ Weiteren Post hinzufügen</button>
       </div>
 
       <!-- BLOCK 3: Follower-Ziel -->
@@ -1317,6 +1333,98 @@ if (histForTP.length && histForTP[0].top_posts) {
   document.getElementById('b2TopPosts').innerHTML = histForTP[0].top_posts.map(p => `<strong>${p.titel || '–'}</strong> · ${p.impressions || '–'} Imp. · ${p.engagement_rate_pct || '–'}%`).join('<br>');
 }
 
+// ══════════ BLOCK 2: Post-Performance ══════════
+const PP_FIELDS = [
+  { key: 'titel', label: 'Post-Titel', wide: true },
+  { key: 'impressions', label: 'Impressions' },
+  { key: 'ind_impressions', label: 'Individuelle Impressions' },
+  { key: 'engagements', label: 'Engagements' },
+  { key: 'eng_rate', label: 'Engagement-Rate %' },
+  { key: 'klicks', label: 'Klicks' },
+  { key: 'ctr', label: 'Click-Through-Rate %' },
+  { key: 'reaktionen', label: 'Reaktionen' },
+  { key: 'kommentare', label: 'Kommentare' },
+  { key: 'shares', label: 'Direkt geteilte Beiträge' },
+  { key: 'follower', label: 'Gewonnene Follower:innen durch Beitrag' },
+  { key: 'besucher', label: 'Seitenbesucher:innen durch Beitrag' },
+];
+
+let b2Posts = load('fem_wp_b2_posts', []);
+
+function renderB2Posts() {
+  const container = document.getElementById('b2PostPerf');
+  container.innerHTML = '';
+  b2Posts.forEach((post, i) => {
+    const header = document.createElement('div');
+    header.className = 'b2-post-header';
+    header.innerHTML = `<span class="b2p-arrow">▼</span><span class="b2p-title">${post.titel || `Post ${i + 1}`}</span><button class="b2p-remove" data-idx="${i}">&times;</button>`;
+    const body = document.createElement('div');
+    body.className = 'b2-post-body';
+    body.innerHTML = `<div class="b2-kpi-grid">${PP_FIELDS.map(f =>
+      `<div class="b2-kpi-field" ${f.wide ? 'style="grid-column:1/-1;"' : ''}><label>${f.label}</label><input value="${post[f.key] || ''}" data-pi="${i}" data-pk="${f.key}"></div>`
+    ).join('')}</div>`;
+    header.addEventListener('click', e => {
+      if (e.target.closest('.b2p-remove')) return;
+      header.classList.toggle('open');
+      body.classList.toggle('open');
+    });
+    header.querySelector('.b2p-remove').addEventListener('click', () => {
+      b2Posts.splice(i, 1);
+      save('fem_wp_b2_posts', b2Posts);
+      renderB2Posts();
+    });
+    container.appendChild(header);
+    container.appendChild(body);
+  });
+}
+
+document.getElementById('b2PostPerf').addEventListener('input', e => {
+  if (e.target.dataset.pi !== undefined) {
+    const i = parseInt(e.target.dataset.pi);
+    b2Posts[i][e.target.dataset.pk] = e.target.value;
+    // Update header title live
+    if (e.target.dataset.pk === 'titel') {
+      const headers = document.querySelectorAll('.b2-post-header .b2p-title');
+      if (headers[i]) headers[i].textContent = e.target.value || `Post ${i + 1}`;
+    }
+    save('fem_wp_b2_posts', b2Posts);
+    // Also save to fem_post_performance by title
+    saveB2PostPerformance();
+  }
+});
+
+document.getElementById('b2AddPost').addEventListener('click', () => {
+  if (b2Posts.length >= 10) { alert('Maximal 10 Posts.'); return; }
+  b2Posts.push({});
+  save('fem_wp_b2_posts', b2Posts);
+  renderB2Posts();
+  // Auto-open the new one
+  const headers = document.querySelectorAll('.b2-post-header');
+  const bodies = document.querySelectorAll('.b2-post-body');
+  if (headers.length) { headers[headers.length - 1].classList.add('open'); bodies[bodies.length - 1].classList.add('open'); }
+});
+
+function saveB2PostPerformance() {
+  const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+  b2Posts.forEach(p => {
+    if (p.titel && p.titel.trim()) {
+      // Find matching pipeline card by title
+      const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+      const match = cards.find(c => c.col === 'publish' && c.title && c.title.includes(p.titel.trim()));
+      const key = match ? String(match.id) : 'title_' + p.titel.trim();
+      perf[key] = {
+        impressions: p.impressions || '', ind_impressions: p.ind_impressions || '',
+        engagements: p.engagements || '', reaktionen: p.reaktionen || '',
+        kommentare: p.kommentare || '', shares: p.shares || '',
+        klicks: p.klicks || '', follower: p.follower || '', besucher: p.besucher || ''
+      };
+    }
+  });
+  localStorage.setItem('fem_post_performance', JSON.stringify(perf));
+}
+
+renderB2Posts();
+
 // ══════════ BLOCK 3: Follower-Ziel (synced with fem_konkurrenz_data) ══════════
 function loadShared() {
   try {
@@ -1558,6 +1666,13 @@ function collectPrompt() {
   const urlEntries = urls.filter(u => u.url.trim());
   if (urlEntries.length) {
     parts.push(`## Referenz-URLs\n${urlEntries.map(u => `- ${u.url}${u.title ? ' (' + u.title + ')' : ''}`).join('\n')}`);
+  }
+
+  // Post-Performance
+  const ppData = load('fem_wp_b2_posts', []).filter(p => p.titel);
+  if (ppData.length) {
+    const ppLines = ppData.map(p => `- ${p.titel}: Impressions ${p.impressions||'–'}, Eng-Rate ${p.eng_rate||'–'}%, Klicks ${p.klicks||'–'}, Reaktionen ${p.reaktionen||'–'}, Kommentare ${p.kommentare||'–'}, Shares ${p.shares||'–'}`);
+    parts.push(`## Post-Performance\n${ppLines.join('\n')}`);
   }
 
   // Block 5
