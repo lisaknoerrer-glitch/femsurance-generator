@@ -542,6 +542,14 @@ body {
         <input type="text" id="cmDue" placeholder="z. B. 10.04.">
       </div>
     </div>
+    <div class="cm-field">
+      <div class="cm-label">Artikel-URL (optional)</div>
+      <input type="url" id="cmUrl" placeholder="https://asscompact.de/...">
+    </div>
+    <div class="cm-field">
+      <div class="cm-label">Notizen / Ideen / Stichpunkte (optional)</div>
+      <textarea id="cmNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
+    </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
       <textarea id="cmBody"></textarea>
@@ -706,8 +714,8 @@ function generatePosts(cardId, btnEl) {
   pendingGenCardId = cardId;
   pendingGenBtnEl = btnEl;
   document.getElementById('genPrepTitle').textContent = `Post generieren: ${card.title}`;
-  document.getElementById('genPrepNotes').value = '';
-  document.getElementById('genPrepUrl').value = '';
+  document.getElementById('genPrepUrl').value = card.url || '';
+  document.getElementById('genPrepNotes').value = card.notes || '';
   document.getElementById('genPrepModal').classList.add('open');
 }
 
@@ -1030,6 +1038,8 @@ function openCardModal(cardId) {
   document.getElementById('cmTitle').value = card.title;
   document.getElementById('cmAssignee').value = card.assignee || '';
   document.getElementById('cmDue').value = card.due || '';
+  document.getElementById('cmUrl').value = card.url || '';
+  document.getElementById('cmNotes').value = card.notes || '';
 
   // Badge
   const badgeClass = formatTagClass(card.format);
@@ -1055,6 +1065,8 @@ document.getElementById('cmSave').addEventListener('click', () => {
   card.title = document.getElementById('cmTitle').value.trim() || card.title;
   card.assignee = document.getElementById('cmAssignee').value.trim();
   card.due = document.getElementById('cmDue').value.trim();
+  card.url = document.getElementById('cmUrl').value.trim();
+  card.notes = document.getElementById('cmNotes').value.trim();
   if (document.getElementById('cmBodyField').style.display !== 'none') {
     card.body = document.getElementById('cmBody').value;
   }
