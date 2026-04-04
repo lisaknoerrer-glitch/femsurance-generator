@@ -1073,6 +1073,8 @@ function renderBoard() {
         generateBtn = `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
       } else if (col.id === 'grafik') {
         generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
+      } else if (col.id === 'geplant') {
+        generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
       }
 
       el.innerHTML = `
@@ -1124,10 +1126,21 @@ function renderBoard() {
           });
         }
       }
+      if (col.id === 'geplant') {
+        const btn = el.querySelector('.btn-publish');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            card.col = 'publish';
+            saveCards();
+            renderBoard();
+          });
+        }
+      }
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area')) return;
         openCardModal(card.id);
       });
 
