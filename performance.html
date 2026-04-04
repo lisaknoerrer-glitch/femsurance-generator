@@ -335,11 +335,11 @@ body {
         <div class="kpi-field"><label>Klicks auf den eigenen Button</label><input id="kf_visitor_button" data-s="visitor" data-k="button_klicks"></div>
       </div>
 
-      <div class="kpi-section-title">Follower</div>
+      <div class="kpi-section-title">Follower:innen</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Gesamt</label><input id="kf_follower_gesamt" data-s="follower" data-k="follower_gesamt"></div>
-        <div class="kpi-field"><label>Neue (30 Tage)</label><input id="kf_follower_neu" data-s="follower" data-k="neue_follower"></div>
-        <div class="kpi-field"><label>Veränderung %</label><input id="kf_follower_change" data-s="follower" data-k="change_pct"></div>
+        <div class="kpi-field"><label>Follower:innen insgesamt</label><input id="kf_follower_gesamt" data-s="follower" data-k="follower_gesamt"></div>
+        <div class="kpi-field"><label>Neue Follower:innen (letzte 30 Tage)</label><input id="kf_follower_neu" data-s="follower" data-k="neue_follower"></div>
+        <div class="kpi-field"><label>Neue Follower:innen via Premium-Einladung</label><input id="kf_follower_premium" data-s="follower" data-k="premium_einladung"></div>
       </div>
 
       <div class="kpi-section-title">Top-Posts</div>
@@ -829,7 +829,7 @@ Gib valides JSON zurück:
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0 },
   "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
   "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
-  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "premium_einladung": 0 },
   "top_posts": [{ "titel": "", "datum": "", "impressions": 0, "engagement_rate_pct": 0 }]
 }`;
 
@@ -964,9 +964,12 @@ const KPI_DEFS = [
   { key: 'visitor_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
   { key: 'visitor_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
   { key: 'visitor_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
-  { section: 'Sichtbarkeit & Follower' },
+  { section: 'Follower:innen' },
+  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
+  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+  { key: 'follower_premium', label: 'Via Premium-Einladung', defaultTarget: 5, paths: ['follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
+  { section: 'Sichtbarkeit' },
   { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
-  { key: 'follower_neu', label: 'Neue Follower 30 Tage', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
 ];
 
 function getNestedVal(obj, path) {

@@ -584,12 +584,17 @@ textarea { resize: vertical; line-height: 1.6; }
           <div class="b2-kpi-field"><label>Klicks auf den eigenen Button</label><input data-b2="visitor_button_klicks"></div>
         </div>
 
-        <div class="b2-section">Sichtbarkeit &amp; Follower</div>
+        <div class="b2-section">Follower:innen</div>
+        <div class="b2-kpi-grid">
+          <div class="b2-kpi-field"><label>Follower:innen insgesamt</label><input data-b2="follower_gesamt"></div>
+          <div class="b2-kpi-field"><label>Neue Follower:innen (letzte 30 Tage)</label><input data-b2="follower_neu"></div>
+          <div class="b2-kpi-field"><label>Neue Follower:innen via Premium-Einladung</label><input data-b2="follower_premium"></div>
+        </div>
+
+        <div class="b2-section">Sichtbarkeit</div>
         <div class="b2-kpi-grid">
           <div class="b2-kpi-field"><label>Suchanzeigen 7T</label><input data-b2="search_anzeigen"></div>
           <div class="b2-kpi-field"><label>Veränderung %</label><input data-b2="search_change"></div>
-          <div class="b2-kpi-field"><label>Neue Follower 30T</label><input data-b2="follower_neu"></div>
-          <div class="b2-kpi-field"><label>Follower gesamt</label><input data-b2="follower_gesamt"></div>
         </div>
 
         <div class="b2-section">Top-Posts</div>
@@ -914,7 +919,7 @@ Gib ausschließlich valides JSON zurück:
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
   "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
   "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
-  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "premium_einladung": 0 },
   "top_posts": [{ "titel": "", "impressions": 0, "engagement_rate_pct": 0 }],
   "unsicherheiten": []
 }`;
@@ -1140,6 +1145,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
     if (merged.follower_summary) {
       if (merged.follower_summary.follower_gesamt) b2Auto.follower_gesamt = merged.follower_summary.follower_gesamt;
       if (merged.follower_summary.neue_follower) b2Auto.follower_neu = merged.follower_summary.neue_follower;
+      if (merged.follower_summary.premium_einladung) b2Auto.follower_premium = merged.follower_summary.premium_einladung;
     }
     if (merged.search_summary) {
       if (merged.search_summary.suchanzeigen) b2Auto.search_anzeigen = merged.search_summary.suchanzeigen;
@@ -1191,11 +1197,11 @@ function renderExtractResults(a) {
       </div>
     </div>
     <div class="er-section">
-      <div class="er-title">Follower</div>
+      <div class="er-title">Follower:innen</div>
       <div class="er-grid">
-        ${field('Gesamt','follower_gesamt','follower_summary',fs.follower_gesamt)}
-        ${field('Neu','neue_follower','follower_summary',fs.neue_follower)}
-        ${field('Veränderung %','change_pct','follower_summary',fs.change_pct)}
+        ${field('Follower:innen insgesamt','follower_gesamt','follower_summary',fs.follower_gesamt)}
+        ${field('Neue Follower:innen (30 Tage)','neue_follower','follower_summary',fs.neue_follower)}
+        ${field('Via Premium-Einladung','premium_einladung','follower_summary',fs.premium_einladung)}
       </div>
     </div>
     <div class="er-section">
@@ -1277,8 +1283,9 @@ document.getElementById('b2LoadLast').addEventListener('click', () => {
     visitor_aufrufe: last.visitor?.seitenaufrufe ?? last.visitor_summary?.seitenaufrufe ?? '',
     visitor_unique: last.visitor?.individuelle_besucher ?? last.visitor_summary?.individuelle_besucher ?? '',
     visitor_button_klicks: last.visitor?.button_klicks ?? last.visitor_summary?.button_klicks ?? '',
+    follower_gesamt: last.follower?.follower_gesamt ?? last.follower_summary?.follower_gesamt ?? '',
     follower_neu: last.follower?.neue_follower ?? last.follower_summary?.neue_follower ?? '',
-    follower_gesamt: last.follower?.follower_gesamt ?? last.follower_summary?.follower_gesamt ?? ''
+    follower_premium: last.follower?.premium_einladung ?? last.follower_summary?.premium_einladung ?? ''
   };
   loadBlock2(mapping);
   saveBlock2();
@@ -1529,7 +1536,7 @@ function collectPrompt() {
     lines.push(`Inhalte (letzte 30 Tage): Impressions ${v.site_impressions||'–'}, Reaktionen ${v.site_reaktionen||'–'}, Kommentare ${v.site_kommentare||'–'}, Direkt geteilte Beiträge ${v.site_shares||'–'}`);
     lines.push(`Suche 7T: Suchanzeigen ${v.search_anzeigen||'–'}, Veränderung ${v.search_change||'–'}%`);
     lines.push(`Besucher:innen: Seitenaufrufe ${v.visitor_aufrufe||'–'}, Individuelle Besucher:innen ${v.visitor_unique||'–'}, Klicks auf eigenen Button ${v.visitor_button_klicks||'–'}`);
-    lines.push(`Follower: gesamt ${v.follower_gesamt||'–'}, neu ${v.follower_neu||'–'}`);
+    lines.push(`Follower:innen: insgesamt ${v.follower_gesamt||'–'}, neue (30 Tage) ${v.follower_neu||'–'}, via Premium-Einladung ${v.follower_premium||'–'}`);
     // Top posts from history
     const hist = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
     if (hist.length && hist[0].top_posts) {
