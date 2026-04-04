@@ -457,6 +457,10 @@ body {
 .gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
 
 /* ── Grafik Preview on Cards ── */
+.card-begruendung {
+  font-size: 10.5px; color: var(--text-secondary); font-style: italic;
+  margin-top: 6px; line-height: 1.4;
+}
 .grafik-thumb {
   width: 100%; max-height: 100px; object-fit: cover;
   border-radius: 4px; margin-top: 8px; display: block;
@@ -825,94 +829,39 @@ Für jede Outline:
 Am Ende: Analyse-Notizen mit Themen, Sprachmuster, Empfehlung.
 Direkte Du-Ansprache. Warm, klar, empowernd. Keine Floskeln.`;
 
-const POST_SYSTEM_PROMPT = `Du bist ein LinkedIn-Content-Experte für FemSurance (Visibility. Network. Impact.), eine Initiative von AssCompact / bbg Betriebsberatungs GmbH für Frauen in der Versicherungsbranche.
+const POST_JSON_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Du bekommst eine Content-Outline und entscheidest selbst wie viele Posts du daraus machst und auf welchem Kanal sie am besten funktionieren. Es können 2, 3, 4 oder mehr Posts sein — je nachdem was der Inhalt hergibt.
 
-Erstelle aus der gegebenen Outline DREI Post-Varianten:
+Antworte NUR im JSON-Format ohne weitere Erklärungen:
+{
+  "posts": [
+    {
+      "kanal": "Company Page" oder "LinkedIn Gruppe" oder "WhatsApp",
+      "tag": "Dienstag" oder "Mittwoch" oder "Donnerstag" oder "Freitag",
+      "uhrzeit": "10:00" oder "08:00",
+      "begruendung": "[1 Satz warum dieser Kanal für diesen Inhalt]",
+      "text": "[fertiger Post im richtigen Format für den Kanal]",
+      "grafikBriefing": "[kurze visuelle Beschreibung]"
+    }
+  ],
+  "geschichteDerWoche": "[2-3 Sätze wie die Posts zusammenhängen]"
+}
 
-1. **Company Page Post** (1000–1500 Zeichen):
-   - Professioneller Ton, Thought-Leadership-Stil
-   - Hook in der ersten Zeile
-   - Struktur: Hook → Problem → Lösung → CTA
-   - 3–5 relevante Hashtags am Ende
-   - Emojis sparsam einsetzen
+KANAL-REGELN:
+Company Page (Di oder Do · 10:00): 1.000-1.500 Zeichen, starker Hook, 3-5 Punkte mit →, Zitat, Reflexionsfrage, 5-7 Hashtags, professionell empowernd
+LinkedIn Gruppe (Mi oder Fr · 10:00): 600-800 Zeichen, bezieht sich auf Company Page, zeigt tiefere Wahrheit, endet IMMER mit offener Frage, persönlich ehrlich
+WhatsApp (Mi · 08:00): max. 250 Zeichen, kurz warm wie von einer Freundin, endet mit 🩷
 
-2. **Gruppen-Post** (600–800 Zeichen):
-   - Diskussionsfördernd, Frage am Ende
-   - Persönlicher, Community-nah
-   - 2–3 Hashtags
+ENTSCHEIDUNGSLOGIK:
+- Ist der Inhalt faktenreich? → Company Page
+- Gibt es eine kontroverse Perspektive? → LinkedIn Gruppe
+- Ist es ein kurzer Impuls oder eine Frage? → WhatsApp
+- Hat der Inhalt mehrere Aspekte? → mehrere Posts auf verschiedenen Kanälen
+- Nutze jeden Kanal max. 2x pro Outline
+- Minimum 2 Posts, Maximum 5 Posts
 
-3. **WhatsApp-Nachricht** (max. 250 Zeichen):
-   - Kurz, knackig, mit Link-Platzhalter [LINK]
-   - Ein Emoji erlaubt
-   - Kein Hashtag
+Direkte Du-Ansprache. Warm, klar, empowernd. Zitate nur aus dem Quellmaterial.`;
 
-Trenne die drei Varianten mit --- auf einer eigenen Zeile.
-Schreibe ausschließlich auf Deutsch.`;
 
-const POST_STORYTELLING_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Marke: FemSurance – Visibility. Network. Impact. Zielgruppe: Frauen in der Versicherungsbranche und Finanzberatung. Stil: warm · klar · empowernd · direkt · keine Floskeln.
-
-Du bekommst eine Outline und schreibst daraus 3 fertige Posts – einen pro Plattform.
-
-POSTING-SCHEDULE:
-LinkedIn Company Page: Di & Do · 10:00 Uhr
-LinkedIn Gruppe: Mi & Fr · 10:00 Uhr
-WhatsApp Community: Mi · 08:00 Uhr
-
-PLATTFORM-REGELN:
-🏢 LinkedIn Company Page · 1.000–1.500 Zeichen:
-- Starker Hook Zeile 1
-- Story mit Zeilenumbrüchen
-- 3–5 Punkte mit Pfeil (→)
-- Zitat aus Quellmaterial
-- Reflexionsfrage am Ende
-- 5–7 Hashtags
-- Tonfall: professionell · empowernd · markenstark
-
-👥 LinkedIn Gruppe · 600–800 Zeichen:
-- Bezug auf Company Page Post
-- Zeigt unbequeme Wahrheit
-- Endet IMMER mit offener Frage
-- Tonfall: persönlich · ehrlich · einladend
-
-💬 WhatsApp · max. 250 Zeichen:
-- Kurz und warm
-- Eine Frage oder Impuls
-- Endet mit 🩷
-- Tonfall: warm · direkt · neugierig
-
-OUTPUT-FORMAT:
-FemSurance Posts – [Posting-Woche]
-────────────────────────────────
-🏢 LINKEDIN COMPANY PAGE
-Datum: [gewählter Tag] · 10:00 Uhr
-[Fertiger Post]
-Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
-────────────────────────────────
-💬 WHATSAPP COMMUNITY
-Datum: Mi · 08:00 Uhr
-[Kurze Nachricht max. 250 Zeichen]
-────────────────────────────────
-👥 LINKEDIN GRUPPE
-Datum: [gewählter Tag] · 10:00 Uhr
-[Fertiger Post mit offener Frage]
-Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
-────────────────────────────────
-🔗 DIE GESCHICHTE DER WOCHE
-[2–3 Sätze wie Posts zusammenhängen]
-────────────────────────────────
-✅ KANBAN-CHECKLISTE
-☐ Post-Text geprüft
-☐ Grafik erstellt
-☐ Freigabe erteilt
-☐ In Buffer eingeplant
-☐ Veröffentlicht
-
-SPRACHE & TON:
-- Direkte Du-Ansprache
-- Kurze Sätze + Zeilenumbrüche
-- Emotion + Klarheit
-- Zitate nur aus Quellmaterial – nie erfunden
-- Keine generischen Aussagen`;
 
 const CANVA_SYSTEM_PROMPT = `Du bist ein Canva Design-Experte für FemSurance. Erstelle einen präzisen Bildprompt für Canva Magic Media basierend auf dem Post-Text.
 
@@ -1109,14 +1058,16 @@ async function generateOutline(cardId, btnEl) {
     });
     genArea.appendChild(saveBtn);
 
-    // Step 2 button: Post generieren (from outline)
+    // Step 2 button: Post generieren (from outline → JSON)
     const postBtn = document.createElement('button');
     postBtn.className = 'btn-generate';
     postBtn.style.marginTop = '8px';
     postBtn.textContent = 'Post generieren';
     postBtn.addEventListener('click', async e => {
       e.stopPropagation();
-      await generatePostFromOutline(card, ta.value, postBtn, genArea);
+      card.outline = ta.value;
+      saveCards();
+      await generatePostsFromOutline(card.id, postBtn);
     });
     genArea.appendChild(postBtn);
 
@@ -1126,62 +1077,6 @@ async function generateOutline(cardId, btnEl) {
   } catch (err) {
     alert('Fehler beim Generieren: ' + err.message);
     btnEl.textContent = 'Entwurf generieren';
-    btnEl.classList.remove('loading');
-    btnEl.disabled = false;
-  }
-}
-
-// ── Step 2: Generate Post from Outline ──
-async function generatePostFromOutline(card, outlineText, btnEl, genArea) {
-  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
-  btnEl.classList.add('loading');
-  btnEl.disabled = true;
-
-  try {
-    const userPrompt = `Thema: ${card.title}\n\nOutline:\n${outlineText}`;
-    const resultText = await callAnthropic(POST_SYSTEM_PROMPT, userPrompt, 2048);
-
-    // Replace outline textarea with post textarea + counters
-    const oldTa = genArea.querySelector('.gen-textarea');
-    if (oldTa) oldTa.remove();
-    const oldCounters = genArea.querySelector('.platform-counters');
-    if (oldCounters) oldCounters.remove();
-
-    const ta = document.createElement('textarea');
-    ta.className = 'gen-textarea';
-    ta.value = resultText;
-    genArea.insertBefore(ta, genArea.firstChild);
-
-    const countersDiv = document.createElement('div');
-    countersDiv.innerHTML = buildPlatformCounters(resultText);
-    ta.after(countersDiv.firstElementChild);
-
-    ta.addEventListener('input', () => {
-      const pc = genArea.querySelector('.platform-counters');
-      if (pc) {
-        const nc = document.createElement('div');
-        nc.innerHTML = buildPlatformCounters(ta.value);
-        pc.replaceWith(nc.firstElementChild);
-      }
-    });
-
-    // Update save button to save body
-    const saveBtn = genArea.querySelector('.btn-save-draft');
-    if (saveBtn) {
-      saveBtn.textContent = 'Post speichern & als Entwurf';
-      saveBtn.onclick = e => {
-        e.stopPropagation();
-        card.body = ta.value;
-        card.col = 'entwurf';
-        saveCards();
-        renderBoard();
-      };
-    }
-    btnEl.style.display = 'none';
-
-  } catch (err) {
-    alert('Fehler: ' + err.message);
-    btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
   }
@@ -1231,6 +1126,69 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
   } catch (err) {
     alert('Fehler: ' + err.message);
     btnEl.textContent = 'Canva-Prompt generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
+
+// ── Generate Posts from Outline (JSON flow) ──
+async function generatePostsFromOutline(cardId, btnEl) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+
+  const outlineText = card.outline || card.body || card.title;
+  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const userPrompt = `Outline-Titel: ${card.title}\n\nOutline:\n${outlineText}`;
+    const resultText = await callAnthropic(POST_JSON_PROMPT, userPrompt, 4096);
+
+    // Parse JSON — strip markdown fences if present
+    let jsonStr = resultText.trim();
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    }
+    const result = JSON.parse(jsonStr);
+
+    if (!result.posts || !result.posts.length) throw new Error('Keine Posts in der Antwort');
+
+    // Create new cards in "post" column
+    const maxId = Math.max(...cards.map(c => c.id), 0);
+    const dayMap = { 'Dienstag': 'Di', 'Mittwoch': 'Mi', 'Donnerstag': 'Do', 'Freitag': 'Fr' };
+    const formatMap = { 'Company Page': 'Company Page', 'LinkedIn Gruppe': 'Gruppe', 'WhatsApp': 'WhatsApp' };
+
+    result.posts.forEach((p, i) => {
+      const format = formatMap[p.kanal] || p.kanal;
+      const dayShort = dayMap[p.tag] || p.tag;
+      cards.push({
+        id: maxId + i + 1,
+        col: 'post',
+        title: `${card.title} · ${p.kanal}`,
+        format: format,
+        tag: format === 'Gruppe' ? 'tag-purple' : format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+        assignee: card.assignee || 'Offen',
+        due: card.due || '',
+        body: p.text,
+        begruendung: p.begruendung || '',
+        grafikBriefing: p.grafikBriefing || '',
+        slot: `${dayShort} ${p.uhrzeit}`,
+        geschichteDerWoche: result.geschichteDerWoche || '',
+        sourceCardId: card.id
+      });
+    });
+
+    // Archive original card
+    card.col = 'publish';
+    card.archivedOutline = true;
+    card.slot = 'Archiv';
+    saveCards();
+    renderBoard();
+
+  } catch (err) {
+    alert('Fehler beim Generieren: ' + err.message);
+    btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
   }
@@ -1296,6 +1254,8 @@ function renderBoard() {
         generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
       }
 
+      const begruendungHtml = card.begruendung ? `<div class="card-begruendung">${card.begruendung}</div>` : '';
+
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
         <div class="kanban-card-meta">
@@ -1304,6 +1264,7 @@ function renderBoard() {
           <span class="kanban-assignee">${card.assignee}</span>
           <span class="kanban-due">${card.due}</span>
         </div>
+        ${begruendungHtml}
         ${bodySection}
         ${generateBtn}
       `;
@@ -1323,7 +1284,7 @@ function renderBoard() {
         if (btn) {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            openCardModal(card.id);
+            generatePostsFromOutline(card.id, btn);
           });
         }
       }
@@ -1858,7 +1819,7 @@ document.getElementById('planModal').addEventListener('click', e => {
 // ── Post generieren from Entwurf modal ──
 document.getElementById('cmGenPost').addEventListener('click', async () => {
   const card = cards.find(c => c.id === activeCardId);
-  if (!card || !card.outline) return;
+  if (!card) return;
 
   const btn = document.getElementById('cmGenPost');
   const status = document.getElementById('cmGenStatus');
@@ -1866,35 +1827,15 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
   btn.textContent = 'WIRD GENERIERT...';
   status.textContent = '';
 
-  // Collect planning data
-  const postingWeek = document.getElementById('cmPostingWeek').value.trim() || 'Aktuelle Woche';
-  const cpSlot = document.getElementById('cmCpSlot').value;
-  const grSlot = document.getElementById('cmGrSlot').value;
-  const waEnabled = document.getElementById('cmWhatsapp').checked;
-
-  // Save planning to card
-  card.postingWeek = postingWeek;
-  card.cpSlot = cpSlot;
-  card.grSlot = grSlot;
-  card.whatsapp = waEnabled;
-  saveCards();
-
   try {
-    const userPrompt = `Outline:\n${document.getElementById('cmOutline').value}\n\nPosting-Woche: ${postingWeek}\nCompany Page: ${cpSlot}\nLinkedIn Gruppe: ${grSlot}\nWhatsApp: ${waEnabled ? 'Ja' : 'Nein'}`;
-
-    const resultText = await callAnthropic(POST_STORYTELLING_PROMPT, userPrompt, 4000);
-
-    // Show result
-    card.body = resultText;
+    // Save any edits first
+    if (document.getElementById('cmOutlineField').style.display !== 'none') {
+      card.outline = document.getElementById('cmOutline').value;
+    }
     saveCards();
 
-    document.getElementById('cmBodyField').style.display = 'block';
-    document.getElementById('cmBody').value = resultText;
-
-    btn.textContent = 'Post generieren';
-    btn.disabled = false;
-    status.textContent = 'Posts erfolgreich generiert ✓';
-    status.style.color = '#16a34a';
+    document.getElementById('cardModal').classList.remove('open');
+    await generatePostsFromOutline(card.id, btn);
 
   } catch (err) {
     btn.textContent = 'Post generieren';
