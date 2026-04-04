@@ -328,10 +328,11 @@ body {
         <div class="kpi-field"><label>Veränderung %</label><input id="kf_search_change" data-s="search" data-k="change_pct"></div>
       </div>
 
-      <div class="kpi-section-title">Besucher (30 Tage)</div>
+      <div class="kpi-section-title">Besucher:innen</div>
       <div class="kpi-grid">
         <div class="kpi-field"><label>Seitenaufrufe</label><input id="kf_visitor_aufrufe" data-s="visitor" data-k="seitenaufrufe"></div>
-        <div class="kpi-field"><label>Individuelle Besucher</label><input id="kf_visitor_unique" data-s="visitor" data-k="individuelle_besucher"></div>
+        <div class="kpi-field"><label>Individuelle Besucher:innen</label><input id="kf_visitor_unique" data-s="visitor" data-k="individuelle_besucher"></div>
+        <div class="kpi-field"><label>Klicks auf den eigenen Button</label><input id="kf_visitor_button" data-s="visitor" data-k="button_klicks"></div>
       </div>
 
       <div class="kpi-section-title">Follower</div>
@@ -827,7 +828,7 @@ Gib valides JSON zurück:
   "post_analytics": { "impressions": 0, "individuelle_impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "ctr_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
   "content_summary": { "impressions": 0, "engagement_rate_pct": 0 },
   "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
-  "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0 },
+  "visitor_summary": { "seitenaufrufe": 0, "individuelle_besucher": 0, "button_klicks": 0 },
   "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
   "top_posts": [{ "titel": "", "datum": "", "impressions": 0, "engagement_rate_pct": 0 }]
 }`;
@@ -959,9 +960,12 @@ const KPI_DEFS = [
   { key: 'site_reaktionen', label: 'Reaktionen (letzte 30 Tage)', defaultTarget: 200, paths: ['site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
   { key: 'site_kommentare', label: 'Kommentare (letzte 30 Tage)', defaultTarget: 30, paths: ['site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
   { key: 'site_shares', label: 'Direkt geteilte Beiträge (letzte 30 Tage)', defaultTarget: 15, paths: ['site.shares', 'content_summary.shares', 'site_shares'] },
-  { section: 'Sichtbarkeit & Funnel' },
+  { section: 'Besucher:innen' },
+  { key: 'visitor_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
+  { key: 'visitor_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
+  { key: 'visitor_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
+  { section: 'Sichtbarkeit & Follower' },
   { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
-  { key: 'visitor_aufrufe', label: 'Seitenaufrufe 30 Tage', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
   { key: 'follower_neu', label: 'Neue Follower 30 Tage', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
 ];
 
