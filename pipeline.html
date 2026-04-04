@@ -315,6 +315,106 @@ body {
   color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
+/* ── New Idea Button + Form ── */
+.btn-new-idea {
+  display: block; width: 100%; margin-top: 8px;
+  padding: 8px 12px; border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); background: none;
+  cursor: pointer; font-family: inherit; font-size: 12px;
+  font-weight: 600; color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.btn-new-idea:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.new-idea-form {
+  background: var(--bg-card); border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm); padding: 12px; margin-top: 8px;
+}
+.new-idea-form input, .new-idea-form select {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 4px; font-family: inherit; font-size: 12px;
+  color: var(--text-primary); margin-bottom: 8px;
+}
+.new-idea-form input:focus, .new-idea-form select:focus {
+  outline: none; border-color: var(--fem-pink);
+}
+.new-idea-btns { display: flex; gap: 6px; }
+.new-idea-btns button {
+  flex: 1; padding: 7px 10px; border-radius: 4px;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; transition: opacity 0.2s;
+}
+.new-idea-btns .btn-create {
+  background: var(--fem-pink); color: #fff;
+}
+.new-idea-btns .btn-create:hover { opacity: 0.9; }
+.new-idea-btns .btn-abort {
+  background: var(--bg-secondary); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.new-idea-btns .btn-abort:hover { background: var(--border); }
+
+/* ── Card Detail Modal ── */
+.card-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 600;
+  align-items: center; justify-content: center;
+}
+.card-modal-overlay.open { display: flex; }
+.card-modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+  padding: 28px 30px;
+  width: 520px; max-width: 92vw; max-height: 85vh;
+  overflow-y: auto;
+}
+.card-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
+.card-modal .cm-field { margin-bottom: 14px; }
+.card-modal .cm-label {
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px;
+}
+.card-modal input[type="text"], .card-modal input[type="date"],
+.card-modal select, .card-modal textarea {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  color: var(--text-primary); background: var(--bg-card); transition: border-color 0.2s;
+}
+.card-modal input:focus, .card-modal select:focus, .card-modal textarea:focus {
+  outline: none; border-color: var(--fem-pink);
+}
+.card-modal textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
+.card-modal .cm-row { display: flex; gap: 12px; }
+.card-modal .cm-row > * { flex: 1; }
+.card-modal .cm-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; margin-bottom: 14px;
+}
+.cm-actions {
+  display: flex; gap: 8px; margin-top: 18px; align-items: center;
+}
+.cm-actions .btn-save-modal {
+  padding: 9px 22px; border: none; border-radius: var(--radius-sm);
+  background: var(--fem-pink); color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.cm-actions .btn-save-modal:hover { opacity: 0.9; }
+.cm-actions .btn-close-modal {
+  padding: 9px 22px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+}
+.cm-actions .btn-close-modal:hover { background: var(--bg-secondary); }
+.cm-actions .btn-delete-modal {
+  margin-left: auto;
+  padding: 9px 18px; border: 1px solid #dc2626;
+  border-radius: var(--radius-sm); background: #fff;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  color: #dc2626; cursor: pointer; transition: all 0.2s;
+}
+.cm-actions .btn-delete-modal:hover { background: #fef2f2; }
 </style>
 </head>
 <body>
@@ -379,6 +479,37 @@ body {
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="modalCancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ Card Detail Modal ══════════ -->
+<div class="card-modal-overlay" id="cardModal">
+  <div class="card-modal">
+    <h3>Karte bearbeiten</h3>
+    <div class="cm-field">
+      <div class="cm-label">Titel</div>
+      <input type="text" id="cmTitle">
+    </div>
+    <div id="cmBadge"></div>
+    <div class="cm-row">
+      <div class="cm-field">
+        <div class="cm-label">Zuweisung</div>
+        <input type="text" id="cmAssignee">
+      </div>
+      <div class="cm-field">
+        <div class="cm-label">Fälligkeitsdatum</div>
+        <input type="text" id="cmDue" placeholder="z. B. 10.04.">
+      </div>
+    </div>
+    <div class="cm-field" id="cmBodyField" style="display:none;">
+      <div class="cm-label">Post-Text</div>
+      <textarea id="cmBody"></textarea>
+    </div>
+    <div class="cm-actions">
+      <button class="btn-save-modal" id="cmSave">Speichern</button>
+      <button class="btn-close-modal" id="cmClose">Schließen</button>
+      <button class="btn-delete-modal" id="cmDelete">🗑 Karte löschen</button>
     </div>
   </div>
 </div>
@@ -635,16 +766,7 @@ function renderBoard() {
         ${generateBtn}
       `;
 
-      // Click to expand body in Entwurf
-      if (col.id === 'entwurf' && card.body) {
-        el.addEventListener('click', e => {
-          if (e.target.closest('.kanban-card-body')) return;
-          const body = el.querySelector('.kanban-card-body');
-          if (body) body.classList.toggle('open');
-        });
-      }
-
-      // Generate button click handler
+      // Generate button click handler (must be before general click)
       if (col.id === 'ideen') {
         const btn = el.querySelector('.btn-generate');
         if (btn) {
@@ -654,6 +776,12 @@ function renderBoard() {
           });
         }
       }
+
+      // Click to open detail modal
+      el.addEventListener('click', e => {
+        if (e.target.closest('.btn-generate') || e.target.closest('.gen-result-area')) return;
+        openCardModal(card.id);
+      });
 
       // Drag events
       el.addEventListener('dragstart', e => {
@@ -685,6 +813,59 @@ function renderBoard() {
         renderBoard();
       }
     });
+
+    // "+ Neue Idee" button for Ideen column
+    if (col.id === 'ideen') {
+      const addBtn = document.createElement('button');
+      addBtn.className = 'btn-new-idea';
+      addBtn.textContent = '+ Neue Idee';
+      addBtn.addEventListener('click', () => {
+        addBtn.style.display = 'none';
+        const form = document.createElement('div');
+        form.className = 'new-idea-form';
+        form.innerHTML = `
+          <input type="text" placeholder="Titel" id="newIdeaTitle">
+          <select id="newIdeaFormat">
+            <option value="Company Page">Company Page</option>
+            <option value="Gruppe">Gruppe</option>
+            <option value="WhatsApp">WhatsApp</option>
+          </select>
+          <input type="date" id="newIdeaDate">
+          <div class="new-idea-btns">
+            <button class="btn-create">Erstellen</button>
+            <button class="btn-abort">Abbrechen</button>
+          </div>
+        `;
+        colEl.appendChild(form);
+        form.querySelector('#newIdeaTitle').focus();
+        form.querySelector('.btn-abort').addEventListener('click', () => {
+          form.remove();
+          addBtn.style.display = '';
+        });
+        form.querySelector('.btn-create').addEventListener('click', () => {
+          const title = form.querySelector('#newIdeaTitle').value.trim();
+          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = '#dc2626'; return; }
+          const format = form.querySelector('#newIdeaFormat').value;
+          const dateVal = form.querySelector('#newIdeaDate').value;
+          const due = dateVal ? dateVal.split('-').reverse().join('.').slice(0,6) : '';
+          const maxId = Math.max(...cards.map(c => c.id), 0);
+          cards.push({
+            id: maxId + 1,
+            col: 'ideen',
+            title: title,
+            format: format,
+            tag: format === 'Gruppe' ? 'tag-purple' : format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+            assignee: 'Offen',
+            due: due,
+            body: ''
+          });
+          saveCards();
+          renderBoard();
+        });
+      });
+      colEl.appendChild(addBtn);
+    }
+
     board.appendChild(colEl);
   });
 }
@@ -714,6 +895,69 @@ document.getElementById('modalCancel').addEventListener('click', () => {
 document.getElementById('scheduleModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) {
     pendingCard = null;
+    e.currentTarget.classList.remove('open');
+  }
+});
+
+// ── Card Detail Modal ──
+let activeCardId = null;
+
+function openCardModal(cardId) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+  activeCardId = cardId;
+
+  document.getElementById('cmTitle').value = card.title;
+  document.getElementById('cmAssignee').value = card.assignee || '';
+  document.getElementById('cmDue').value = card.due || '';
+
+  // Badge
+  const badgeClass = formatTagClass(card.format);
+  document.getElementById('cmBadge').innerHTML = `<span class="cm-badge ${badgeClass}">${card.format}</span>`;
+
+  // Body
+  const bodyField = document.getElementById('cmBodyField');
+  const bodyTa = document.getElementById('cmBody');
+  if (card.body) {
+    bodyField.style.display = 'block';
+    bodyTa.value = card.body;
+  } else {
+    bodyField.style.display = 'none';
+    bodyTa.value = '';
+  }
+
+  document.getElementById('cardModal').classList.add('open');
+}
+
+document.getElementById('cmSave').addEventListener('click', () => {
+  const card = cards.find(c => c.id === activeCardId);
+  if (!card) return;
+  card.title = document.getElementById('cmTitle').value.trim() || card.title;
+  card.assignee = document.getElementById('cmAssignee').value.trim();
+  card.due = document.getElementById('cmDue').value.trim();
+  if (document.getElementById('cmBodyField').style.display !== 'none') {
+    card.body = document.getElementById('cmBody').value;
+  }
+  saveCards();
+  document.getElementById('cardModal').classList.remove('open');
+  renderBoard();
+});
+
+document.getElementById('cmClose').addEventListener('click', () => {
+  document.getElementById('cardModal').classList.remove('open');
+});
+
+document.getElementById('cmDelete').addEventListener('click', () => {
+  if (!confirm('Karte wirklich löschen?')) return;
+  const idx = cards.findIndex(c => c.id === activeCardId);
+  if (idx !== -1) cards.splice(idx, 1);
+  saveCards();
+  document.getElementById('cardModal').classList.remove('open');
+  renderBoard();
+});
+
+document.getElementById('cardModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
     e.currentTarget.classList.remove('open');
   }
 });
