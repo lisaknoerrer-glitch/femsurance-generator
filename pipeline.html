@@ -564,6 +564,35 @@ body {
       <div class="cm-label">Outline</div>
       <textarea id="cmOutline" rows="8"></textarea>
     </div>
+    <div id="cmPlanSection" style="display:none; margin-top:4px; padding:16px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
+      <div class="cm-label" style="margin-bottom:10px; color:var(--fem-pink);">Post planen</div>
+      <div class="cm-field">
+        <div class="cm-label">Posting-Woche</div>
+        <input type="text" id="cmPostingWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr">
+      </div>
+      <div class="cm-row">
+        <div class="cm-field">
+          <div class="cm-label">Company Page</div>
+          <select id="cmCpSlot">
+            <option value="Dienstag 10:00">Dienstag 10:00</option>
+            <option value="Donnerstag 10:00">Donnerstag 10:00</option>
+          </select>
+        </div>
+        <div class="cm-field">
+          <div class="cm-label">LinkedIn Gruppe</div>
+          <select id="cmGrSlot">
+            <option value="Mittwoch 10:00">Mittwoch 10:00</option>
+            <option value="Freitag 10:00">Freitag 10:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="cm-field" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="cmWhatsapp" checked style="width:auto; accent-color:var(--fem-pink);">
+        <label for="cmWhatsapp" style="font-size:12.5px; cursor:pointer;">WhatsApp Community Mi 08:00</label>
+      </div>
+      <button class="btn-save-modal" id="cmGenPost" style="width:100%; margin-top:10px;">Post generieren</button>
+      <div id="cmGenStatus" style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px;"></div>
+    </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
       <textarea id="cmBody"></textarea>
@@ -639,6 +668,71 @@ Erstelle aus der gegebenen Outline DREI Post-Varianten:
 
 Trenne die drei Varianten mit --- auf einer eigenen Zeile.
 Schreibe ausschließlich auf Deutsch.`;
+
+const POST_STORYTELLING_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Marke: FemSurance – Visibility. Network. Impact. Zielgruppe: Frauen in der Versicherungsbranche und Finanzberatung. Stil: warm · klar · empowernd · direkt · keine Floskeln.
+
+Du bekommst eine Outline und schreibst daraus 3 fertige Posts – einen pro Plattform.
+
+POSTING-SCHEDULE:
+LinkedIn Company Page: Di & Do · 10:00 Uhr
+LinkedIn Gruppe: Mi & Fr · 10:00 Uhr
+WhatsApp Community: Mi · 08:00 Uhr
+
+PLATTFORM-REGELN:
+🏢 LinkedIn Company Page · 1.000–1.500 Zeichen:
+- Starker Hook Zeile 1
+- Story mit Zeilenumbrüchen
+- 3–5 Punkte mit Pfeil (→)
+- Zitat aus Quellmaterial
+- Reflexionsfrage am Ende
+- 5–7 Hashtags
+- Tonfall: professionell · empowernd · markenstark
+
+👥 LinkedIn Gruppe · 600–800 Zeichen:
+- Bezug auf Company Page Post
+- Zeigt unbequeme Wahrheit
+- Endet IMMER mit offener Frage
+- Tonfall: persönlich · ehrlich · einladend
+
+💬 WhatsApp · max. 250 Zeichen:
+- Kurz und warm
+- Eine Frage oder Impuls
+- Endet mit 🩷
+- Tonfall: warm · direkt · neugierig
+
+OUTPUT-FORMAT:
+FemSurance Posts – [Posting-Woche]
+────────────────────────────────
+🏢 LINKEDIN COMPANY PAGE
+Datum: [gewählter Tag] · 10:00 Uhr
+[Fertiger Post]
+Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
+────────────────────────────────
+💬 WHATSAPP COMMUNITY
+Datum: Mi · 08:00 Uhr
+[Kurze Nachricht max. 250 Zeichen]
+────────────────────────────────
+👥 LINKEDIN GRUPPE
+Datum: [gewählter Tag] · 10:00 Uhr
+[Fertiger Post mit offener Frage]
+Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
+────────────────────────────────
+🔗 DIE GESCHICHTE DER WOCHE
+[2–3 Sätze wie Posts zusammenhängen]
+────────────────────────────────
+✅ KANBAN-CHECKLISTE
+☐ Post-Text geprüft
+☐ Grafik erstellt
+☐ Freigabe erteilt
+☐ In Buffer eingeplant
+☐ Veröffentlicht
+
+SPRACHE & TON:
+- Direkte Du-Ansprache
+- Kurze Sätze + Zeilenumbrüche
+- Emotion + Klarheit
+- Zitate nur aus Quellmaterial – nie erfunden
+- Keine generischen Aussagen`;
 
 // ── Default Card Data ──
 const defaultCards = [
@@ -1109,6 +1203,21 @@ function openCardModal(cardId) {
     outlineTa.value = '';
   }
 
+  // Plan section — show for Entwurf cards with outline
+  const planSection = document.getElementById('cmPlanSection');
+  if (card.outline && (card.col === 'entwurf' || card.col === 'ideen')) {
+    planSection.style.display = 'block';
+    document.getElementById('cmPostingWeek').value = card.postingWeek || '';
+    document.getElementById('cmCpSlot').value = card.cpSlot || 'Dienstag 10:00';
+    document.getElementById('cmGrSlot').value = card.grSlot || 'Mittwoch 10:00';
+    document.getElementById('cmWhatsapp').checked = card.whatsapp !== false;
+    document.getElementById('cmGenStatus').textContent = '';
+    document.getElementById('cmGenPost').disabled = false;
+    document.getElementById('cmGenPost').textContent = 'Post generieren';
+  } else {
+    planSection.style.display = 'none';
+  }
+
   // Body
   const bodyField = document.getElementById('cmBodyField');
   const bodyTa = document.getElementById('cmBody');
@@ -1135,6 +1244,12 @@ document.getElementById('cmSave').addEventListener('click', () => {
   if (document.getElementById('cmOutlineField').style.display !== 'none') {
     card.outline = document.getElementById('cmOutline').value;
   }
+  if (document.getElementById('cmPlanSection').style.display !== 'none') {
+    card.postingWeek = document.getElementById('cmPostingWeek').value.trim();
+    card.cpSlot = document.getElementById('cmCpSlot').value;
+    card.grSlot = document.getElementById('cmGrSlot').value;
+    card.whatsapp = document.getElementById('cmWhatsapp').checked;
+  }
   if (document.getElementById('cmBodyField').style.display !== 'none') {
     card.body = document.getElementById('cmBody').value;
   }
@@ -1159,6 +1274,55 @@ document.getElementById('cmDelete').addEventListener('click', () => {
 document.getElementById('cardModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) {
     e.currentTarget.classList.remove('open');
+  }
+});
+
+// ── Post generieren from Entwurf modal ──
+document.getElementById('cmGenPost').addEventListener('click', async () => {
+  const card = cards.find(c => c.id === activeCardId);
+  if (!card || !card.outline) return;
+
+  const btn = document.getElementById('cmGenPost');
+  const status = document.getElementById('cmGenStatus');
+  btn.disabled = true;
+  btn.textContent = 'WIRD GENERIERT...';
+  status.textContent = '';
+
+  // Collect planning data
+  const postingWeek = document.getElementById('cmPostingWeek').value.trim() || 'Aktuelle Woche';
+  const cpSlot = document.getElementById('cmCpSlot').value;
+  const grSlot = document.getElementById('cmGrSlot').value;
+  const waEnabled = document.getElementById('cmWhatsapp').checked;
+
+  // Save planning to card
+  card.postingWeek = postingWeek;
+  card.cpSlot = cpSlot;
+  card.grSlot = grSlot;
+  card.whatsapp = waEnabled;
+  saveCards();
+
+  try {
+    const userPrompt = `Outline:\n${document.getElementById('cmOutline').value}\n\nPosting-Woche: ${postingWeek}\nCompany Page: ${cpSlot}\nLinkedIn Gruppe: ${grSlot}\nWhatsApp: ${waEnabled ? 'Ja' : 'Nein'}`;
+
+    const resultText = await callAnthropic(POST_STORYTELLING_PROMPT, userPrompt, 4000);
+
+    // Show result
+    card.body = resultText;
+    saveCards();
+
+    document.getElementById('cmBodyField').style.display = 'block';
+    document.getElementById('cmBody').value = resultText;
+
+    btn.textContent = 'Post generieren';
+    btn.disabled = false;
+    status.textContent = 'Posts erfolgreich generiert ✓';
+    status.style.color = '#16a34a';
+
+  } catch (err) {
+    btn.textContent = 'Post generieren';
+    btn.disabled = false;
+    status.textContent = 'Fehler: ' + err.message;
+    status.style.color = '#dc2626';
   }
 });
 
