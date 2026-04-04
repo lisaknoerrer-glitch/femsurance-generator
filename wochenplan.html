@@ -324,7 +324,72 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .archiv-section select:focus { outline: none; border-color: var(--fem-pink); }
 
-/* ── Scrollbar ── */
+/* ── Multi-Screenshot Slots ── */
+.screenshot-slots {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  margin-bottom: 12px;
+}
+.screenshot-slots .ss-slot:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.ss-slot {
+  background: var(--bg-secondary); border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); padding: 10px; text-align: center;
+  cursor: pointer; transition: all 0.2s; position: relative;
+}
+.ss-slot:hover { border-color: var(--fem-pink); }
+.ss-slot.has-file { border-style: solid; border-color: var(--fem-pink); }
+.ss-slot .ss-label {
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.ss-slot .ss-hint { font-size: 10px; color: var(--text-secondary); opacity: 0.7; }
+.ss-slot .ss-preview {
+  max-width: 100%; max-height: 70px; border-radius: 4px; margin-top: 6px;
+}
+.ss-slot.drag-over { border-color: var(--fem-pink); background: var(--fem-pink-light); }
+
+/* ── Extract Button + Results ── */
+.btn-extract {
+  display: block; width: 100%; padding: 10px; border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  color: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+}
+.btn-extract:hover { opacity: 0.9; }
+.btn-extract:disabled { opacity: 0.5; cursor: not-allowed; }
+.extract-results {
+  margin-top: 12px; padding: 14px; background: var(--bg-secondary);
+  border-radius: var(--radius-sm); display: none;
+}
+.extract-results.open { display: block; }
+.extract-results .er-section {
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.extract-results .er-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.extract-results .er-title {
+  font-size: 11px; font-weight: 600; color: var(--fem-pink);
+  text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px;
+}
+.extract-results .er-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.extract-results .er-field label {
+  font-size: 10px; color: var(--text-secondary); display: block;
+}
+.extract-results .er-field input {
+  width: 100%; padding: 4px 8px; border: 1px solid var(--border);
+  border-radius: 3px; font-size: 12px; font-family: inherit;
+}
+.extract-results .er-field input:focus { outline: none; border-color: var(--fem-pink); }
+.extract-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 600; background: #dcfce7; color: #16a34a;
+  margin-left: 8px;
+}
+
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -378,13 +443,7 @@ textarea { resize: vertical; line-height: 1.6; }
       <!-- BLOCK 1: Screenshot + KW + Datum -->
       <div class="block fade-up">
         <div class="block-title"><span class="block-num">1</span> Wochenstatistik</div>
-        <div class="drop-zone" id="dropZone">
-          <span class="drop-icon">📊</span>
-          <span class="drop-label">Screenshot Wochenstatistik hierher ziehen</span>
-          <span class="drop-hint">PNG oder JPG · max. 5 MB</span>
-        </div>
-        <input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none">
-        <div class="row-2">
+        <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
             <input type="number" id="b1Kw" min="1" max="53" placeholder="z. B. 14">
@@ -394,6 +453,10 @@ textarea { resize: vertical; line-height: 1.6; }
             <input type="date" id="b1Date">
           </div>
         </div>
+        <label class="field-label">Screenshots (LinkedIn Analytics)</label>
+        <div class="screenshot-slots" id="ssSlots"></div>
+        <button class="btn-extract" id="btnExtract">📊 Statistiken extrahieren</button>
+        <div class="extract-results" id="extractResults"></div>
       </div>
 
       <!-- BLOCK 2: LinkedIn Analytics -->
@@ -557,41 +620,61 @@ function load(key, fallback) {
 }
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
-// ══════════ BLOCK 1: Screenshot + KW + Date ══════════
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
-let uploadedImage = null;
-let uploadedImageType = null;
-let uploadedImageName = null;
+// ══════════ BLOCK 1: Multi-Screenshot + KW + Date ══════════
+const SS_CATEGORIES = [
+  'Beitrag-Analyse',
+  'Inhalte / Seitenübersicht',
+  'Besucher:innen & Seitenaufrufe',
+  'Follower:innen',
+  'Top-Posts / Chart'
+];
+let screenshots = []; // [{ category, image, imageType, imageName }]
 
-function handleFile(file) {
+function renderScreenshotSlots() {
+  const container = document.getElementById('ssSlots');
+  container.innerHTML = '';
+  SS_CATEGORIES.forEach((cat, i) => {
+    const existing = screenshots.find(s => s.category === cat);
+    const slot = document.createElement('div');
+    slot.className = 'ss-slot' + (existing ? ' has-file' : '');
+    slot.dataset.cat = cat;
+    if (existing) {
+      slot.innerHTML = `<div class="ss-label">${cat}</div><img class="ss-preview" src="${existing.image}" alt="${cat}"><div class="ss-hint">${existing.imageName}</div>`;
+    } else {
+      slot.innerHTML = `<div class="ss-label">${cat}</div><div class="ss-hint">PNG / JPG hierher ziehen</div>`;
+    }
+    const fileIn = document.createElement('input');
+    fileIn.type = 'file'; fileIn.accept = 'image/png,image/jpeg'; fileIn.style.display = 'none';
+    slot.appendChild(fileIn);
+
+    slot.addEventListener('click', e => { if (!e.target.closest('.ss-preview')) fileIn.click(); });
+    fileIn.addEventListener('change', e => handleSSFile(cat, e.target.files[0]));
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); handleSSFile(cat, e.dataTransfer.files[0]); });
+    container.appendChild(slot);
+  });
+}
+
+function handleSSFile(category, file) {
   if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
   if (file.size > 5 * 1024 * 1024) { alert('Datei zu groß (max. 5 MB)'); return; }
   const reader = new FileReader();
   reader.onload = e => {
-    uploadedImage = e.target.result;
-    uploadedImageType = file.type;
-    uploadedImageName = file.name;
-    dropZone.classList.add('has-file');
-    dropZone.innerHTML = `<span class="drop-label">${file.name}</span><img class="drop-preview" src="${uploadedImage}" alt="Preview">`;
+    const idx = screenshots.findIndex(s => s.category === category);
+    const entry = { category, image: e.target.result, imageType: file.type, imageName: file.name };
+    if (idx >= 0) screenshots[idx] = entry; else screenshots.push(entry);
     saveBlock1();
+    renderScreenshotSlots();
   };
   reader.readAsDataURL(file);
 }
-
-dropZone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
 
 function saveBlock1() {
   save('fem_wp_block1', {
     kw: document.getElementById('b1Kw').value,
     date: document.getElementById('b1Date').value,
-    image: uploadedImage,
-    imageType: uploadedImageType,
-    imageName: uploadedImageName
+    screenshots: screenshots
   });
 }
 document.getElementById('b1Kw').addEventListener('input', saveBlock1);
@@ -601,7 +684,165 @@ document.getElementById('b1Date').addEventListener('input', saveBlock1);
 const b1 = load('fem_wp_block1', {});
 if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
 if (b1.date) document.getElementById('b1Date').value = b1.date;
-if (b1.image) { uploadedImage = b1.image; uploadedImageType = b1.imageType || 'image/png'; uploadedImageName = b1.imageName || 'screenshot'; dropZone.classList.add('has-file'); dropZone.innerHTML = `<span class="drop-label">${uploadedImageName}</span><img class="drop-preview" src="${b1.image}" alt="Preview">`; }
+if (b1.screenshots && b1.screenshots.length) { screenshots = b1.screenshots; }
+// Migration: old single-image format
+if (!b1.screenshots && b1.image) { screenshots = [{ category: 'Beitrag-Analyse', image: b1.image, imageType: b1.imageType || 'image/png', imageName: b1.imageName || 'screenshot' }]; }
+renderScreenshotSlots();
+
+// ══════════ EXTRACT ANALYTICS ══════════
+const EXTRACT_PROMPT = `Du analysierst LinkedIn-Screenshots einer Unternehmensseite (FemSurance von AssCompact).
+
+Extrahiere nur sichtbare Kennzahlen. Trenne strikt zwischen Post-Ebene, Seitenebene, Suche, Besucher, Follower. Erfinde keine Zahlen. Markiere unsichere Werte.
+
+Gib ausschließlich valides JSON zurück:
+{
+  "post_analytics": { "titel": "", "datum": "", "impressions": 0, "individuelle_impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "ctr_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0, "follower_generiert": 0 },
+  "content_highlights": { "impressions": 0, "engagement_rate_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
+  "search_highlights": { "suchanzeigen": 0, "change_pct": 0 },
+  "visitor_highlights": { "seitenaufrufe": 0, "seitenaufrufe_change_pct": 0, "individuelle_besucher": 0, "change_pct": 0 },
+  "follower_highlights": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "top_posts": [{ "titel": "", "impressions": 0, "engagement_rate_pct": 0 }],
+  "unsicherheiten": []
+}`;
+
+document.getElementById('btnExtract').addEventListener('click', async () => {
+  if (!screenshots.length) { alert('Bitte mindestens einen Screenshot hochladen.'); return; }
+  const btn = document.getElementById('btnExtract');
+  btn.disabled = true;
+  btn.textContent = 'Wird extrahiert...';
+
+  try {
+    const userContent = [{ type: 'text', text: 'Analysiere diese LinkedIn-Screenshots und extrahiere die Kennzahlen als JSON.' }];
+    screenshots.forEach(s => {
+      userContent.push({
+        type: 'image',
+        source: { type: 'base64', media_type: s.imageType || 'image/png', data: s.image.split(',')[1] }
+      });
+    });
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: EXTRACT_PROMPT,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+
+    if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
+    const data = await resp.json();
+    let jsonStr = data.content[0].text.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const analytics = JSON.parse(jsonStr);
+
+    localStorage.setItem('fem_wp_analytics', JSON.stringify(analytics));
+    renderExtractResults(analytics);
+    btn.textContent = '📊 Statistiken extrahieren';
+    btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = '📊 Statistiken extrahieren';
+  }
+  btn.disabled = false;
+});
+
+function renderExtractResults(a) {
+  const container = document.getElementById('extractResults');
+  container.classList.add('open');
+
+  function field(label, key, section, val) {
+    return `<div class="er-field"><label>${label}</label><input type="text" data-section="${section}" data-key="${key}" value="${val ?? ''}"></div>`;
+  }
+
+  const pa = a.post_analytics || {};
+  const ch = a.content_highlights || {};
+  const vh = a.visitor_highlights || {};
+  const fh = a.follower_highlights || {};
+  const tp = a.top_posts || [];
+
+  container.innerHTML = `
+    <div class="er-section">
+      <div class="er-title">Post-Analyse</div>
+      <div class="er-grid">
+        ${field('Titel','titel','post_analytics',pa.titel)}
+        ${field('Datum','datum','post_analytics',pa.datum)}
+        ${field('Impressions','impressions','post_analytics',pa.impressions)}
+        ${field('Engagement-Rate %','engagement_rate_pct','post_analytics',pa.engagement_rate_pct)}
+        ${field('Klicks','klicks','post_analytics',pa.klicks)}
+        ${field('CTR %','ctr_pct','post_analytics',pa.ctr_pct)}
+        ${field('Reaktionen','reaktionen','post_analytics',pa.reaktionen)}
+        ${field('Kommentare','kommentare','post_analytics',pa.kommentare)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Seite (30 Tage)</div>
+      <div class="er-grid">
+        ${field('Impressions','impressions','content_highlights',ch.impressions)}
+        ${field('Engagement-Rate %','engagement_rate_pct','content_highlights',ch.engagement_rate_pct)}
+        ${field('Reaktionen','reaktionen','content_highlights',ch.reaktionen)}
+        ${field('Kommentare','kommentare','content_highlights',ch.kommentare)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Besucher</div>
+      <div class="er-grid">
+        ${field('Seitenaufrufe','seitenaufrufe','visitor_highlights',vh.seitenaufrufe)}
+        ${field('Veränderung %','seitenaufrufe_change_pct','visitor_highlights',vh.seitenaufrufe_change_pct)}
+        ${field('Individuelle Besucher','individuelle_besucher','visitor_highlights',vh.individuelle_besucher)}
+        ${field('Veränderung %','change_pct','visitor_highlights',vh.change_pct)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Follower</div>
+      <div class="er-grid">
+        ${field('Gesamt','follower_gesamt','follower_highlights',fh.follower_gesamt)}
+        ${field('Neu','neue_follower','follower_highlights',fh.neue_follower)}
+        ${field('Veränderung %','change_pct','follower_highlights',fh.change_pct)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Top-Posts</div>
+      ${tp.map((p, i) => `<div class="er-grid" style="margin-bottom:4px;">
+        ${field('Titel','titel','top_posts_'+i,p.titel)}
+        ${field('Impressions','impressions','top_posts_'+i,p.impressions)}
+      </div>`).join('')}
+    </div>
+    ${a.unsicherheiten && a.unsicherheiten.length ? `<div class="er-section"><div class="er-title">Unsicherheiten</div><div style="font-size:12px;color:var(--text-secondary);">${a.unsicherheiten.join(', ')}</div></div>` : ''}
+  `;
+
+  // Save edits back to localStorage
+  container.addEventListener('input', () => {
+    const updated = JSON.parse(localStorage.getItem('fem_wp_analytics') || '{}');
+    container.querySelectorAll('input[data-section]').forEach(inp => {
+      const sec = inp.dataset.section;
+      const key = inp.dataset.key;
+      if (sec.startsWith('top_posts_')) {
+        const idx = parseInt(sec.split('_')[2]);
+        if (!updated.top_posts) updated.top_posts = [];
+        if (!updated.top_posts[idx]) updated.top_posts[idx] = {};
+        updated.top_posts[idx][key] = inp.value;
+      } else {
+        if (!updated[sec]) updated[sec] = {};
+        updated[sec][key] = inp.value;
+      }
+    });
+    localStorage.setItem('fem_wp_analytics', JSON.stringify(updated));
+  });
+}
+
+// Restore extracted analytics on load
+const savedAnalytics = load('fem_wp_analytics', null);
+if (savedAnalytics) {
+  renderExtractResults(savedAnalytics);
+  document.getElementById('btnExtract').innerHTML = '📊 Statistiken extrahieren<span class="extract-badge">✓ Extrahiert</span>';
+}
 
 // ══════════ BLOCK 2: Analytics ══════════
 function saveBlock2() {
@@ -841,7 +1082,14 @@ function collectPrompt() {
   const kw = document.getElementById('b1Kw').value;
   const date = document.getElementById('b1Date').value;
   if (kw || date) parts.push(`## Kalenderwoche\nKW ${kw || '?'}, Montag: ${date || '?'}`);
-  if (uploadedImage) parts.push(`## Screenshot Wochenstatistik\nEin Screenshot der LinkedIn-Wochenstatistik wurde als Bild mitgesendet. Bitte analysiere die sichtbaren Kennzahlen (Reichweite, Impressionen, Engagement, Klicks, Follower-Entwicklung).`);
+
+  // Include extracted analytics if available
+  const extractedAnalytics = load('fem_wp_analytics', null);
+  if (extractedAnalytics) {
+    parts.push(`## Extrahierte Analytics\n${JSON.stringify(extractedAnalytics, null, 2)}`);
+  } else if (screenshots.length) {
+    parts.push(`## Screenshots\n${screenshots.length} LinkedIn-Screenshots wurden hochgeladen (${screenshots.map(s => s.category).join(', ')}). Bitte "Statistiken extrahieren" nutzen.`);
+  }
 
   // Block 2
   const analytics = document.getElementById('b2Analytics').value.trim();
@@ -928,25 +1176,12 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify((() => {
-        const userContent = [{ type: 'text', text: prompt }];
-        if (uploadedImage) {
-          userContent.push({
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: uploadedImageType || 'image/png',
-              data: uploadedImage.split(',')[1]
-            }
-          });
-        }
-        return {
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4096,
-          system: WP_SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: userContent }]
-        };
-      })())
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        system: WP_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
 
     if (!resp.ok) {
