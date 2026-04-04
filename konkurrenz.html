@@ -258,32 +258,41 @@ body {
 </main>
 
 <script>
+// ══════════ Shared data: { femFollower, goal, accounts } ══════════
 const STORAGE_KEY = 'fem_konkurrenz_data';
-const femFollowers = 1847;
-const defaultGoal = 2500;
-
-function getGoal() {
-  const accounts = loadAccounts();
-  const fem = accounts.find(a => a.isFem);
-  return (fem && parseInt(fem.goal)) || defaultGoal;
-}
+const DEFAULTS = { femFollower: 1847, goal: 2500 };
 
 const defaultAccounts = [
-  { name: 'FemSurance', followers: 1847, engagement: '5.4', postsWeek: '4', goal: 2500, isFem: true },
-  { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
-  { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
+  { name: '', followers: '', engagement: '', postsWeek: '' },
+  { name: '', followers: '', engagement: '', postsWeek: '' },
 ];
 
-function loadAccounts() {
+function loadData() {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      // Migration: if old array format, convert
+      if (Array.isArray(d)) {
+        const fem = d.find(a => a.isFem);
+        return {
+          femFollower: (fem && parseInt(fem.followers)) || DEFAULTS.femFollower,
+          goal: (fem && parseInt(fem.goal)) || DEFAULTS.goal,
+          accounts: d.filter(a => !a.isFem).map(a => ({ name: a.name || '', followers: a.followers || '', engagement: a.engagement || '', postsWeek: a.postsWeek || '' }))
+        };
+      }
+      return {
+        femFollower: d.femFollower ?? DEFAULTS.femFollower,
+        goal: d.goal ?? DEFAULTS.goal,
+        accounts: d.accounts || JSON.parse(JSON.stringify(defaultAccounts))
+      };
+    }
   } catch (e) {}
-  return JSON.parse(JSON.stringify(defaultAccounts));
+  return { femFollower: DEFAULTS.femFollower, goal: DEFAULTS.goal, accounts: JSON.parse(JSON.stringify(defaultAccounts)) };
 }
 
-function saveAccounts(accounts) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   const indicator = document.getElementById('saveIndicator');
   indicator.classList.add('show');
   setTimeout(() => indicator.classList.remove('show'), 1500);
@@ -294,79 +303,79 @@ function getBarColor(index) {
   return colors[index % colors.length];
 }
 
+function updateHero(current, goal) {
+  const pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
+  const remaining = Math.max(goal - current, 0);
+  document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
+  document.getElementById('heroGoalInput').value = goal;
+  document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
+  document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+}
+
 function renderTable() {
-  const accounts = loadAccounts();
+  const data = loadData();
   const tbody = document.getElementById('compBody');
   tbody.innerHTML = '';
 
-  const femAcc = accounts.find(a => a.isFem);
-  const femCurrent = (femAcc && parseInt(femAcc.followers)) || femFollowers;
-  const currentGoal = (femAcc && parseInt(femAcc.goal)) || defaultGoal;
-  const maxFollowers = Math.max(...accounts.map(a => parseInt(a.followers) || 0), currentGoal);
+  const femCurrent = data.femFollower;
+  const currentGoal = data.goal;
+  const allFollowers = [femCurrent, ...data.accounts.map(a => parseInt(a.followers) || 0)];
+  const maxFollowers = Math.max(...allFollowers, currentGoal);
 
-  accounts.forEach((acc, i) => {
+  // FemSurance row
+  {
+    const barW = maxFollowers > 0 ? (femCurrent / maxFollowers * 100) : 0;
     const tr = document.createElement('tr');
-    if (acc.isFem) tr.className = 'comp-highlight';
+    tr.className = 'comp-highlight';
+    tr.innerHTML = `
+      <td class="comp-name-cell">FemSurance</td>
+      <td><input type="number" id="femFollowerInput" value="${femCurrent}" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+      <td>—</td>
+      <td>—</td>
+      <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
+      <td></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // Competitor rows
+  data.accounts.forEach((acc, i) => {
     const followers = parseInt(acc.followers) || 0;
     const barW = maxFollowers > 0 ? (followers / maxFollowers * 100) : 0;
     const diff = followers - femCurrent;
-    const diffText = acc.isFem ? '—' : (followers ? (diff > 0 ? `+${diff.toLocaleString('de-DE')} voraus` : diff < 0 ? `${Math.abs(diff).toLocaleString('de-DE')} weniger` : 'Gleichauf') : '—');
-
-    if (acc.isFem) {
-      tr.innerHTML = `
-        <td class="comp-name-cell">FemSurance</td>
-        <td><input type="number" id="femFollower" value="${parseInt(acc.followers) || femFollowers}" data-i="${i}" data-field="followers" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-        <td><input type="text" value="${acc.engagement || '5.4'}" data-i="${i}" data-field="engagement" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
-        <td><input type="number" value="${acc.postsWeek || '4'}" data-i="${i}" data-field="postsWeek" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
-        <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
-        <td></td>
-      `;
-    } else {
-      tr.innerHTML = `
-        <td><input type="text" value="${acc.name}" placeholder="Account-Name" data-i="${i}" data-field="name"></td>
-        <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers"></td>
-        <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
-        <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
-        <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
-        <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button></td>
-      `;
-    }
+    const diffText = followers ? (diff > 0 ? `+${diff.toLocaleString('de-DE')} voraus` : diff < 0 ? `${Math.abs(diff).toLocaleString('de-DE')} weniger` : 'Gleichauf') : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" value="${acc.name}" placeholder="Account-Name" data-i="${i}" data-field="name"></td>
+      <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers"></td>
+      <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
+      <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
+      <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
+      <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button></td>
+    `;
     tbody.appendChild(tr);
   });
 
-  // Update hero
-  {
-    const current = femCurrent;
-    const pct = currentGoal > 0 ? Math.min((current / currentGoal) * 100, 100) : 0;
-    const remaining = Math.max(currentGoal - current, 0);
-    document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
-    document.getElementById('heroGoalInput').value = currentGoal;
-    document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
-    document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
-  }
+  updateHero(femCurrent, currentGoal);
+
+  // Bind FemSurance follower input
+  document.getElementById('femFollowerInput').addEventListener('input', e => {
+    const data = loadData();
+    data.femFollower = parseInt(e.target.value) || 0;
+    saveData(data);
+    updateHero(data.femFollower, data.goal);
+    clearTimeout(window._renderTimer);
+    window._renderTimer = setTimeout(renderTable, 600);
+  });
 }
 
-// Event delegation for inputs
+// Event delegation for competitor inputs
 document.getElementById('compBody').addEventListener('input', e => {
-  if (e.target.tagName === 'INPUT') {
-    const accounts = loadAccounts();
+  if (e.target.tagName === 'INPUT' && e.target.dataset.i !== undefined) {
+    const data = loadData();
     const i = parseInt(e.target.dataset.i);
-    const field = e.target.dataset.field;
-    accounts[i][field] = e.target.value;
-    saveAccounts(accounts);
-
-    // If FemSurance field changed, update hero immediately
-    if (accounts[i].isFem && (field === 'followers')) {
-      const current = parseInt(e.target.value) || 0;
-      const goal = getGoal();
-      const pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
-      const remaining = Math.max(goal - current, 0);
-      document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
-      document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
-      document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
-    }
-
-    // Re-render to update comparison columns (debounced)
+    data.accounts[i][e.target.dataset.field] = e.target.value;
+    saveData(data);
     clearTimeout(window._renderTimer);
     window._renderTimer = setTimeout(renderTable, 600);
   }
@@ -376,39 +385,30 @@ document.getElementById('compBody').addEventListener('input', e => {
 document.getElementById('compBody').addEventListener('click', e => {
   const btn = e.target.closest('.btn-remove');
   if (btn) {
-    const accounts = loadAccounts();
-    const i = parseInt(btn.dataset.i);
-    accounts.splice(i, 1);
-    saveAccounts(accounts);
+    const data = loadData();
+    data.accounts.splice(parseInt(btn.dataset.i), 1);
+    saveData(data);
     renderTable();
   }
 });
 
 // Add button
 document.getElementById('btnAdd').addEventListener('click', () => {
-  const accounts = loadAccounts();
-  accounts.push({ name: '', followers: '', engagement: '', postsWeek: '', isFem: false });
-  saveAccounts(accounts);
+  const data = loadData();
+  data.accounts.push({ name: '', followers: '', engagement: '', postsWeek: '' });
+  saveData(data);
   renderTable();
 });
 
-renderTable();
-
 // Hero goal input
 document.getElementById('heroGoalInput').addEventListener('input', e => {
-  const newGoal = parseInt(e.target.value) || 0;
-  const accounts = loadAccounts();
-  const fem = accounts.find(a => a.isFem);
-  if (fem) {
-    fem.goal = newGoal;
-    saveAccounts(accounts);
-  }
-  const current = (fem && parseInt(fem.followers)) || femFollowers;
-  const pct = newGoal > 0 ? Math.min((current / newGoal) * 100, 100) : 0;
-  const remaining = Math.max(newGoal - current, 0);
-  document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
-  document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+  const data = loadData();
+  data.goal = parseInt(e.target.value) || 0;
+  saveData(data);
+  updateHero(data.femFollower, data.goal);
 });
+
+renderTable();
 </script>
 </body>
 </html>
