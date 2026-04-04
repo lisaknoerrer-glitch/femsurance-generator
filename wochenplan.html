@@ -611,13 +611,28 @@ const b2 = load('fem_wp_block2', {});
 if (b2.analytics) document.getElementById('b2Analytics').value = b2.analytics;
 if (b2.mode) document.getElementById('b2Mode').value = b2.mode;
 
-// ══════════ BLOCK 3: Follower-Ziel ══════════
+// ══════════ BLOCK 3: Follower-Ziel (synced with fem_konkurrenz_data) ══════════
+function loadKonkurrenz() {
+  try {
+    const data = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '[]');
+    return data;
+  } catch { return []; }
+}
+function saveKonkurrenzFollowers(current, goal) {
+  const accounts = loadKonkurrenz();
+  const fem = accounts.find(a => a.isFem);
+  if (fem) {
+    fem.followers = String(current);
+    fem.goal = goal;
+  }
+  localStorage.setItem('fem_konkurrenz_data', JSON.stringify(accounts));
+}
+
 function calcFollower() {
   const current = parseInt(document.getElementById('b3Current').value) || 0;
   const goal = parseInt(document.getElementById('b3Goal').value) || 0;
   const diff = Math.max(goal - current, 0);
   document.getElementById('b3Diff').textContent = diff > 0 ? diff.toLocaleString('de-DE') + ' Follower' : '–';
-  // Estimate months: assume ~18 followers/week growth
   if (diff > 0) {
     const weeks = Math.ceil(diff / 18);
     const months = Math.round(weeks / 4.3 * 10) / 10;
@@ -626,13 +641,17 @@ function calcFollower() {
     document.getElementById('b3Months').textContent = diff === 0 && goal > 0 ? 'Ziel erreicht!' : '–';
   }
   save('fem_wp_block3', { current, goal });
+  saveKonkurrenzFollowers(current, goal);
 }
 document.getElementById('b3Current').addEventListener('input', calcFollower);
 document.getElementById('b3Goal').addEventListener('input', calcFollower);
 
+// Restore: prefer fem_konkurrenz_data, fallback to fem_wp_block3
+const konkurrenzAccounts = loadKonkurrenz();
+const femAccount = konkurrenzAccounts.find(a => a.isFem);
 const b3 = load('fem_wp_block3', {});
-if (b3.current) document.getElementById('b3Current').value = b3.current;
-if (b3.goal) document.getElementById('b3Goal').value = b3.goal;
+document.getElementById('b3Current').value = (femAccount && femAccount.followers) ? parseInt(femAccount.followers) : (b3.current || '');
+document.getElementById('b3Goal').value = (femAccount && femAccount.goal) ? parseInt(femAccount.goal) : (b3.goal || '');
 calcFollower();
 
 // ══════════ BLOCK 4: URLs ══════════
