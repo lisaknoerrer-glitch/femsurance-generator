@@ -722,11 +722,11 @@ body {
         </div>
       </div>
 
-      <!-- Review -->
+      <!-- Post -->
       <div class="kanban-col">
         <div class="kanban-col-header">
-          <span class="kanban-col-title">Review</span>
-          <span class="kanban-count" id="dashReview">2</span>
+          <span class="kanban-col-title">Post</span>
+          <span class="kanban-count" id="dashPost">2</span>
         </div>
         <div class="kanban-card">
           Beitrag: Netzwerk-Studie Ergebnisse
@@ -831,15 +831,17 @@ body {
     const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
     if (cards.length) {
       const count = col => cards.filter(c => c.col === col).length;
-      const ideen = count('ideen'), entwurf = count('entwurf'), review = count('review'), grafik = count('grafik'), geplant = count('geplant'), publish = count('publish');
+      // Migrate old "review" to "post"
+      cards.forEach(c => { if (c.col === 'review') c.col = 'post'; });
+      const ideen = count('ideen'), entwurf = count('entwurf'), post = count('post'), grafik = count('grafik'), geplant = count('geplant'), publish = count('publish');
       document.getElementById('dashIdeen').textContent = ideen;
       document.getElementById('dashEntwurf').textContent = entwurf;
-      document.getElementById('dashReview').textContent = review;
+      document.getElementById('dashPost').textContent = post;
       document.getElementById('dashGrafik').textContent = grafik;
       document.getElementById('dashGeplant').textContent = geplant;
       document.getElementById('dashPublish').textContent = publish;
       document.getElementById('dashPlanned').textContent = geplant;
-      document.getElementById('dashTasks').textContent = ideen + entwurf + review + grafik;
+      document.getElementById('dashTasks').textContent = ideen + entwurf + post + grafik;
 
       // Count published posts by platform in last 7 days
       const now7 = new Date();
