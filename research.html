@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C;
+  --fem-pink-light: #fce4f0;
+  --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED;
+  --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.04s; }
+.fade-up:nth-child(2) { animation-delay: 0.10s; }
+.fade-up:nth-child(3) { animation-delay: 0.16s; }
+.fade-up:nth-child(4) { animation-delay: 0.22s; }
+
+/* ── Left Navigation ── */
+.nav-left {
+  position: fixed; top: 0; left: 0;
+  width: 62px; height: 100vh;
+  background: var(--nav-bg);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  width: 34px; height: 34px; background: var(--fem-pink);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
+}
+.nav-links {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%; list-style: none;
+}
+.nav-links a {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-sm); margin: 0 6px;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--fem-pink); }
+.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+
+/* ── Main ── */
+.main { margin-left: 62px; padding: 28px 32px 40px; max-width: 1100px; }
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header h1 em { font-style: normal; color: var(--fem-pink); }
+.header-meta { font-size: 13px; color: var(--text-secondary); }
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
+  padding: 20px 22px; margin-bottom: 22px;
+}
+.card-title {
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px;
+}
+
+/* ── Trending Table ── */
+.trend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.trend-table thead th {
+  text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--border);
+}
+.trend-table tbody td {
+  padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.trend-table tbody tr:hover { background: var(--bg-secondary); }
+.trend-name { font-weight: 600; }
+.trend-bar-track {
+  width: 100%; height: 6px; background: var(--bg-secondary);
+  border-radius: 3px; overflow: hidden;
+}
+.trend-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
+}
+.trend-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.trend-up   { background: #dcfce7; color: #16a34a; }
+.trend-stable { background: #fef9c3; color: #a16207; }
+.trend-new  { background: var(--fem-pink-light); color: var(--fem-pink); }
+
+/* ── Hook Library ── */
+.hook-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hook-item {
+  background: var(--bg-secondary); border-radius: var(--radius-sm);
+  padding: 14px 16px; position: relative;
+}
+.hook-category {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  color: var(--fem-purple); letter-spacing: 0.04em; margin-bottom: 6px;
+}
+.hook-text {
+  font-size: 13px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.5; margin-bottom: 8px;
+}
+.hook-copy-btn {
+  padding: 4px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 11px;
+  font-weight: 500; color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.hook-copy-btn:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.hook-copy-btn.copied { background: var(--fem-pink); color: #fff; border-color: var(--fem-pink); }
+
+/* ── Outline Generator ── */
+.gen-form { display: flex; flex-direction: column; gap: 14px; }
+.gen-row { display: flex; gap: 12px; align-items: flex-end; }
+.gen-field { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.gen-field label {
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+}
+.gen-field select, .gen-field textarea {
+  padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  font-family: inherit; font-size: 13px; color: var(--text-primary);
+  resize: vertical; transition: border-color 0.2s;
+}
+.gen-field select:focus, .gen-field textarea:focus {
+  outline: none; border-color: var(--fem-pink);
+}
+.gen-field textarea { min-height: 80px; }
+.btn-generate {
+  padding: 10px 24px; border: none; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  color: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s; white-space: nowrap;
+}
+.btn-generate:hover { opacity: 0.9; }
+.outline-results { margin-top: 16px; }
+.outline-item {
+  background: var(--bg-secondary); border-radius: var(--radius-sm);
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.outline-num {
+  font-size: 11px; font-weight: 700; color: var(--fem-pink);
+  margin-bottom: 4px;
+}
+.outline-hook { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.outline-points {
+  font-size: 12.5px; color: var(--text-secondary); line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ Left Navigation ══════════ -->
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Übersicht
+    </a>
+    <a href="performance.html">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Performance
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Pipeline
+    </a>
+    <a href="research.html" class="active">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Research
+    </a>
+    <a href="konkurrenz.html">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Konkurrenz
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Wochenplan
+    </a>
+  </ul>
+</nav>
+
+<!-- ══════════ Main Content ══════════ -->
+<main class="main">
+
+  <div class="page-header fade-up">
+    <h1><em>FemSurance</em> Research</h1>
+    <div class="header-meta">Themen · Hooks · Outlines</div>
+  </div>
+
+  <!-- Trending-Tabelle -->
+  <div class="card fade-up">
+    <div class="card-title">Trending-Themen FemSurance</div>
+    <table class="trend-table">
+      <thead>
+        <tr>
+          <th>Thema</th>
+          <th>Relevanz</th>
+          <th>LinkedIn-Volumen</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="trend-name">Frauen in Führung</td>
+          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:92%"></div></div></td>
+          <td>12.400 Posts/Monat</td>
+          <td><span class="trend-badge trend-up">+18 %</span></td>
+        </tr>
+        <tr>
+          <td class="trend-name">Selfbranding</td>
+          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:85%"></div></div></td>
+          <td>9.800 Posts/Monat</td>
+          <td><span class="trend-badge trend-up">+24 %</span></td>
+        </tr>
+        <tr>
+          <td class="trend-name">Vereinbarkeit</td>
+          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:78%"></div></div></td>
+          <td>8.200 Posts/Monat</td>
+          <td><span class="trend-badge trend-stable">+3 %</span></td>
+        </tr>
+        <tr>
+          <td class="trend-name">Female Recruiting</td>
+          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:71%"></div></div></td>
+          <td>6.900 Posts/Monat</td>
+          <td><span class="trend-badge trend-up">+31 %</span></td>
+        </tr>
+        <tr>
+          <td class="trend-name">Diversität</td>
+          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:67%"></div></div></td>
+          <td>7.500 Posts/Monat</td>
+          <td><span class="trend-badge trend-new">Neu</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Hook-Formel-Bibliothek -->
+  <div class="card fade-up">
+    <div class="card-title">Hook-Formel-Bibliothek</div>
+    <div class="hook-grid">
+      <div class="hook-item">
+        <div class="hook-category">Provokation</div>
+        <div class="hook-text">„Die meisten Maklerinnen machen diesen einen Fehler – und merken es nicht."</div>
+        <button class="hook-copy-btn" data-copy="Die meisten Maklerinnen machen diesen einen Fehler – und merken es nicht.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Statistik</div>
+        <div class="hook-text">„Nur 25 % der Führungskräfte in der Versicherung sind Frauen. Hier ist, warum sich das ändern muss."</div>
+        <button class="hook-copy-btn" data-copy="Nur 25 % der Führungskräfte in der Versicherung sind Frauen. Hier ist, warum sich das ändern muss.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Frage</div>
+        <div class="hook-text">„Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?"</div>
+        <button class="hook-copy-btn" data-copy="Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Storytelling</div>
+        <div class="hook-text">„Vor 3 Jahren saß ich weinend im Auto nach einem Kundentermin. Heute leite ich ein Team von 12 Beraterinnen."</div>
+        <button class="hook-copy-btn" data-copy="Vor 3 Jahren saß ich weinend im Auto nach einem Kundentermin. Heute leite ich ein Team von 12 Beraterinnen.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Listicle</div>
+        <div class="hook-text">„5 LinkedIn-Tipps, die meine Reichweite als Maklerin verdreifacht haben."</div>
+        <button class="hook-copy-btn" data-copy="5 LinkedIn-Tipps, die meine Reichweite als Maklerin verdreifacht haben.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Kontroverse</div>
+        <div class="hook-text">„Unpopuläre Meinung: Netzwerken ist wichtiger als jede Weiterbildung."</div>
+        <button class="hook-copy-btn" data-copy="Unpopuläre Meinung: Netzwerken ist wichtiger als jede Weiterbildung.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">Vergleich</div>
+        <div class="hook-text">„Der Unterschied zwischen erfolgreichen und durchschnittlichen Maklerinnen? Ein einziges Wort: Sichtbarkeit."</div>
+        <button class="hook-copy-btn" data-copy="Der Unterschied zwischen erfolgreichen und durchschnittlichen Maklerinnen? Ein einziges Wort: Sichtbarkeit.">Kopieren</button>
+      </div>
+      <div class="hook-item">
+        <div class="hook-category">How-To</div>
+        <div class="hook-text">„So baust du dir in 90 Tagen eine Personal Brand auf LinkedIn auf – Schritt für Schritt."</div>
+        <button class="hook-copy-btn" data-copy="So baust du dir in 90 Tagen eine Personal Brand auf LinkedIn auf – Schritt für Schritt.">Kopieren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outline Generator -->
+  <div class="card fade-up">
+    <div class="card-title">Outline Generator</div>
+    <div class="gen-form">
+      <div class="gen-field">
+        <label>Thema / Freitext</label>
+        <textarea id="genTopic" placeholder="z. B. Tipps für Maklerinnen zum Thema Selfbranding auf LinkedIn"></textarea>
+      </div>
+      <div class="gen-row">
+        <div class="gen-field">
+          <label>Themenwelt</label>
+          <select id="genTheme">
+            <option value="Frauen in Führung">Frauen in Führung</option>
+            <option value="Selfbranding">Selfbranding</option>
+            <option value="Vereinbarkeit">Vereinbarkeit</option>
+            <option value="Female Recruiting">Female Recruiting</option>
+            <option value="Diversität">Diversität</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label>Anzahl Outlines</label>
+          <select id="genCount">
+            <option value="3">3 Outlines</option>
+            <option value="5" selected>5 Outlines</option>
+            <option value="7">7 Outlines</option>
+          </select>
+        </div>
+        <button class="btn-generate" id="btnGenerate">Outlines generieren</button>
+      </div>
+    </div>
+    <div class="outline-results" id="outlineResults"></div>
+  </div>
+
+</main>
+
+<script>
+// ── Copy Buttons ──
+document.querySelectorAll('.hook-copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(btn.dataset.copy).then(() => {
+      btn.textContent = 'Kopiert!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Kopieren';
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  });
+});
+
+// ── Outline Generator ──
+const hookTemplates = [
+  t => `Die meisten ${t}-Strategien scheitern. Hier ist, was stattdessen funktioniert.`,
+  t => `3 Dinge, die ich über ${t} gelernt habe – die mir niemand gesagt hat.`,
+  t => `Warum ${t} der Schlüssel für Maklerinnen in 2026 ist.`,
+  t => `${t}: Der Fehler, den 90 % machen – und wie du ihn vermeidest.`,
+  t => `So nutzt du ${t} für deine LinkedIn-Strategie – in 5 einfachen Schritten.`,
+  t => `Ich habe 100 ${t}-Posts analysiert. Das sind die 3 Muster, die viral gehen.`,
+  t => `${t} wird unterschätzt. Hier sind die Zahlen, die das beweisen.`,
+];
+
+const outlinePoints = [
+  ['Warum das Thema jetzt relevant ist', 'Häufigster Fehler und Lösung', 'Konkretes Beispiel aus der Praxis', 'Call-to-Action für die Community'],
+  ['Persönliche Erfahrung als Einstieg', 'Drei Kernpunkte mit Daten', 'Best Practice aus der Branche', 'Frage an die Leser:innen'],
+  ['Provokante These als Hook', 'Gegenargument entkräften', 'Schritt-für-Schritt-Anleitung', 'Zusammenfassung + CTA'],
+  ['Statistik als Aufmacher', 'Was das für Maklerinnen bedeutet', 'Interview-Zitat einbauen', 'Link zum ausführlichen Beitrag'],
+  ['Storytelling-Einstieg', 'Lessons Learned (3 Punkte)', 'Umsetzbare Tipps', 'Engagement-Frage am Ende'],
+  ['Vergleich vorher/nachher', 'Die wichtigsten Do's und Don'ts', 'Tool-Empfehlung oder Ressource', 'Hashtag-Strategie'],
+  ['Kontroverse Meinung als Start', 'Begründung mit Fakten', 'Karussell-Idee für visuelles Format', 'Community-Diskussion anregen'],
+];
+
+document.getElementById('btnGenerate').addEventListener('click', () => {
+  const topic = document.getElementById('genTopic').value.trim() || 'FemSurance Content';
+  const theme = document.getElementById('genTheme').value;
+  const count = parseInt(document.getElementById('genCount').value);
+  const container = document.getElementById('outlineResults');
+  container.innerHTML = '';
+
+  const shuffled = [...hookTemplates].sort(() => Math.random() - 0.5);
+  const shuffledPts = [...outlinePoints].sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < count; i++) {
+    const hook = shuffled[i % shuffled.length](theme);
+    const pts = shuffledPts[i % shuffledPts.length];
+    const el = document.createElement('div');
+    el.className = 'outline-item';
+    el.innerHTML = `
+      <div class="outline-num">Outline ${i + 1}</div>
+      <div class="outline-hook">${hook}</div>
+      <div class="outline-points">${pts.map(p => '• ' + p).join('<br>')}</div>
+    `;
+    container.appendChild(el);
+  }
+});
+</script>
+</body>
+</html>

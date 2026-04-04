@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Content Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C;
+  --fem-pink-light: #fce4f0;
+  --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED;
+  --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.04s; }
+.fade-up:nth-child(2) { animation-delay: 0.10s; }
+
+/* ── Left Navigation ── */
+.nav-left {
+  position: fixed; top: 0; left: 0;
+  width: 62px; height: 100vh;
+  background: var(--nav-bg);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  width: 34px; height: 34px; background: var(--fem-pink);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
+}
+.nav-links {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%; list-style: none;
+}
+.nav-links a {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-sm); margin: 0 6px;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--fem-pink); }
+.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+
+/* ── Main ── */
+.main { margin-left: 62px; padding: 28px 32px 40px; }
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header h1 em { font-style: normal; color: var(--fem-pink); }
+.header-meta { font-size: 13px; color: var(--text-secondary); }
+
+/* ── Kanban ── */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.kanban-col {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  min-height: 400px;
+}
+.kanban-col-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+.kanban-col-title {
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.03em;
+}
+.kanban-count {
+  font-size: 11px; font-weight: 600; background: var(--bg-card);
+  color: var(--text-secondary); border-radius: 10px; padding: 1px 8px;
+}
+.kanban-drop-zone {
+  min-height: 60px;
+}
+.kanban-drop-zone.drag-over {
+  background: var(--fem-pink-light);
+  border-radius: var(--radius-sm);
+  outline: 2px dashed var(--fem-pink-mid);
+  outline-offset: -2px;
+}
+
+/* ── Kanban Card ── */
+.kanban-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+  cursor: grab;
+  transition: box-shadow 0.2s, transform 0.15s;
+  user-select: none;
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.kanban-card-title {
+  font-weight: 600; margin-bottom: 6px;
+  line-height: 1.35;
+}
+.kanban-card-meta {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-top: 8px;
+}
+.kanban-tag {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 4px;
+}
+.tag-pink   { background: var(--fem-pink-light); color: var(--fem-pink); }
+.tag-purple { background: var(--fem-purple-light); color: var(--fem-purple); }
+.tag-gray   { background: #e5e7eb; color: var(--text-secondary); }
+.tag-green  { background: #dcfce7; color: #16a34a; }
+.kanban-assignee {
+  font-size: 11px; color: var(--text-secondary);
+}
+.kanban-due {
+  font-size: 11px; color: var(--text-secondary);
+  margin-left: auto;
+}
+.kanban-card-body {
+  display: none;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-secondary);
+  line-height: 1.6; white-space: pre-wrap;
+}
+.kanban-card-body.open { display: block; }
+
+/* ── Modal ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35); z-index: 500;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  padding: 28px 30px;
+  width: 380px; max-width: 90vw;
+}
+.modal h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 6px;
+}
+.modal p {
+  font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;
+}
+.slot-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 18px;
+}
+.slot-btn {
+  padding: 10px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 13px;
+  font-weight: 500; color: var(--text-primary);
+  transition: all 0.2s; text-align: left;
+}
+.slot-btn:hover {
+  border-color: var(--fem-pink); background: var(--fem-pink-light);
+}
+.slot-btn .slot-day { font-weight: 600; }
+.slot-btn .slot-ch { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+.btn-cancel {
+  padding: 8px 18px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 13px;
+  color: var(--text-secondary); transition: all 0.2s;
+}
+.btn-cancel:hover { background: var(--bg-secondary); }
+</style>
+</head>
+<body>
+
+<!-- ══════════ Left Navigation ══════════ -->
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Übersicht
+    </a>
+    <a href="performance.html">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Performance
+    </a>
+    <a href="pipeline.html" class="active">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Pipeline
+    </a>
+    <a href="research.html">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Research
+    </a>
+    <a href="konkurrenz.html">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Konkurrenz
+    </a>
+    <a href="#">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Wochenplan
+    </a>
+  </ul>
+</nav>
+
+<!-- ══════════ Schedule Modal ══════════ -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+    <h3>Zeitslot wählen</h3>
+    <p id="modalCardName">Karte wird nach „Geplant" verschoben.</p>
+    <div class="slot-grid">
+      <button class="slot-btn" data-slot="Di 10:00">
+        <div class="slot-day">Dienstag 10:00</div>
+        <div class="slot-ch">Company Page</div>
+      </button>
+      <button class="slot-btn" data-slot="Mi 08:00">
+        <div class="slot-day">Mittwoch 08:00</div>
+        <div class="slot-ch">WhatsApp</div>
+      </button>
+      <button class="slot-btn" data-slot="Mi 10:00">
+        <div class="slot-day">Mittwoch 10:00</div>
+        <div class="slot-ch">Gruppe</div>
+      </button>
+      <button class="slot-btn" data-slot="Do 10:00">
+        <div class="slot-day">Donnerstag 10:00</div>
+        <div class="slot-ch">Company Page</div>
+      </button>
+      <button class="slot-btn" data-slot="Fr 10:00">
+        <div class="slot-day">Freitag 10:00</div>
+        <div class="slot-ch">Gruppe</div>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ Main Content ══════════ -->
+<main class="main">
+
+  <div class="page-header fade-up">
+    <h1><em>FemSurance</em> Content Pipeline</h1>
+    <div class="header-meta">Drag &amp; Drop · Kanban-Board</div>
+  </div>
+
+  <div class="kanban-board fade-up" id="kanbanBoard"></div>
+
+</main>
+
+<script>
+// ── Card Data ──
+const cards = [
+  { id: 1,  col: 'ideen',    title: 'Podcast-Recap: Diversität in der Versicherung', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '10.04.', body: '' },
+  { id: 2,  col: 'ideen',    title: 'Infografik: Frauen in Führung 2026',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 1', due: '12.04.', body: '' },
+  { id: 3,  col: 'ideen',    title: 'Umfrage: Welches Thema interessiert euch?',     format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 2', due: '14.04.', body: '' },
+  { id: 4,  col: 'entwurf',  title: 'Interview: Frauen in der Versicherungsbranche', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 2', due: '08.04.', body: 'Frauen machen nur 25 % der Führungskräfte in der Versicherungsbranche aus – doch das ändert sich.\n\nIm Interview mit Maria K. sprechen wir über:\n✅ Karrierewege für Maklerinnen\n✅ Netzwerken als Schlüsselkompetenz\n✅ Die Rolle von Mentoring\n\n#FemSurance #FrauenInFührung #Versicherung' },
+  { id: 5,  col: 'entwurf',  title: 'Karussell: 3 Mythen über Maklerinnen',          format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '09.04.', body: 'Mythos 1: „Frauen verkaufen weniger."\nRealität: Studien zeigen, dass Maklerinnen höhere Abschlussquoten bei Beratungsgesprächen erzielen.\n\nMythos 2: „Teilzeit = weniger Erfolg."\nRealität: Flexible Modelle steigern die Kundenbindung.\n\nMythos 3: „Netzwerken ist nicht so wichtig."\nRealität: 80 % der Top-Maklerinnen nennen Netzwerk als Erfolgsfaktor #1.\n\n#FemSurance #Mythen #Maklerinnen' },
+  { id: 6,  col: 'review',   title: 'Beitrag: Netzwerk-Studie Ergebnisse',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 4', due: '07.04.', body: '' },
+  { id: 7,  col: 'review',   title: 'Video-Skript: Nachhaltige Vorsorge',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 3', due: '07.04.', body: '' },
+  { id: 8,  col: 'geplant',  title: 'Post: FemSurance Award Rückblick',              format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 1', due: '08.04.', body: '', slot: 'Di 10:00' },
+  { id: 9,  col: 'geplant',  title: 'Zitat-Grafik: Empowerment-Reihe #4',           format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 2', due: '09.04.', body: '', slot: 'Mi 10:00' },
+  { id: 10, col: 'publish',  title: '5 Tipps für Maklerinnen im Vertrieb',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 1', due: '01.04.', body: '' },
+  { id: 11, col: 'publish',  title: 'Reel: Behind the Scenes FemSurance',            format: 'WhatsApp',     tag: 'tag-gray',   assignee: 'Name 3', due: '30.03.', body: '' },
+];
+
+const colDefs = [
+  { id: 'ideen',   label: 'Ideen' },
+  { id: 'entwurf', label: 'Entwurf' },
+  { id: 'review',  label: 'Review' },
+  { id: 'geplant', label: 'Geplant' },
+  { id: 'publish', label: 'Veröffentlicht' },
+];
+
+const formatTagClass = f => f === 'Company Page' ? 'tag-pink' : f === 'Gruppe' ? 'tag-purple' : 'tag-gray';
+
+// ── Render Board ──
+function renderBoard() {
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = '';
+  colDefs.forEach(col => {
+    const colCards = cards.filter(c => c.col === col.id);
+    const colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+    colEl.innerHTML = `
+      <div class="kanban-col-header">
+        <span class="kanban-col-title">${col.label}</span>
+        <span class="kanban-count">${colCards.length}</span>
+      </div>
+      <div class="kanban-drop-zone" data-col="${col.id}"></div>
+    `;
+    const zone = colEl.querySelector('.kanban-drop-zone');
+    colCards.forEach(card => {
+      const el = document.createElement('div');
+      el.className = 'kanban-card';
+      el.draggable = true;
+      el.dataset.id = card.id;
+      const slotInfo = card.slot ? `<span class="kanban-tag tag-green">${card.slot}</span>` : '';
+      const bodySection = (col.id === 'entwurf' && card.body) ?
+        `<div class="kanban-card-body">${card.body}</div>` : '';
+      el.innerHTML = `
+        <div class="kanban-card-title">${card.title}</div>
+        <div class="kanban-card-meta">
+          <span class="kanban-tag ${formatTagClass(card.format)}">${card.format}</span>
+          ${slotInfo}
+          <span class="kanban-assignee">${card.assignee}</span>
+          <span class="kanban-due">${card.due}</span>
+        </div>
+        ${bodySection}
+      `;
+      // Click to expand body in Entwurf
+      if (col.id === 'entwurf' && card.body) {
+        el.addEventListener('click', e => {
+          if (e.target.closest('.kanban-card-body')) return;
+          const body = el.querySelector('.kanban-card-body');
+          if (body) body.classList.toggle('open');
+        });
+      }
+      // Drag events
+      el.addEventListener('dragstart', e => {
+        el.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', card.id);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      zone.appendChild(el);
+    });
+
+    // Drop zone events
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const cardId = parseInt(e.dataTransfer.getData('text/plain'));
+      const card = cards.find(c => c.id === cardId);
+      if (!card || card.col === col.id) return;
+      if (col.id === 'geplant') {
+        pendingCard = card;
+        pendingTargetCol = col.id;
+        document.getElementById('modalCardName').textContent = `„${card.title}" wird nach „Geplant" verschoben.`;
+        document.getElementById('scheduleModal').classList.add('open');
+      } else {
+        card.col = col.id;
+        renderBoard();
+      }
+    });
+    board.appendChild(colEl);
+  });
+}
+
+// ── Schedule Modal ──
+let pendingCard = null;
+let pendingTargetCol = null;
+
+document.querySelectorAll('.slot-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (pendingCard) {
+      pendingCard.col = 'geplant';
+      pendingCard.slot = btn.dataset.slot;
+      pendingCard = null;
+      document.getElementById('scheduleModal').classList.remove('open');
+      renderBoard();
+    }
+  });
+});
+
+document.getElementById('modalCancel').addEventListener('click', () => {
+  pendingCard = null;
+  document.getElementById('scheduleModal').classList.remove('open');
+});
+
+document.getElementById('scheduleModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    pendingCard = null;
+    e.currentTarget.classList.remove('open');
+  }
+});
+
+renderBoard();
+</script>
+</body>
+</html>
