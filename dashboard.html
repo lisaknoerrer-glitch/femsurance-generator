@@ -333,7 +333,7 @@ body {
 .kanban-section { margin-bottom: 22px; }
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
 }
 .kanban-col {
@@ -737,6 +737,14 @@ body {
         </div>
       </div>
 
+      <!-- Grafik -->
+      <div class="kanban-col">
+        <div class="kanban-col-header">
+          <span class="kanban-col-title">Grafik</span>
+          <span class="kanban-count" id="dashGrafik">0</span>
+        </div>
+      </div>
+
       <!-- Geplant -->
       <div class="kanban-col">
         <div class="kanban-col-header">
@@ -822,15 +830,15 @@ body {
     const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
     if (cards.length) {
       const count = col => cards.filter(c => c.col === col).length;
-      const ideen = count('ideen'), entwurf = count('entwurf'), review = count('review'), geplant = count('geplant'), publish = count('publish');
+      const ideen = count('ideen'), entwurf = count('entwurf'), review = count('review'), grafik = count('grafik'), geplant = count('geplant'), publish = count('publish');
       document.getElementById('dashIdeen').textContent = ideen;
       document.getElementById('dashEntwurf').textContent = entwurf;
       document.getElementById('dashReview').textContent = review;
+      document.getElementById('dashGrafik').textContent = grafik;
       document.getElementById('dashGeplant').textContent = geplant;
       document.getElementById('dashPublish').textContent = publish;
-      // Update banner: planned = geplant, tasks = ideen + entwurf + review
       document.getElementById('dashPlanned').textContent = geplant;
-      document.getElementById('dashTasks').textContent = ideen + entwurf + review;
+      document.getElementById('dashTasks').textContent = ideen + entwurf + review + grafik;
     }
   } catch (e) {}
 

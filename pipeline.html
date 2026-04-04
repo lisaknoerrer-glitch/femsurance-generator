@@ -84,7 +84,7 @@ body {
 /* ── Kanban ── */
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 14px;
   align-items: start;
 }
@@ -523,6 +523,42 @@ body {
   </div>
 </div>
 
+<!-- ══════════ Post Planen Modal (Grafik → Geplant) ══════════ -->
+<div class="modal-overlay" id="planModal">
+  <div class="modal" style="width:420px;">
+    <h3>Post planen</h3>
+    <p id="planModalCardName" style="margin-bottom:14px;"></p>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Posting-Woche</div>
+      <input type="text" id="planWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Company Page</div>
+        <select id="planCp" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+          <option value="Di 10:00">Dienstag 10:00</option>
+          <option value="Do 10:00">Donnerstag 10:00</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">LinkedIn Gruppe</div>
+        <select id="planGr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+          <option value="Mi 10:00">Mittwoch 10:00</option>
+          <option value="Fr 10:00">Freitag 10:00</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <input type="checkbox" id="planWa" checked style="accent-color:var(--fem-pink);">
+      <label for="planWa" style="font-size:13px;cursor:pointer;">WhatsApp Community Mi 08:00</label>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="planConfirm" style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--fem-pink);color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Einplanen</button>
+      <button id="planCancel" class="btn-cancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ Card Detail Modal ══════════ -->
 <div class="card-modal-overlay" id="cardModal">
   <div class="card-modal">
@@ -793,6 +829,7 @@ const colDefs = [
   { id: 'ideen',   label: 'Ideen' },
   { id: 'entwurf', label: 'Entwurf' },
   { id: 'review',  label: 'Review' },
+  { id: 'grafik',  label: 'Grafik' },
   { id: 'geplant', label: 'Geplant' },
   { id: 'publish', label: 'Veröffentlicht' },
 ];
@@ -1024,9 +1061,13 @@ function renderBoard() {
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
 
-      // Generate button for Ideen column
-      const generateBtn = (col.id === 'ideen') ?
-        `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>` : '';
+      // Generate button for Ideen column / Plan button for Grafik column
+      let generateBtn = '';
+      if (col.id === 'ideen') {
+        generateBtn = `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
+      } else if (col.id === 'grafik') {
+        generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
+      }
 
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
@@ -1040,7 +1081,7 @@ function renderBoard() {
         ${generateBtn}
       `;
 
-      // Generate button click handler (must be before general click)
+      // Generate / Plan button click handler (must be before general click)
       if (col.id === 'ideen') {
         const btn = el.querySelector('.btn-generate');
         if (btn) {
@@ -1050,10 +1091,19 @@ function renderBoard() {
           });
         }
       }
+      if (col.id === 'grafik') {
+        const btn = el.querySelector('.btn-plan-post');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openPlanModal(card.id);
+          });
+        }
+      }
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.gen-result-area')) return;
         openCardModal(card.id);
       });
 
@@ -1275,6 +1325,45 @@ document.getElementById('cardModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) {
     e.currentTarget.classList.remove('open');
   }
+});
+
+// ── Plan Modal (Grafik → Geplant) ──
+let planCardId = null;
+
+function openPlanModal(cardId) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+  planCardId = cardId;
+  document.getElementById('planModalCardName').textContent = `„${card.title}" einplanen`;
+  document.getElementById('planWeek').value = card.postingWeek || '';
+  document.getElementById('planCp').value = card.cpSlot || 'Di 10:00';
+  document.getElementById('planGr').value = card.grSlot || 'Mi 10:00';
+  document.getElementById('planWa').checked = card.whatsapp !== false;
+  document.getElementById('planModal').classList.add('open');
+}
+
+document.getElementById('planConfirm').addEventListener('click', () => {
+  const card = cards.find(c => c.id === planCardId);
+  if (!card) return;
+  card.postingWeek = document.getElementById('planWeek').value.trim();
+  card.cpSlot = document.getElementById('planCp').value;
+  card.grSlot = document.getElementById('planGr').value;
+  card.whatsapp = document.getElementById('planWa').checked;
+  // Build slot display string
+  const slots = [card.cpSlot, card.grSlot];
+  if (card.whatsapp) slots.push('Mi 08:00');
+  card.slot = slots.join(' · ');
+  card.col = 'geplant';
+  saveCards();
+  document.getElementById('planModal').classList.remove('open');
+  renderBoard();
+});
+
+document.getElementById('planCancel').addEventListener('click', () => {
+  document.getElementById('planModal').classList.remove('open');
+});
+document.getElementById('planModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
 
 // ── Post generieren from Entwurf modal ──
