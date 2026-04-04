@@ -750,6 +750,7 @@ function handleExportFile(file) {
       const sep = text.includes(';') ? ';' : ',';
       const lines = text.split('\n').filter(l => l.trim());
       const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
+      console.log('LinkedIn Export Spalten:', headers);
       const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
       exportData = { headers, rows, fileName: file.name };
       save('fem_wp_export_data', exportData);
@@ -765,6 +766,7 @@ function handleExportFile(file) {
         const ws = wb.Sheets[wb.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
         const headers = json[0] ? json[0].map(String) : [];
+        console.log('LinkedIn Export Spalten:', headers);
         const rows = json.slice(1).map(r => r.map(c => c != null ? String(c) : ''));
         exportData = { headers, rows, fileName: file.name };
         save('fem_wp_export_data', exportData);
@@ -842,28 +844,96 @@ Gib ausschließlich valides JSON zurück:
 
 function extractFromExport(data) {
   if (!data || !data.headers || !data.rows.length) return null;
-  const h = data.headers.map(s => s.toLowerCase());
+
+  // LinkedIn German column name mapping
+  const COL_MAP = {
+    'impressionen (organische updates)': 'impressions',
+    'impressionen (gesponserte updates)': 'sponsored_impressions',
+    'impressionen (gesamt)': 'total_impressions',
+    'klicks (organische updates)': 'clicks',
+    'klicks (gesponserte updates)': 'sponsored_clicks',
+    'reaktionen (organische updates)': 'reactions',
+    'reaktionen (gesponserte updates)': 'sponsored_reactions',
+    'kommentare (organische updates)': 'comments',
+    'kommentare (gesponserte updates)': 'sponsored_comments',
+    'geteilt (organische updates)': 'shares',
+    'geteilt (gesponserte updates)': 'sponsored_shares',
+    'engagement-rate (organische updates)': 'engagement_rate',
+    'engagement-rate (gesponserte updates)': 'sponsored_engagement_rate',
+    'datum': 'date',
+    'date': 'date',
+    'titel des updates': 'title',
+    'update-titel': 'title',
+    'titel': 'title',
+    'title': 'title',
+    'impressionen': 'impressions',
+    'klicks': 'clicks',
+    'reaktionen': 'reactions',
+    'kommentare': 'comments',
+    'shares': 'shares',
+    'engagement-rate': 'engagement_rate',
+    'follower': 'follower',
+    'neue follower': 'new_follower',
+  };
+
+  // Map headers to normalized keys
+  const normalizedHeaders = data.headers.map(h => {
+    const lower = h.toLowerCase().trim();
+    return COL_MAP[lower] || lower;
+  });
+  console.log('Mapped columns:', normalizedHeaders);
+
   const result = { posts: [], content_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
+
+  // Parse each row
+  let totalImpressions = 0, totalClicks = 0, totalReactions = 0, totalComments = 0, totalShares = 0;
+  let engRateSum = 0, engRateCount = 0;
+
   data.rows.forEach(row => {
     const obj = {};
-    h.forEach((key, i) => { obj[key] = row[i] || ''; });
-    const post = {};
-    for (const [k, v] of Object.entries(obj)) {
-      if (k.includes('titel') || k.includes('title') || k.includes('post')) post.titel = v;
-      if (k.includes('datum') || k.includes('date')) post.datum = v;
-      if (k.includes('impression')) post.impressions = parseInt(v) || 0;
-      if (k.includes('engagement') && k.includes('rate')) post.engagement_rate_pct = parseFloat(v) || 0;
-      if (k.includes('klick') || k.includes('click')) post.klicks = parseInt(v) || 0;
-      if (k.includes('reaktion') || k.includes('reaction') || k.includes('like')) post.reaktionen = parseInt(v) || 0;
-      if (k.includes('kommentar') || k.includes('comment')) post.kommentare = parseInt(v) || 0;
-    }
-    if (post.titel || post.impressions) result.posts.push(post);
+    normalizedHeaders.forEach((key, i) => { obj[key] = row[i] || ''; });
+
+    const imp = parseFloat(String(obj.impressions || obj.total_impressions || '').replace(/\./g, '').replace(',', '.')) || 0;
+    const clicks = parseFloat(String(obj.clicks || '').replace(/\./g, '').replace(',', '.')) || 0;
+    const reactions = parseFloat(String(obj.reactions || '').replace(/\./g, '').replace(',', '.')) || 0;
+    const comments = parseFloat(String(obj.comments || '').replace(/\./g, '').replace(',', '.')) || 0;
+    const shares = parseFloat(String(obj.shares || '').replace(/\./g, '').replace(',', '.')) || 0;
+    const engRate = parseFloat(String(obj.engagement_rate || '').replace('%', '').replace(',', '.')) || 0;
+
+    totalImpressions += imp;
+    totalClicks += clicks;
+    totalReactions += reactions;
+    totalComments += comments;
+    totalShares += shares;
+    if (engRate > 0) { engRateSum += engRate; engRateCount++; }
+
+    const post = {
+      titel: obj.title || obj.date || '',
+      datum: obj.date || '',
+      impressions: Math.round(imp),
+      klicks: Math.round(clicks),
+      reaktionen: Math.round(reactions),
+      kommentare: Math.round(comments),
+      shares: Math.round(shares),
+      engagement_rate_pct: Math.round(engRate * 100) / 100
+    };
+    if (post.impressions > 0 || post.titel) result.posts.push(post);
   });
+
+  console.log('Export Totals:', { totalImpressions, totalClicks, totalReactions, totalComments, totalShares, avgEngRate: engRateCount ? (engRateSum / engRateCount).toFixed(2) : 0 });
+
+  // Build summaries
+  const avgEngRate = engRateCount > 0 ? Math.round((engRateSum / engRateCount) * 100) / 100 : 0;
+  result.content_summary = {
+    impressions: Math.round(totalImpressions),
+    engagement_rate_pct: avgEngRate,
+    reaktionen: Math.round(totalReactions),
+    kommentare: Math.round(totalComments),
+    shares: Math.round(totalShares),
+    klicks: Math.round(totalClicks)
+  };
   if (result.posts.length) {
     result.top_posts = [...result.posts].sort((a, b) => (b.impressions || 0) - (a.impressions || 0)).slice(0, 5);
-    const totalImp = result.posts.reduce((s, p) => s + (p.impressions || 0), 0);
-    const avgEng = result.posts.reduce((s, p) => s + (p.engagement_rate_pct || 0), 0) / result.posts.length;
-    result.content_summary = { impressions: totalImp, engagement_rate_pct: Math.round(avgEng * 100) / 100 };
   }
   return result;
 }
@@ -934,15 +1004,22 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       calcFollower(); // saves to fem_wp_block3 + fem_konkurrenz_data
     }
 
-    // Also auto-fill Block 2 performance fields if available
+    // Also auto-fill Block 2 performance fields from extraction
     const b2Auto = {};
-    if (merged.content_summary) {
-      if (merged.content_summary.impressions) b2Auto.site_impressions = merged.content_summary.impressions;
-      if (merged.content_summary.engagement_rate_pct) b2Auto.site_eng_rate = merged.content_summary.engagement_rate_pct;
-      if (merged.content_summary.reaktionen) b2Auto.site_reaktionen = merged.content_summary.reaktionen;
-      if (merged.content_summary.kommentare) b2Auto.site_kommentare = merged.content_summary.kommentare;
-      if (merged.content_summary.shares) b2Auto.site_shares = merged.content_summary.shares;
-    }
+    const cs = merged.content_summary || {};
+    // Post-level fields (from export totals)
+    if (cs.impressions) b2Auto.post_impressions = cs.impressions;
+    if (cs.engagement_rate_pct) b2Auto.post_eng_rate = cs.engagement_rate_pct;
+    if (cs.klicks) b2Auto.post_klicks = cs.klicks;
+    if (cs.reaktionen) b2Auto.post_reaktionen = cs.reaktionen;
+    if (cs.kommentare) b2Auto.post_kommentare = cs.kommentare;
+    if (cs.shares) b2Auto.post_shares = cs.shares;
+    // Site-level fields (same source for now)
+    if (cs.impressions) b2Auto.site_impressions = cs.impressions;
+    if (cs.engagement_rate_pct) b2Auto.site_eng_rate = cs.engagement_rate_pct;
+    if (cs.reaktionen) b2Auto.site_reaktionen = cs.reaktionen;
+    if (cs.kommentare) b2Auto.site_kommentare = cs.kommentare;
+    if (cs.shares) b2Auto.site_shares = cs.shares;
     if (merged.visitor_summary) {
       if (merged.visitor_summary.seitenaufrufe) b2Auto.visitor_aufrufe = merged.visitor_summary.seitenaufrufe;
       if (merged.visitor_summary.individuelle_besucher) b2Auto.visitor_unique = merged.visitor_summary.individuelle_besucher;
