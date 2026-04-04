@@ -215,6 +215,34 @@ body {
   color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
+
+/* ── Generate Button ── */
+.btn-generate {
+  display: block; width: 100%; margin-top: 10px;
+  padding: 7px 12px; border: none; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  color: #fff; font-family: inherit; font-size: 11.5px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn-generate:hover { opacity: 0.9; }
+.btn-generate:disabled {
+  opacity: 0.6; cursor: not-allowed;
+  background: var(--text-secondary);
+}
+.gen-result {
+  margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;
+}
+.gen-result textarea {
+  width: 100%; min-height: 180px; padding: 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 12px;
+  color: var(--text-primary); line-height: 1.5; resize: vertical;
+  background: var(--bg-secondary);
+}
+.gen-result textarea:focus { outline: none; border-color: var(--fem-pink); }
+.gen-error {
+  margin-top: 8px; padding: 8px 10px; border-radius: var(--radius-sm);
+  background: #fef2f2; color: #dc2626; font-size: 12px;
+}
 </style>
 </head>
 <body>
@@ -296,6 +324,33 @@ body {
 </main>
 
 <script>
+// ── Config ──
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+const POST_SYSTEM_PROMPT = `Du bist ein LinkedIn-Content-Experte für FemSurance (Visibility. Network. Impact.), eine Initiative von AssCompact / bbg Betriebsberatungs GmbH für Frauen in der Versicherungsbranche.
+
+Erstelle für jedes Thema DREI Post-Varianten:
+
+1. **Company Page Post** (1000–1500 Zeichen):
+   - Professioneller Ton, Thought-Leadership-Stil
+   - Hook in der ersten Zeile
+   - Struktur: Hook → Problem → Lösung → CTA
+   - 3–5 relevante Hashtags am Ende
+   - Emojis sparsam einsetzen
+
+2. **Gruppen-Post** (600–800 Zeichen):
+   - Diskussionsfördernd, Frage am Ende
+   - Persönlicher, Community-nah
+   - 2–3 Hashtags
+
+3. **WhatsApp-Nachricht** (max. 250 Zeichen):
+   - Kurz, knackig, mit Link-Platzhalter [LINK]
+   - Ein Emoji erlaubt
+   - Kein Hashtag
+
+Trenne die drei Varianten mit --- auf einer eigenen Zeile.
+Schreibe ausschließlich auf Deutsch.`;
+
 // ── Card Data ──
 const cards = [
   { id: 1,  col: 'ideen',    title: 'Podcast-Recap: Diversität in der Versicherung', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '10.04.', body: '' },
@@ -345,6 +400,8 @@ function renderBoard() {
       const slotInfo = card.slot ? `<span class="kanban-tag tag-green">${card.slot}</span>` : '';
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
+      const generateBtn = col.id === 'ideen' ?
+        `<button class="btn-generate" data-card-id="${card.id}">Post generieren</button>` : '';
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}</div>
         <div class="kanban-card-meta">
@@ -354,6 +411,7 @@ function renderBoard() {
           <span class="kanban-due">${card.due}</span>
         </div>
         ${bodySection}
+        ${generateBtn}
       `;
       // Click to expand body in Entwurf
       if (col.id === 'entwurf' && card.body) {
@@ -361,6 +419,14 @@ function renderBoard() {
           if (e.target.closest('.kanban-card-body')) return;
           const body = el.querySelector('.kanban-card-body');
           if (body) body.classList.toggle('open');
+        });
+      }
+      // Generate button handler
+      const genBtn = el.querySelector('.btn-generate');
+      if (genBtn) {
+        genBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          generatePost(card, el, genBtn);
         });
       }
       // Drag events
@@ -423,6 +489,56 @@ document.getElementById('scheduleModal').addEventListener('click', e => {
     e.currentTarget.classList.remove('open');
   }
 });
+
+// ── Generate Post via Anthropic API ──
+async function generatePost(card, cardEl, btn) {
+  btn.disabled = true;
+  btn.textContent = 'POSTS WERDEN GENERIERT...';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: POST_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: card.title }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`API-Fehler ${res.status}: ${err}`);
+    }
+
+    const data = await res.json();
+    const text = data.content[0].text;
+
+    // Remove the button and show textarea
+    btn.remove();
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'gen-result';
+    resultDiv.innerHTML = `
+      <textarea>${text}</textarea>
+    `;
+    cardEl.appendChild(resultDiv);
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Post generieren';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'gen-error';
+    errDiv.textContent = err.message;
+    cardEl.appendChild(errDiv);
+    setTimeout(() => errDiv.remove(), 5000);
+  }
+}
 
 renderBoard();
 </script>
