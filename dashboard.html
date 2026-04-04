@@ -621,23 +621,26 @@ body {
   </div>
 
   <!-- ── Kanal-Übersicht ── -->
-  <div class="stats-row fade-up" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card" style="text-align:center;">
-      <div class="perf-stat">
-        <div class="perf-value" id="dashCompanyFollower">–</div>
-        <div class="perf-label">Company Page Follower</div>
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="card-title">Kanal-Übersicht</div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+      <div style="text-align:center; padding:14px 0;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Company Page</div>
+        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashCompanyFollower">–</div>
+        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Follower</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Di &amp; Do 10:00 · <span id="dashCompanyPosts">–</span> Posts/Woche</div>
       </div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div class="perf-stat">
-        <div class="perf-value" id="dashGruppeMembers">–</div>
-        <div class="perf-label">LinkedIn Gruppe Mitglieder</div>
+      <div style="text-align:center; padding:14px 0; border-left:1px solid var(--border); border-right:1px solid var(--border);">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Gruppe</div>
+        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashGruppeMembers">–</div>
+        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Mi &amp; Fr 10:00 · <span id="dashGruppePosts">–</span> Posts/Woche</div>
       </div>
-    </div>
-    <div class="card" style="text-align:center;">
-      <div class="perf-stat">
-        <div class="perf-value" id="dashWhatsappMembers">–</div>
-        <div class="perf-label">WhatsApp Community Mitglieder</div>
+      <div style="text-align:center; padding:14px 0;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">WhatsApp Community</div>
+        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashWhatsappMembers">–</div>
+        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px;">Mi 08:00 · <span id="dashWhatsappPosts">–</span> Posts/Woche</div>
       </div>
     </div>
   </div>
@@ -820,9 +823,14 @@ body {
       document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
       document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
     }
+    const gpw = Array.isArray(raw) ? 0 : (parseInt(raw.gruppePostsPerWeek) || 0);
+    const wpw = Array.isArray(raw) ? 0 : (parseInt(raw.whatsappPostsPerWeek) || 0);
     document.getElementById('dashCompanyFollower').textContent = f > 0 ? f.toLocaleString('de-DE') : '–';
     document.getElementById('dashGruppeMembers').textContent = gm > 0 ? gm.toLocaleString('de-DE') : '–';
     document.getElementById('dashWhatsappMembers').textContent = wm > 0 ? wm.toLocaleString('de-DE') : '–';
+    document.getElementById('dashCompanyPosts').textContent = '2';
+    document.getElementById('dashGruppePosts').textContent = gpw > 0 ? gpw : '2';
+    document.getElementById('dashWhatsappPosts').textContent = wpw > 0 ? wpw : '1';
   } catch (e) {}
 })();
 </script>
