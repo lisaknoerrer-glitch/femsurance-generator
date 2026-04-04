@@ -169,6 +169,106 @@ body {
 }
 .kanban-card-body.open { display: block; }
 
+/* ── Generate Button ── */
+.btn-generate {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-generate.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: linear-gradient(135deg, #b0b0b0, #888);
+}
+
+/* ── Generated Content Textarea ── */
+.gen-textarea {
+  width: 100%;
+  min-height: 180px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  resize: vertical;
+}
+.gen-textarea:focus {
+  outline: none;
+  border-color: var(--fem-pink);
+  box-shadow: 0 0 0 2px var(--fem-pink-light);
+}
+
+/* ── Character Counter ── */
+.char-counter {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.char-counter.in-range { color: #16a34a; background: #dcfce7; }
+.char-counter.out-range { color: #dc2626; background: #fee2e2; }
+
+.platform-counters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.platform-counters .platform-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── Save Draft Button ── */
+.btn-save-draft {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm);
+  background: var(--fem-pink-light);
+  color: var(--fem-pink);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-save-draft:hover {
+  background: var(--fem-pink);
+  color: #fff;
+}
+
+/* ── Format Badges ── */
+.format-badges {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 6px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+.format-badges span {
+  cursor: default;
+}
+
 /* ── Modal ── */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
@@ -215,34 +315,6 @@ body {
   color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
-
-/* ── Generate Button ── */
-.btn-generate {
-  display: block; width: 100%; margin-top: 10px;
-  padding: 7px 12px; border: none; border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
-  color: #fff; font-family: inherit; font-size: 11.5px; font-weight: 600;
-  cursor: pointer; transition: opacity 0.2s;
-}
-.btn-generate:hover { opacity: 0.9; }
-.btn-generate:disabled {
-  opacity: 0.6; cursor: not-allowed;
-  background: var(--text-secondary);
-}
-.gen-result {
-  margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;
-}
-.gen-result textarea {
-  width: 100%; min-height: 180px; padding: 10px; border: 1px solid var(--border);
-  border-radius: var(--radius-sm); font-family: inherit; font-size: 12px;
-  color: var(--text-primary); line-height: 1.5; resize: vertical;
-  background: var(--bg-secondary);
-}
-.gen-result textarea:focus { outline: none; border-color: var(--fem-pink); }
-.gen-error {
-  margin-top: 8px; padding: 8px 10px; border-radius: var(--radius-sm);
-  background: #fef2f2; color: #dc2626; font-size: 12px;
-}
 </style>
 </head>
 <body>
@@ -351,7 +423,7 @@ Erstelle für jedes Thema DREI Post-Varianten:
 Trenne die drei Varianten mit --- auf einer eigenen Zeile.
 Schreibe ausschließlich auf Deutsch.`;
 
-// ── Card Data ──
+// ── Default Card Data ──
 const defaultCards = [
   { id: 1,  col: 'ideen',    title: 'Podcast-Recap: Diversität in der Versicherung', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '10.04.', body: '' },
   { id: 2,  col: 'ideen',    title: 'Infografik: Frauen in Führung 2026',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 1', due: '12.04.', body: '' },
@@ -366,31 +438,37 @@ const defaultCards = [
   { id: 11, col: 'publish',  title: 'Reel: Behind the Scenes FemSurance',            format: 'WhatsApp',     tag: 'tag-gray',   assignee: 'Name 3', due: '30.03.', body: '' },
 ];
 
-// ── Persistence ──
+// ── Load / Save from localStorage ──
 function loadCards() {
   try {
-    const stored = localStorage.getItem('fem_pipeline_board');
-    if (stored) return JSON.parse(stored);
-  } catch (e) {}
+    const saved = localStorage.getItem('fem_pipeline_board');
+    if (saved) return JSON.parse(saved);
+  } catch (e) { /* ignore */ }
   return JSON.parse(JSON.stringify(defaultCards));
 }
 function saveCards() {
   localStorage.setItem('fem_pipeline_board', JSON.stringify(cards));
 }
+
+let cards = loadCards();
+
+// ── Import ideas from other pages ──
 function importPipelineIdeas() {
   try {
     const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
     if (!ideas.length) return;
     const maxId = Math.max(...cards.map(c => c.id), 0);
     ideas.forEach((idea, i) => {
+      const title = idea.title || idea;
+      const format = idea.format || 'Company Page';
       cards.push({
         id: maxId + i + 1,
         col: 'ideen',
-        title: idea.title || idea,
-        format: idea.format || 'Company Page',
-        tag: idea.format === 'Gruppe' ? 'tag-purple' : idea.format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
-        assignee: idea.assignee || 'Offen',
-        due: idea.due || '',
+        title: title,
+        format: format,
+        tag: format === 'Gruppe' ? 'tag-purple' : format === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+        assignee: 'Offen',
+        due: '',
         body: ''
       });
     });
@@ -398,8 +476,6 @@ function importPipelineIdeas() {
     saveCards();
   } catch (e) {}
 }
-
-const cards = loadCards();
 importPipelineIdeas();
 
 const colDefs = [
@@ -411,6 +487,105 @@ const colDefs = [
 ];
 
 const formatTagClass = f => f === 'Company Page' ? 'tag-pink' : f === 'Gruppe' ? 'tag-purple' : 'tag-gray';
+
+// ── Character counter helper ──
+function getCharClass(len, min, max) {
+  return (len >= min && len <= max) ? 'in-range' : 'out-range';
+}
+
+function buildPlatformCounters(text) {
+  const sections = text.split(/\n---\n/).map(s => s.trim());
+  const cp = sections[0] ? sections[0].length : 0;
+  const gr = sections[1] ? sections[1].length : 0;
+  const wa = sections[2] ? sections[2].length : 0;
+  return `<div class="platform-counters">
+    <div><span class="platform-label">🏢 Company Page:</span> <span class="char-counter ${getCharClass(cp, 1000, 1500)}">${cp}/1000–1500</span></div>
+    <div><span class="platform-label">👥 Gruppe:</span> <span class="char-counter ${getCharClass(gr, 600, 800)}">${gr}/600–800</span></div>
+    <div><span class="platform-label">💬 WhatsApp:</span> <span class="char-counter ${getCharClass(wa, 0, 250)}">${wa}/250</span></div>
+  </div>`;
+}
+
+// ── Generate posts via Anthropic API ──
+async function generatePosts(cardId, btnEl) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+
+  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: POST_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: card.title }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      throw new Error('API-Fehler: ' + resp.status + ' – ' + errBody);
+    }
+
+    const data = await resp.json();
+    const resultText = data.content[0].text;
+
+    // Insert textarea + counters + save button after the button
+    const wrapper = btnEl.parentElement;
+    const genArea = document.createElement('div');
+    genArea.className = 'gen-result-area';
+
+    const ta = document.createElement('textarea');
+    ta.className = 'gen-textarea';
+    ta.value = resultText;
+    genArea.appendChild(ta);
+
+    const countersDiv = document.createElement('div');
+    countersDiv.innerHTML = buildPlatformCounters(resultText);
+    genArea.appendChild(countersDiv.firstElementChild);
+
+    // Update counters on edit
+    ta.addEventListener('input', () => {
+      const pc = genArea.querySelector('.platform-counters');
+      if (pc) {
+        const newCounters = document.createElement('div');
+        newCounters.innerHTML = buildPlatformCounters(ta.value);
+        pc.replaceWith(newCounters.firstElementChild);
+      }
+    });
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-save-draft';
+    saveBtn.textContent = 'Speichern & als Entwurf';
+    saveBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.body = ta.value;
+      card.col = 'entwurf';
+      saveCards();
+      renderBoard();
+    });
+    genArea.appendChild(saveBtn);
+
+    // Remove old generate button and add result
+    btnEl.style.display = 'none';
+    wrapper.appendChild(genArea);
+
+  } catch (err) {
+    alert('Fehler beim Generieren: ' + err.message);
+    btnEl.textContent = 'Post generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
 
 // ── Render Board ──
 function renderBoard() {
@@ -434,12 +609,22 @@ function renderBoard() {
       el.draggable = true;
       el.dataset.id = card.id;
       const slotInfo = card.slot ? `<span class="kanban-tag tag-green">${card.slot}</span>` : '';
+
+      // Format badges for Entwurf cards with body containing ---
+      let formatBadgesHtml = '';
+      if (col.id === 'entwurf' && card.body && card.body.includes('---')) {
+        formatBadgesHtml = '<span class="format-badges"><span title="Company Page">🏢</span><span title="Gruppe">👥</span><span title="WhatsApp">💬</span></span>';
+      }
+
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
-      const generateBtn = col.id === 'ideen' ?
+
+      // Generate button for Ideen column
+      const generateBtn = (col.id === 'ideen') ?
         `<button class="btn-generate" data-card-id="${card.id}">Post generieren</button>` : '';
+
       el.innerHTML = `
-        <div class="kanban-card-title">${card.title}</div>
+        <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
         <div class="kanban-card-meta">
           <span class="kanban-tag ${formatTagClass(card.format)}">${card.format}</span>
           ${slotInfo}
@@ -449,6 +634,7 @@ function renderBoard() {
         ${bodySection}
         ${generateBtn}
       `;
+
       // Click to expand body in Entwurf
       if (col.id === 'entwurf' && card.body) {
         el.addEventListener('click', e => {
@@ -457,14 +643,18 @@ function renderBoard() {
           if (body) body.classList.toggle('open');
         });
       }
-      // Generate button handler
-      const genBtn = el.querySelector('.btn-generate');
-      if (genBtn) {
-        genBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          generatePost(card, el, genBtn);
-        });
+
+      // Generate button click handler
+      if (col.id === 'ideen') {
+        const btn = el.querySelector('.btn-generate');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            generatePosts(card.id, btn);
+          });
+        }
       }
+
       // Drag events
       el.addEventListener('dragstart', e => {
         el.classList.add('dragging');
@@ -509,8 +699,8 @@ document.querySelectorAll('.slot-btn').forEach(btn => {
       pendingCard.col = 'geplant';
       pendingCard.slot = btn.dataset.slot;
       pendingCard = null;
-      saveCards();
       document.getElementById('scheduleModal').classList.remove('open');
+      saveCards();
       renderBoard();
     }
   });
@@ -527,56 +717,6 @@ document.getElementById('scheduleModal').addEventListener('click', e => {
     e.currentTarget.classList.remove('open');
   }
 });
-
-// ── Generate Post via Anthropic API ──
-async function generatePost(card, cardEl, btn) {
-  btn.disabled = true;
-  btn.textContent = 'POSTS WERDEN GENERIERT...';
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2048,
-        system: POST_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: card.title }]
-      })
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`API-Fehler ${res.status}: ${err}`);
-    }
-
-    const data = await res.json();
-    const text = data.content[0].text;
-
-    // Remove the button and show textarea
-    btn.remove();
-    const resultDiv = document.createElement('div');
-    resultDiv.className = 'gen-result';
-    resultDiv.innerHTML = `
-      <textarea>${text}</textarea>
-    `;
-    cardEl.appendChild(resultDiv);
-
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = 'Post generieren';
-    const errDiv = document.createElement('div');
-    errDiv.className = 'gen-error';
-    errDiv.textContent = err.message;
-    cardEl.appendChild(errDiv);
-    setTimeout(() => errDiv.remove(), 5000);
-  }
-}
 
 renderBoard();
 </script>
