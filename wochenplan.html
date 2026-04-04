@@ -413,6 +413,28 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-top-posts { font-size:12px; color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
 .b2-top-posts strong { color:var(--text-primary); }
 
+/* ── Tooltip ── */
+.info-tip {
+  position: relative; display: inline-flex; align-items: center;
+  margin-left: 6px; cursor: help;
+  font-size: 13px; color: var(--fem-pink); font-style: normal;
+}
+.info-tip::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content; max-width: 280px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary);
+  font-size: 12px; font-weight: 400; line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--border);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 50; white-space: normal;
+}
+.info-tip:hover::after { opacity: 1; }
+
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -465,7 +487,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 1: Datenquellen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">1</span> Datenquellen</div>
+        <div class="block-title"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span></div>
         <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
@@ -499,7 +521,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 2: Performance-Daten -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">2</span> Performance-Daten</div>
+        <div class="block-title"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span></div>
         <button class="btn-load-last" id="b2LoadLast">📥 Letzte Woche übernehmen</button>
 
         <div class="b2-section">Post-Ebene</div>
@@ -542,7 +564,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 3: Follower-Ziel -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">3</span> Follower-Ziel</div>
+        <div class="block-title"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span></div>
         <div class="row-2">
           <div class="field">
             <label class="field-label">FemSurance Follower aktuell</label>
@@ -561,14 +583,14 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 4: URLs -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">4</span> Referenz-URLs</div>
+        <div class="block-title"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span></div>
         <div id="urlList"></div>
         <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
       </div>
 
       <!-- BLOCK 5: Branchenthemen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">5</span> Branchenthemen</div>
+        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Trage hier ein was Wettbewerber diese Woche gepostet haben — VWheute, Versicherungsbote etc. Claude berücksichtigt das bei der Content-Planung.">ℹ️</span></div>
         <div id="b5Sections">
           <div class="collapsible-header" data-target="b5_vwheute">
             <span class="collapsible-title">VWheute</span>
@@ -606,7 +628,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 6: Events & Kontakte -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">6</span> Events &amp; Kontakte</div>
+        <div class="block-title"><span class="block-num">6</span> Events &amp; Kontakte <span class="info-tip" data-tip="Eigene Events, Interviews oder Personen die du diese Woche kontaktiert hast. Fließt in die Wochenauswertung ein.">ℹ️</span></div>
         <div class="field">
           <label class="field-label">Events / Interviews diese Woche</label>
           <textarea id="b6Events" rows="4" placeholder="z. B. Webinar am Mittwoch, Interview mit..."></textarea>
@@ -627,7 +649,7 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 7: Lernstand -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand</div>
+        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span></div>
         <div class="field">
           <textarea id="b7Lernstand" rows="8"></textarea>
         </div>
