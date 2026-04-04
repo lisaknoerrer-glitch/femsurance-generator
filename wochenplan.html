@@ -929,6 +929,37 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
     localStorage.setItem('fem_wp_analytics', JSON.stringify(merged));
     renderExtractResults(merged);
+
+    // Auto-fill Block 3 from extracted follower data
+    const extractedFollower = parseInt(merged.follower_summary?.follower_gesamt) || 0;
+    if (extractedFollower > 0) {
+      document.getElementById('b3Current').value = extractedFollower;
+      calcFollower(); // saves to fem_wp_block3 + fem_konkurrenz_data
+    }
+
+    // Also auto-fill Block 2 performance fields if available
+    const b2Auto = {};
+    if (merged.content_summary) {
+      if (merged.content_summary.impressions) b2Auto.site_impressions = merged.content_summary.impressions;
+      if (merged.content_summary.engagement_rate_pct) b2Auto.site_eng_rate = merged.content_summary.engagement_rate_pct;
+      if (merged.content_summary.reaktionen) b2Auto.site_reaktionen = merged.content_summary.reaktionen;
+      if (merged.content_summary.kommentare) b2Auto.site_kommentare = merged.content_summary.kommentare;
+      if (merged.content_summary.shares) b2Auto.site_shares = merged.content_summary.shares;
+    }
+    if (merged.visitor_summary) {
+      if (merged.visitor_summary.seitenaufrufe) b2Auto.visitor_aufrufe = merged.visitor_summary.seitenaufrufe;
+      if (merged.visitor_summary.individuelle_besucher) b2Auto.visitor_unique = merged.visitor_summary.individuelle_besucher;
+    }
+    if (merged.follower_summary) {
+      if (merged.follower_summary.follower_gesamt) b2Auto.follower_gesamt = merged.follower_summary.follower_gesamt;
+      if (merged.follower_summary.neue_follower) b2Auto.follower_neu = merged.follower_summary.neue_follower;
+    }
+    if (merged.search_summary) {
+      if (merged.search_summary.suchanzeigen) b2Auto.search_anzeigen = merged.search_summary.suchanzeigen;
+      if (merged.search_summary.change_pct) b2Auto.search_change = merged.search_summary.change_pct;
+    }
+    if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
+
     btn.textContent = '📊 Daten extrahieren';
     btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
 
