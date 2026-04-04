@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C;
+  --fem-pink-light: #fce4f0;
+  --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED;
+  --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.04s; }
+.fade-up:nth-child(2) { animation-delay: 0.10s; }
+.fade-up:nth-child(3) { animation-delay: 0.16s; }
+.fade-up:nth-child(4) { animation-delay: 0.22s; }
+.fade-up:nth-child(5) { animation-delay: 0.28s; }
+.fade-up:nth-child(6) { animation-delay: 0.34s; }
+
+/* ── Left Navigation ── */
+.nav-left {
+  position: fixed; top: 0; left: 0;
+  width: 62px; height: 100vh;
+  background: var(--nav-bg);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  width: 34px; height: 34px; background: var(--fem-pink);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
+}
+.nav-links {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%; list-style: none;
+}
+.nav-links a {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-sm); margin: 0 6px;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--fem-pink); }
+.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+
+/* ── Main ── */
+.main {
+  margin-left: 62px;
+  padding: 28px 32px 40px;
+  max-width: 1200px;
+}
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header h1 em { font-style: normal; color: var(--fem-pink); }
+.header-meta { font-size: 13px; color: var(--text-secondary); }
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
+  padding: 20px 22px; margin-bottom: 22px;
+}
+.card-title {
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px;
+}
+
+/* ── Reichweiten-Ziel ── */
+.goal-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+.goal-current .goal-value { font-size: 28px; font-weight: 700; color: var(--fem-pink); }
+.goal-current .goal-label, .goal-target .goal-label { font-size: 12px; color: var(--text-secondary); }
+.goal-target { text-align: right; }
+.goal-target .goal-value { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+.progress-track { width: 100%; height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple)); border-radius: 5px; transition: width 1s ease; }
+.goal-diff { font-size: 12.5px; color: var(--text-secondary); text-align: center; }
+.goal-diff strong { color: var(--fem-pink); font-weight: 600; }
+
+/* ── Filter ── */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 18px; }
+.filter-btn {
+  padding: 6px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text-secondary); font-size: 12.5px;
+  font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--fem-pink); color: #fff; border-color: var(--fem-pink);
+}
+
+/* ── Chart ── */
+.chart-container { width: 100%; height: 220px; position: relative; }
+.chart-container svg { width: 100%; height: 100%; }
+.chart-grid line { stroke: var(--border); stroke-width: 1; }
+.chart-label { font-size: 10px; fill: var(--text-secondary); }
+
+/* ── Schedule ── */
+.schedule-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.schedule-item {
+  background: var(--bg-secondary); border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.schedule-channel { font-size: 12px; font-weight: 600; color: var(--fem-pink); margin-bottom: 4px; }
+.schedule-times { font-size: 12.5px; color: var(--text-primary); line-height: 1.7; }
+.schedule-times strong { font-weight: 600; }
+
+/* ── Table ── */
+.post-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.post-table thead th {
+  text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+.post-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.post-table tbody tr:hover { background: var(--bg-secondary); }
+.post-title-cell { max-width: 260px; }
+.post-title-text {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: block; font-weight: 500;
+}
+.mini-spark { width: 60px; height: 20px; }
+.mini-spark svg { width: 100%; height: 100%; }
+.engagement-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.engagement-high { background: #dcfce7; color: #16a34a; }
+.engagement-mid  { background: #fef9c3; color: #a16207; }
+.engagement-low  { background: var(--bg-secondary); color: var(--text-secondary); }
+.btn-to-pipeline {
+  padding: 4px 10px; border: 1px solid var(--fem-pink);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 11px;
+  font-weight: 600; color: var(--fem-pink); transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
+.btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ Left Navigation ══════════ -->
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Übersicht
+    </a>
+    <a href="performance.html" class="active">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Performance
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Pipeline
+    </a>
+    <a href="research.html">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Research
+    </a>
+    <a href="konkurrenz.html">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Konkurrenz
+    </a>
+    <a href="wochenplan.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Wochenplan
+    </a>
+  </ul>
+</nav>
+
+<!-- ══════════ Main Content ══════════ -->
+<main class="main">
+
+  <div class="page-header fade-up">
+    <h1><em>FemSurance</em> Performance</h1>
+    <div class="header-meta">LinkedIn Analytics · KW 14</div>
+  </div>
+
+  <!-- Reichweiten-Ziel -->
+  <div class="card fade-up">
+    <div class="card-title">Reichweiten-Ziel</div>
+    <div class="goal-row">
+      <div class="goal-current">
+        <div class="goal-label">FemSurance Follower aktuell</div>
+        <div class="goal-value">1.847</div>
+      </div>
+      <div class="goal-target">
+        <div class="goal-label">Ziel-Follower</div>
+        <div class="goal-value">2.500</div>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width: 73.9%;"></div>
+    </div>
+    <div class="goal-diff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
+  </div>
+
+  <!-- Zeitraum-Filter + Chart -->
+  <div class="card fade-up">
+    <div class="card-title">Follower-Entwicklung</div>
+    <div class="filter-bar">
+      <button class="filter-btn" data-days="7">7 Tage</button>
+      <button class="filter-btn" data-days="30">30 Tage</button>
+      <button class="filter-btn active" data-days="90">90 Tage</button>
+    </div>
+    <div class="chart-container">
+      <svg id="followerChart" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- Posting-Schedule -->
+  <div class="card fade-up">
+    <div class="card-title">Posting-Schedule</div>
+    <div class="schedule-grid">
+      <div class="schedule-item">
+        <div class="schedule-channel">Company Page</div>
+        <div class="schedule-times">
+          <strong>Dienstag</strong> 10:00 Uhr<br>
+          <strong>Donnerstag</strong> 10:00 Uhr
+        </div>
+      </div>
+      <div class="schedule-item">
+        <div class="schedule-channel">Gruppe</div>
+        <div class="schedule-times">
+          <strong>Mittwoch</strong> 10:00 Uhr<br>
+          <strong>Freitag</strong> 10:00 Uhr
+        </div>
+      </div>
+      <div class="schedule-item">
+        <div class="schedule-channel">WhatsApp</div>
+        <div class="schedule-times">
+          <strong>Mittwoch</strong> 08:00 Uhr
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-Tabelle -->
+  <div class="card fade-up">
+    <div class="card-title">Letzte 20 Posts</div>
+    <div style="overflow-x:auto;">
+      <table class="post-table">
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Datum</th>
+            <th>Kanal</th>
+            <th>Reichweite</th>
+            <th>Likes</th>
+            <th>Kommentare</th>
+            <th>Engagement</th>
+            <th>Trend</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="postTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Filter Buttons ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    drawChart(parseInt(btn.dataset.days));
+  });
+});
+
+// ── Follower Chart ──
+function drawChart(days) {
+  const svg = document.getElementById('followerChart');
+  const W = 800, H = 200, padT = 20, padB = 30, padL = 45, padR = 10;
+  const base = 1847;
+  const data = [];
+  for (let i = days; i >= 0; i--) {
+    const noise = Math.sin(i * 0.4) * 8 + Math.random() * 6;
+    data.push(Math.round(base - (i * (base - 1720) / 90) + noise));
+  }
+  const minV = Math.min(...data) - 10;
+  const maxV = Math.max(...data) + 10;
+  const xStep = (W - padL - padR) / (data.length - 1);
+  const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / (maxV - minV));
+
+  let gridLines = '';
+  const steps = 5;
+  for (let i = 0; i <= steps; i++) {
+    const v = minV + (maxV - minV) * (i / steps);
+    const y = yScale(v);
+    gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" class="chart-grid"/>`;
+    gridLines += `<text x="${padL - 6}" y="${y + 3}" text-anchor="end" class="chart-label">${Math.round(v)}</text>`;
+  }
+  // X labels
+  const labelCount = Math.min(days <= 7 ? 7 : days <= 30 ? 6 : 6, data.length);
+  const labelStep = Math.floor((data.length - 1) / labelCount);
+  for (let i = 0; i < data.length; i += labelStep) {
+    const x = padL + i * xStep;
+    const d = new Date(); d.setDate(d.getDate() - (data.length - 1 - i));
+    gridLines += `<text x="${x}" y="${H - 6}" text-anchor="middle" class="chart-label">${d.getDate()}.${d.getMonth() + 1}.</text>`;
+  }
+
+  const points = data.map((v, i) => `${padL + i * xStep},${yScale(v)}`);
+  const line = points.join(' ');
+  const area = `${padL},${H - padB} ${line} ${padL + (data.length - 1) * xStep},${H - padB}`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E91E8C" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#E91E8C" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <polygon points="${area}" fill="url(#areaGrad)"/>
+    <polyline points="${line}" fill="none" stroke="#E91E8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+}
+drawChart(90);
+
+// ── Post Table ──
+const posts = [
+  { title: '5 Tipps für Maklerinnen im Vertrieb', date: '01.04.', ch: 'Company Page', reach: 1240, likes: 47, comments: 12, eng: 6.2 },
+  { title: 'Netzwerk-Studie: Ergebnisse 2026', date: '29.03.', ch: 'Company Page', reach: 980, likes: 38, comments: 8, eng: 5.1 },
+  { title: 'Female Leadership in der Versicherung', date: '27.03.', ch: 'Gruppe', reach: 870, likes: 32, comments: 15, eng: 5.8 },
+  { title: 'Interview: Zukunft der Maklerinnen', date: '25.03.', ch: 'Company Page', reach: 1120, likes: 41, comments: 9, eng: 4.9 },
+  { title: '3 Mythen über Frauen im Vertrieb', date: '22.03.', ch: 'Gruppe', reach: 760, likes: 28, comments: 6, eng: 4.2 },
+  { title: 'Karussell: Selfbranding-Tipps', date: '20.03.', ch: 'Company Page', reach: 1340, likes: 56, comments: 18, eng: 6.8 },
+  { title: 'Podcast-Recap: Diversität Talk', date: '18.03.', ch: 'Gruppe', reach: 620, likes: 22, comments: 5, eng: 3.9 },
+  { title: 'FemSurance Award Ankündigung', date: '15.03.', ch: 'Company Page', reach: 1560, likes: 68, comments: 22, eng: 7.1 },
+  { title: 'Vereinbarkeit: Best Practices', date: '13.03.', ch: 'Gruppe', reach: 710, likes: 30, comments: 11, eng: 5.4 },
+  { title: 'Zitat-Grafik: Empowerment #3', date: '11.03.', ch: 'Company Page', reach: 890, likes: 35, comments: 4, eng: 4.1 },
+  { title: 'WhatsApp-Tipp: Elevator Pitch', date: '10.03.', ch: 'WhatsApp', reach: 340, likes: 14, comments: 3, eng: 4.5 },
+  { title: 'Recruiting: Frauen gewinnen', date: '08.03.', ch: 'Company Page', reach: 1080, likes: 44, comments: 16, eng: 5.9 },
+  { title: 'Behind the Scenes: Redaktion', date: '06.03.', ch: 'Gruppe', reach: 540, likes: 19, comments: 7, eng: 4.0 },
+  { title: 'Infografik: Branchenvergleich', date: '04.03.', ch: 'Company Page', reach: 960, likes: 37, comments: 10, eng: 5.2 },
+  { title: 'Umfrage: Eure Themen für Q2', date: '01.03.', ch: 'Gruppe', reach: 480, likes: 16, comments: 24, eng: 6.5 },
+  { title: 'Video: Netzwerken auf Events', date: '27.02.', ch: 'Company Page', reach: 1180, likes: 52, comments: 14, eng: 5.7 },
+  { title: 'Gastbeitrag: Maklerin des Jahres', date: '25.02.', ch: 'Company Page', reach: 1420, likes: 61, comments: 19, eng: 6.3 },
+  { title: 'WhatsApp: Wochenrückblick KW 8', date: '24.02.', ch: 'WhatsApp', reach: 290, likes: 11, comments: 2, eng: 3.8 },
+  { title: 'Karussell: Female Recruiting 101', date: '22.02.', ch: 'Gruppe', reach: 690, likes: 26, comments: 8, eng: 4.6 },
+  { title: 'Reel: Ein Tag bei FemSurance', date: '20.02.', ch: 'Company Page', reach: 1050, likes: 43, comments: 11, eng: 5.3 },
+];
+
+function miniSparkSVG() {
+  const pts = Array.from({length: 7}, () => Math.random());
+  const max = Math.max(...pts), min = Math.min(...pts);
+  const coords = pts.map((v, i) => `${i * 10},${18 - ((v - min) / (max - min || 1)) * 16}`).join(' ');
+  return `<svg viewBox="0 0 60 20" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="#E91E8C" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+}
+
+const tbody = document.getElementById('postTableBody');
+posts.forEach(p => {
+  const engClass = p.eng >= 5.5 ? 'engagement-high' : p.eng >= 4.0 ? 'engagement-mid' : 'engagement-low';
+  tbody.innerHTML += `<tr>
+    <td class="post-title-cell"><span class="post-title-text">${p.title}</span></td>
+    <td>${p.date}</td>
+    <td>${p.ch}</td>
+    <td>${p.reach.toLocaleString('de-DE')}</td>
+    <td>${p.likes}</td>
+    <td>${p.comments}</td>
+    <td><span class="engagement-badge ${engClass}">${p.eng.toFixed(1)} %</span></td>
+    <td><div class="mini-spark">${miniSparkSVG()}</div></td>
+    <td><button class="btn-to-pipeline" data-title="${p.title}" data-ch="${p.ch}">→ Pipeline</button></td>
+  </tr>`;
+});
+
+// ── Send to Pipeline ──
+document.getElementById('postTableBody').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-to-pipeline');
+  if (!btn) return;
+  const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
+  ideas.push({ title: btn.dataset.title, format: btn.dataset.ch });
+  localStorage.setItem('fem_pipeline_ideas', JSON.stringify(ideas));
+  btn.textContent = 'Gesendet!';
+  btn.classList.add('sent');
+});
+</script>
+</body>
+</html>

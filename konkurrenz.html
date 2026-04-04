@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Konkurrenz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C;
+  --fem-pink-light: #fce4f0;
+  --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED;
+  --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.04s; }
+.fade-up:nth-child(2) { animation-delay: 0.10s; }
+.fade-up:nth-child(3) { animation-delay: 0.16s; }
+.fade-up:nth-child(4) { animation-delay: 0.22s; }
+
+/* ── Left Navigation ── */
+.nav-left {
+  position: fixed; top: 0; left: 0;
+  width: 62px; height: 100vh;
+  background: var(--nav-bg);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; z-index: 100;
+}
+.nav-logo {
+  width: 34px; height: 34px; background: var(--fem-pink);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
+}
+.nav-links {
+  display: flex; flex-direction: column; gap: 4px;
+  width: 100%; list-style: none;
+}
+.nav-links a {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-sm); margin: 0 6px;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--fem-pink); }
+.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+
+/* ── Main ── */
+.main { margin-left: 62px; padding: 28px 32px 40px; max-width: 1000px; }
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header h1 em { font-style: normal; color: var(--fem-pink); }
+.header-meta { font-size: 13px; color: var(--text-secondary); }
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
+  padding: 20px 22px; margin-bottom: 22px;
+}
+.card-title {
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px;
+}
+
+/* ── Hero / Goal ── */
+.hero {
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  border-radius: var(--radius-lg);
+  padding: 32px 30px;
+  color: #fff;
+  margin-bottom: 22px;
+}
+.hero-label { font-size: 13px; font-weight: 500; opacity: 0.85; margin-bottom: 8px; }
+.hero-row {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 16px;
+}
+.hero-value { font-size: 36px; font-weight: 700; line-height: 1; }
+.hero-target { font-size: 18px; font-weight: 600; opacity: 0.8; }
+.hero-track {
+  width: 100%; height: 12px; background: rgba(255,255,255,0.25);
+  border-radius: 6px; overflow: hidden; margin-bottom: 10px;
+}
+.hero-fill {
+  height: 100%; background: #fff; border-radius: 6px;
+  transition: width 1s ease;
+}
+.hero-diff {
+  font-size: 13px; opacity: 0.85; text-align: center;
+}
+.hero-diff strong { font-weight: 700; }
+
+/* ── Competitor Table ── */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.comp-table thead th {
+  text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--border);
+}
+.comp-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.comp-table tbody tr:hover { background: var(--bg-secondary); }
+.comp-table input {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  color: var(--text-primary); background: var(--bg-card);
+  transition: border-color 0.2s;
+}
+.comp-table input:focus { outline: none; border-color: var(--fem-pink); }
+.comp-table input[type="number"] { width: 100px; }
+.comp-bar-track {
+  width: 100%; height: 6px; background: var(--bg-secondary);
+  border-radius: 3px; overflow: hidden;
+}
+.comp-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.comp-name-cell { font-weight: 600; }
+.comp-highlight { background: var(--fem-pink-light) !important; }
+.comp-highlight .comp-name-cell { color: var(--fem-pink); }
+
+/* Actions */
+.btn-row { display: flex; gap: 10px; margin-top: 16px; }
+.btn-add {
+  padding: 8px 20px; border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-card);
+  cursor: pointer; font-family: inherit; font-size: 13px;
+  font-weight: 500; color: var(--text-secondary); transition: all 0.2s;
+}
+.btn-add:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.btn-remove {
+  padding: 4px 10px; border: none; background: none;
+  cursor: pointer; font-size: 16px; color: var(--text-secondary);
+  transition: color 0.2s; border-radius: var(--radius-sm);
+}
+.btn-remove:hover { color: #dc2626; background: #fef2f2; }
+
+/* Save indicator */
+.save-indicator {
+  font-size: 12px; color: #16a34a; font-weight: 500;
+  opacity: 0; transition: opacity 0.3s;
+  margin-left: auto;
+}
+.save-indicator.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ Left Navigation ══════════ -->
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Übersicht
+    </a>
+    <a href="performance.html">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Performance
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Pipeline
+    </a>
+    <a href="research.html">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Research
+    </a>
+    <a href="konkurrenz.html" class="active">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Konkurrenz
+    </a>
+    <a href="wochenplan.html">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Wochenplan
+    </a>
+  </ul>
+</nav>
+
+<!-- ══════════ Main Content ══════════ -->
+<main class="main">
+
+  <div class="page-header fade-up">
+    <h1><em>FemSurance</em> Konkurrenzanalyse</h1>
+    <div class="header-meta">Vergleich · Follower-Tracking</div>
+  </div>
+
+  <!-- Hero: FemSurance Progress -->
+  <div class="hero fade-up" id="heroSection">
+    <div class="hero-label">FemSurance Follower-Fortschritt</div>
+    <div class="hero-row">
+      <div class="hero-value" id="heroCurrentVal">1.847</div>
+      <div class="hero-target">Ziel: <span id="heroGoalVal">2.500</span></div>
+    </div>
+    <div class="hero-track">
+      <div class="hero-fill" id="heroFill" style="width:73.9%"></div>
+    </div>
+    <div class="hero-diff" id="heroDiff">Noch <strong>653</strong> Follower bis zum Ziel · 73,9 % erreicht</div>
+  </div>
+
+  <!-- Competitor Comparison -->
+  <div class="card fade-up">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">Vergleichs-Accounts</div>
+      <span class="save-indicator" id="saveIndicator">Gespeichert</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="comp-table" id="compTable">
+        <thead>
+          <tr>
+            <th>Account-Name</th>
+            <th>Follower</th>
+            <th>Eng.-Rate (%)</th>
+            <th>Posts/Woche</th>
+            <th>Vergleich zu FemSurance</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="compBody"></tbody>
+      </table>
+    </div>
+    <div class="btn-row">
+      <button class="btn-add" id="btnAdd">+ Account hinzufügen</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const STORAGE_KEY = 'fem_konkurrenz_data';
+const femFollowers = 1847;
+const femGoal = 2500;
+
+const defaultAccounts = [
+  { name: 'FemSurance', followers: 1847, engagement: '5.4', postsWeek: '4', isFem: true },
+  { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
+  { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
+];
+
+function loadAccounts() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(defaultAccounts));
+}
+
+function saveAccounts(accounts) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+  const indicator = document.getElementById('saveIndicator');
+  indicator.classList.add('show');
+  setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+function getBarColor(index) {
+  const colors = ['#E91E8C', '#7C3AED', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626', '#8b5cf6'];
+  return colors[index % colors.length];
+}
+
+function renderTable() {
+  const accounts = loadAccounts();
+  const tbody = document.getElementById('compBody');
+  tbody.innerHTML = '';
+
+  const maxFollowers = Math.max(...accounts.map(a => parseInt(a.followers) || 0), femGoal);
+
+  accounts.forEach((acc, i) => {
+    const tr = document.createElement('tr');
+    if (acc.isFem) tr.className = 'comp-highlight';
+    const followers = parseInt(acc.followers) || 0;
+    const barW = maxFollowers > 0 ? (followers / maxFollowers * 100) : 0;
+    const diff = followers - femFollowers;
+    const diffText = acc.isFem ? '—' : (followers ? (diff > 0 ? `+${diff.toLocaleString('de-DE')} voraus` : diff < 0 ? `${Math.abs(diff).toLocaleString('de-DE')} weniger` : 'Gleichauf') : '—');
+
+    if (acc.isFem) {
+      tr.innerHTML = `
+        <td class="comp-name-cell">FemSurance</td>
+        <td><strong>${femFollowers.toLocaleString('de-DE')}</strong></td>
+        <td>5,4 %</td>
+        <td>4</td>
+        <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
+        <td></td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td><input type="text" value="${acc.name}" placeholder="Account-Name" data-i="${i}" data-field="name"></td>
+        <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers"></td>
+        <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
+        <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
+        <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
+        <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button></td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+
+  // Update hero
+  const femAcc = accounts.find(a => a.isFem);
+  if (femAcc) {
+    const current = parseInt(femAcc.followers) || femFollowers;
+    const pct = Math.min((current / femGoal) * 100, 100);
+    const remaining = Math.max(femGoal - current, 0);
+    document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
+    document.getElementById('heroGoalVal').textContent = femGoal.toLocaleString('de-DE');
+    document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
+    document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+  }
+}
+
+// Event delegation for inputs
+document.getElementById('compBody').addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT') {
+    const accounts = loadAccounts();
+    const i = parseInt(e.target.dataset.i);
+    const field = e.target.dataset.field;
+    accounts[i][field] = e.target.value;
+    saveAccounts(accounts);
+    // Re-render to update comparison
+    clearTimeout(window._renderTimer);
+    window._renderTimer = setTimeout(renderTable, 600);
+  }
+});
+
+// Remove button
+document.getElementById('compBody').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-remove');
+  if (btn) {
+    const accounts = loadAccounts();
+    const i = parseInt(btn.dataset.i);
+    accounts.splice(i, 1);
+    saveAccounts(accounts);
+    renderTable();
+  }
+});
+
+// Add button
+document.getElementById('btnAdd').addEventListener('click', () => {
+  const accounts = loadAccounts();
+  accounts.push({ name: '', followers: '', engagement: '', postsWeek: '', isFem: false });
+  saveAccounts(accounts);
+  renderTable();
+});
+
+renderTable();
+</script>
+</body>
+</html>
