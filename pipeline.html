@@ -1260,7 +1260,7 @@ function renderBoard() {
       } else if (col.id === 'grafik') {
         const previewHtml = card.previewImage
           ? `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`
-          : `<button class="btn-generate btn-canva-card" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
+          : '';
         generateBtn = previewHtml
           + `<button class="btn-generate btn-canva-prompt" data-card-id="${card.id}" style="margin-top:6px;">Canva-Prompt generieren</button>`
           + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
@@ -1323,13 +1323,6 @@ function renderBoard() {
         }
       }
       if (col.id === 'grafik') {
-        const canvaBtn = el.querySelector('.btn-canva-card');
-        if (canvaBtn) {
-          canvaBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
-          });
-        }
         const promptBtn = el.querySelector('.btn-canva-prompt');
         if (promptBtn) {
           promptBtn.addEventListener('click', async (e) => {
@@ -1359,7 +1352,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
         openCardModal(card.id);
       });
 
