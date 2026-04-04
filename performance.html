@@ -215,61 +215,63 @@ body {
     <div class="header-meta">LinkedIn Analytics · KW 14</div>
   </div>
 
-  <!-- Reichweiten-Ziel -->
+  <!-- Reichweiten-Ziele (3 Spalten) -->
   <div class="card fade-up">
-    <div class="card-title">Reichweiten-Ziel</div>
-    <div class="goal-row">
-      <div class="goal-current">
-        <div class="goal-label">FemSurance Follower aktuell</div>
-        <div class="goal-value" id="perfCurrent">1.847</div>
-      </div>
-      <div class="goal-target">
-        <div class="goal-label">Ziel-Follower</div>
-        <div class="goal-value" id="perfGoal">2.500</div>
-      </div>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="perfFill" style="width: 73.9%;"></div>
-    </div>
-    <div class="goal-diff" id="perfDiff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
-  </div>
+    <div class="card-title">Reichweiten-Ziele</div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0;">
 
-  <!-- LinkedIn Gruppe Ziel -->
-  <div class="card fade-up">
-    <div class="card-title">LinkedIn Gruppe</div>
-    <div class="goal-row">
-      <div class="goal-current">
-        <div class="goal-label">Mitglieder aktuell</div>
-        <div class="goal-value" id="perfGruppeVal" style="color:var(--fem-pink);">–</div>
+      <!-- Company Page -->
+      <div style="padding:0 20px 0 0;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Company Page</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+          <div>
+            <div style="font-size:11px; color:var(--text-secondary);">Follower aktuell</div>
+            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfCurrent">1.847</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
+            <div style="font-size:18px; font-weight:700;" id="perfGoal">2.500</div>
+          </div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="perfFill" style="width:73.9%;"></div></div>
+        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfDiff">Noch <strong>653</strong> · 73,9 % erreicht</div>
       </div>
-      <div class="goal-target">
-        <div class="goal-label">Ziel-Mitglieder</div>
-        <div class="goal-value" id="perfGruppeGoalVal">–</div>
-      </div>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="perfGruppeFill" style="width:0%;"></div>
-    </div>
-    <div class="goal-diff" id="perfGruppeDiff">–</div>
-  </div>
 
-  <!-- WhatsApp Community Ziel -->
-  <div class="card fade-up">
-    <div class="card-title">WhatsApp Community</div>
-    <div class="goal-row">
-      <div class="goal-current">
-        <div class="goal-label">Mitglieder aktuell</div>
-        <div class="goal-value" id="perfWhatsappVal" style="color:var(--fem-pink);">–</div>
+      <!-- Gruppe -->
+      <div style="padding:0 20px; border-left:1px solid var(--border); border-right:1px solid var(--border);">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Gruppe</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+          <div>
+            <div style="font-size:11px; color:var(--text-secondary);">Mitglieder aktuell</div>
+            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfGruppeVal">–</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
+            <div style="font-size:18px; font-weight:700;" id="perfGruppeGoalVal">–</div>
+          </div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="perfGruppeFill" style="width:0%;"></div></div>
+        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfGruppeDiff">–</div>
       </div>
-      <div class="goal-target">
-        <div class="goal-label">Ziel-Mitglieder</div>
-        <div class="goal-value" id="perfWhatsappGoalVal">–</div>
+
+      <!-- WhatsApp -->
+      <div style="padding:0 0 0 20px;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">WhatsApp Community</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+          <div>
+            <div style="font-size:11px; color:var(--text-secondary);">Mitglieder aktuell</div>
+            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfWhatsappVal">–</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
+            <div style="font-size:18px; font-weight:700;" id="perfWhatsappGoalVal">–</div>
+          </div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="perfWhatsappFill" style="width:0%;"></div></div>
+        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfWhatsappDiff">–</div>
       </div>
+
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="perfWhatsappFill" style="width:0%;"></div>
-    </div>
-    <div class="goal-diff" id="perfWhatsappDiff">–</div>
   </div>
 
   <!-- Zeitraum-Filter + Charts -->
@@ -518,7 +520,7 @@ try {
     const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
     const remaining = Math.max(goal - f, 0);
     document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
-    document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+    document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> · ${pct.toFixed(1)} % erreicht`;
   }
 
   // LinkedIn Gruppe block
@@ -530,7 +532,7 @@ try {
     const remaining = Math.max(g - c, 0);
     document.getElementById(fillId).style.width = pct.toFixed(1) + '%';
     document.getElementById(diffId).innerHTML = g > 0
-      ? `Noch <strong>${remaining.toLocaleString('de-DE')} ${label}</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`
+      ? `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> · ${pct.toFixed(1)} % erreicht`
       : '–';
   }
   updateBlock(gm, gg, 'perfGruppeVal', 'perfGruppeGoalVal', 'perfGruppeFill', 'perfGruppeDiff', 'Mitglieder');
