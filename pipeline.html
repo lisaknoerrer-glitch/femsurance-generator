@@ -491,6 +491,70 @@ body {
   max-width: 100%; max-height: 140px; border-radius: var(--radius-sm);
   margin-top: 8px; display: block;
 }
+
+/* ── Plan Modal Tabs + Calendar ── */
+.plan-tabs { display: flex; gap: 0; margin-bottom: 16px; }
+.plan-tab {
+  flex: 1; padding: 10px 8px; border: none; border-bottom: 2px solid var(--border);
+  background: none; font-family: inherit; font-size: 12px; font-weight: 600;
+  color: var(--text-secondary); cursor: pointer; text-align: center;
+  transition: all 0.2s;
+}
+.plan-tab.active { border-bottom-color: var(--fem-pink); color: var(--fem-pink); }
+.plan-tab:hover { color: var(--text-primary); }
+.plan-panel { display: none; }
+.plan-panel.active { display: block; }
+.mini-cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.mini-cal-header span { font-size: 13px; font-weight: 600; }
+.mini-cal-header button {
+  width: 28px; height: 28px; border: none; border-radius: 50%;
+  background: var(--bg-secondary); cursor: pointer; font-size: 14px;
+  color: var(--text-secondary); display: flex; align-items: center;
+  justify-content: center; transition: all 0.15s;
+}
+.mini-cal-header button:hover { background: var(--fem-pink-light); color: var(--fem-pink); }
+.mini-cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+  text-align: center; margin-bottom: 12px;
+}
+.mini-cal-grid .day-label {
+  font-size: 10px; font-weight: 600; color: var(--text-secondary);
+  padding: 4px 0; text-transform: uppercase;
+}
+.mini-cal-grid .day-cell {
+  padding: 6px 0; font-size: 12px; border-radius: 4px;
+  cursor: pointer; transition: all 0.15s; color: var(--text-primary);
+}
+.mini-cal-grid .day-cell:hover { background: var(--fem-pink-light); }
+.mini-cal-grid .day-cell.empty { cursor: default; }
+.mini-cal-grid .day-cell.empty:hover { background: none; }
+.mini-cal-grid .day-cell.recommended {
+  background: var(--fem-pink-light); font-weight: 600;
+}
+.mini-cal-grid .day-cell.selected {
+  background: var(--fem-pink); color: #fff; font-weight: 700;
+}
+.mini-cal-grid .day-cell.today {
+  outline: 2px solid var(--fem-purple); outline-offset: -2px;
+}
+.plan-selected {
+  margin-top: 8px; padding: 8px 12px; background: var(--bg-secondary);
+  border-radius: var(--radius-sm); font-size: 12.5px; display: flex;
+  align-items: center; justify-content: space-between;
+}
+.plan-selected .plan-date { font-weight: 600; color: var(--fem-pink); }
+.plan-selected .btn-plan-save {
+  padding: 6px 16px; border: none; border-radius: 4px;
+  background: var(--fem-pink); color: #fff; font-family: inherit;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+}
+.plan-selected .btn-plan-save:hover { opacity: 0.9; }
+.plan-selected .btn-plan-save.saved {
+  background: #dcfce7; color: #16a34a;
+}
 </style>
 </head>
 <body>
@@ -561,36 +625,57 @@ body {
 
 <!-- ══════════ Post Planen Modal (Grafik → Geplant) ══════════ -->
 <div class="modal-overlay" id="planModal">
-  <div class="modal" style="width:420px;">
+  <div class="modal" style="width:440px;">
     <h3>Post planen</h3>
-    <p id="planModalCardName" style="margin-bottom:14px;"></p>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Posting-Woche</div>
-      <input type="text" id="planWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+    <p id="planModalCardName" style="margin-bottom:12px; font-size:13px; color:var(--text-secondary);"></p>
+
+    <div class="plan-tabs">
+      <button class="plan-tab active" data-ch="cp">🏢 Company Page</button>
+      <button class="plan-tab" data-ch="gr">👥 Gruppe</button>
+      <button class="plan-tab" data-ch="wa">💬 WhatsApp</button>
     </div>
-    <div style="display:flex;gap:12px;margin-bottom:12px;">
-      <div style="flex:1;">
-        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Company Page</div>
-        <select id="planCp" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
-          <option value="Di 10:00">Dienstag 10:00</option>
-          <option value="Do 10:00">Donnerstag 10:00</option>
-        </select>
+
+    <div class="plan-panel active" id="panelCp">
+      <div class="mini-cal-header">
+        <button id="cpPrev">‹</button>
+        <span id="cpMonthLabel"></span>
+        <button id="cpNext">›</button>
       </div>
-      <div style="flex:1;">
-        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">LinkedIn Gruppe</div>
-        <select id="planGr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
-          <option value="Mi 10:00">Mittwoch 10:00</option>
-          <option value="Fr 10:00">Freitag 10:00</option>
-        </select>
+      <div class="mini-cal-grid" id="cpCalGrid"></div>
+      <div class="plan-selected" id="cpSelected" style="display:none;">
+        <span>🏢 <span class="plan-date" id="cpDateLabel"></span> · 10:00</span>
+        <button class="btn-plan-save" id="cpSave">Einplanen</button>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-      <input type="checkbox" id="planWa" checked style="accent-color:var(--fem-pink);">
-      <label for="planWa" style="font-size:13px;cursor:pointer;">WhatsApp Community Mi 08:00</label>
+
+    <div class="plan-panel" id="panelGr">
+      <div class="mini-cal-header">
+        <button id="grPrev">‹</button>
+        <span id="grMonthLabel"></span>
+        <button id="grNext">›</button>
+      </div>
+      <div class="mini-cal-grid" id="grCalGrid"></div>
+      <div class="plan-selected" id="grSelected" style="display:none;">
+        <span>👥 <span class="plan-date" id="grDateLabel"></span> · 10:00</span>
+        <button class="btn-plan-save" id="grSave">Einplanen</button>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;">
-      <button id="planConfirm" style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--fem-pink);color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Einplanen</button>
-      <button id="planCancel" class="btn-cancel">Abbrechen</button>
+
+    <div class="plan-panel" id="panelWa">
+      <div class="mini-cal-header">
+        <button id="waPrev">‹</button>
+        <span id="waMonthLabel"></span>
+        <button id="waNext">›</button>
+      </div>
+      <div class="mini-cal-grid" id="waCalGrid"></div>
+      <div class="plan-selected" id="waSelected" style="display:none;">
+        <span>💬 <span class="plan-date" id="waDateLabel"></span> · 08:00</span>
+        <button class="btn-plan-save" id="waSave">Einplanen</button>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; text-align:right;">
+      <button id="planCancel" class="btn-cancel">Schließen</button>
     </div>
   </div>
 </div>
@@ -680,6 +765,13 @@ body {
       </div>
       <input type="file" id="cmGrafikFile" accept="image/png,image/jpeg" style="display:none;">
       <img id="cmGrafikPreview" class="cm-preview-img" style="display:none;">
+      <div style="margin-top:12px;">
+        <button class="btn-save-modal" id="cmCanvaPromptBtn" style="width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple));">✨ Canva-Prompt generieren</button>
+        <div id="cmCanvaPromptResult" style="display:none; margin-top:8px;">
+          <textarea id="cmCanvaPromptText" rows="6" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;background:var(--bg-secondary);resize:vertical;"></textarea>
+          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:4px;background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
+        </div>
+      </div>
     </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
@@ -1165,7 +1257,16 @@ function renderBoard() {
       el.className = 'kanban-card';
       el.draggable = true;
       el.dataset.id = card.id;
-      const slotInfo = card.slot ? `<span class="kanban-tag tag-green">${card.slot}</span>` : '';
+      let slotInfo = '';
+      if (card.cpDate || card.grDate || card.waDate) {
+        const badges = [];
+        if (card.cpDate) badges.push(`<span class="kanban-tag tag-green">🏢 ${card.cpDate}</span>`);
+        if (card.grDate) badges.push(`<span class="kanban-tag tag-green">👥 ${card.grDate}</span>`);
+        if (card.waDate) badges.push(`<span class="kanban-tag tag-green">💬 ${card.waDate}</span>`);
+        slotInfo = badges.join(' ');
+      } else if (card.slot) {
+        slotInfo = `<span class="kanban-tag tag-green">${card.slot}</span>`;
+      }
 
       // Format badges for Entwurf cards with body containing ---
       let formatBadgesHtml = '';
@@ -1438,6 +1539,13 @@ function openCardModal(cardId) {
   }
 
   // Grafik section — show for grafik/post/geplant/publish
+  const canvaPromptResult = document.getElementById('cmCanvaPromptResult');
+  if (card.canvaPrompt) {
+    document.getElementById('cmCanvaPromptText').value = card.canvaPrompt;
+    canvaPromptResult.style.display = 'block';
+  } else {
+    canvaPromptResult.style.display = 'none';
+  }
   const grafikSection = document.getElementById('cmGrafikSection');
   if (['grafik', 'post', 'geplant', 'publish'].includes(card.col) || card.canvaLink || card.previewImage) {
     grafikSection.classList.add('open');
@@ -1562,37 +1670,183 @@ function handleGrafikFile(file) {
   reader.readAsDataURL(file);
 }
 
-// ── Plan Modal (Grafik → Geplant) ──
+// ── Canva Prompt in Card Modal ──
+document.getElementById('cmCanvaPromptBtn').addEventListener('click', async () => {
+  const card = cards.find(c => c.id === activeCardId);
+  if (!card) return;
+  const btn = document.getElementById('cmCanvaPromptBtn');
+  btn.textContent = 'WIRD GENERIERT...';
+  btn.disabled = true;
+  try {
+    const postText = card.body || card.outline || card.title;
+    const result = await callAnthropic(CANVA_SYSTEM_PROMPT, `Post-Text:\n${postText}`, 1024);
+    card.canvaPrompt = result;
+    saveCards();
+    document.getElementById('cmCanvaPromptText').value = result;
+    document.getElementById('cmCanvaPromptResult').style.display = 'block';
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+  }
+  btn.textContent = '✨ Canva-Prompt generieren';
+  btn.disabled = false;
+});
+
+document.getElementById('cmCanvaPromptCopy').addEventListener('click', () => {
+  const text = document.getElementById('cmCanvaPromptText').value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('cmCanvaPromptCopy');
+    btn.textContent = 'Kopiert ✓';
+    btn.style.background = '#dcfce7'; btn.style.color = '#16a34a'; btn.style.borderColor = '#16a34a';
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+  });
+});
+
+// ── Plan Modal with Mini Calendars ──
 let planCardId = null;
+const MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const DAY_LABELS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+// Tab switching
+document.querySelectorAll('.plan-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.plan-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel' + tab.dataset.ch.charAt(0).toUpperCase() + tab.dataset.ch.slice(1)).classList.add('active');
+  });
+});
+
+// Calendar state per channel
+const calState = {
+  cp: { month: new Date().getMonth(), year: new Date().getFullYear(), selected: null, rec: [2, 4] }, // Di=2, Do=4
+  gr: { month: new Date().getMonth(), year: new Date().getFullYear(), selected: null, rec: [3, 5] }, // Mi=3, Fr=5
+  wa: { month: new Date().getMonth(), year: new Date().getFullYear(), selected: null, rec: [3] },    // Mi=3
+};
+
+function renderCal(ch) {
+  const s = calState[ch];
+  const gridId = ch + 'CalGrid';
+  const labelId = ch + 'MonthLabel';
+  document.getElementById(labelId).textContent = `${MONTH_NAMES[s.month]} ${s.year}`;
+
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  DAY_LABELS.forEach(d => { grid.innerHTML += `<div class="day-label">${d}</div>`; });
+
+  const firstDay = new Date(s.year, s.month, 1);
+  let startDow = firstDay.getDay(); // 0=So
+  startDow = startDow === 0 ? 7 : startDow; // Mo=1
+  const daysInMonth = new Date(s.year, s.month + 1, 0).getDate();
+  const today = new Date();
+
+  for (let i = 1; i < startDow; i++) grid.innerHTML += '<div class="day-cell empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(s.year, s.month, d);
+    const dow = date.getDay() === 0 ? 7 : date.getDay();
+    const isRec = s.rec.includes(dow);
+    const isSelected = s.selected && s.selected.getTime() === date.getTime();
+    const isToday = date.toDateString() === today.toDateString();
+    let cls = 'day-cell';
+    if (isSelected) cls += ' selected';
+    else if (isRec) cls += ' recommended';
+    if (isToday) cls += ' today';
+    grid.innerHTML += `<div class="${cls}" data-d="${d}">${d}</div>`;
+  }
+
+  // Click handler
+  grid.querySelectorAll('.day-cell:not(.empty)').forEach(cell => {
+    cell.addEventListener('click', () => {
+      s.selected = new Date(s.year, s.month, parseInt(cell.dataset.d));
+      renderCal(ch);
+      showSelectedDate(ch);
+    });
+  });
+
+  showSelectedDate(ch);
+}
+
+function showSelectedDate(ch) {
+  const s = calState[ch];
+  const selEl = document.getElementById(ch + 'Selected');
+  const labelEl = document.getElementById(ch + 'DateLabel');
+  if (s.selected) {
+    const dow = DAY_LABELS[(s.selected.getDay() + 6) % 7];
+    const label = `${dow}, ${s.selected.getDate()}. ${MONTH_NAMES[s.selected.getMonth()]}`;
+    labelEl.textContent = label;
+    selEl.style.display = 'flex';
+  } else {
+    selEl.style.display = 'none';
+  }
+}
+
+function formatDateShort(date) {
+  if (!date) return '';
+  const dow = DAY_LABELS[(date.getDay() + 6) % 7];
+  return `${dow} ${date.getDate()}.${date.getMonth() + 1}.`;
+}
+
+// Nav buttons
+['cp', 'gr', 'wa'].forEach(ch => {
+  document.getElementById(ch + 'Prev').addEventListener('click', () => {
+    calState[ch].month--;
+    if (calState[ch].month < 0) { calState[ch].month = 11; calState[ch].year--; }
+    renderCal(ch);
+  });
+  document.getElementById(ch + 'Next').addEventListener('click', () => {
+    calState[ch].month++;
+    if (calState[ch].month > 11) { calState[ch].month = 0; calState[ch].year++; }
+    renderCal(ch);
+  });
+});
+
+// Save buttons per channel
+function saveChannelDate(ch, field, timeStr) {
+  document.getElementById(ch + 'Save').addEventListener('click', () => {
+    const card = cards.find(c => c.id === planCardId);
+    if (!card || !calState[ch].selected) return;
+    card[field] = formatDateShort(calState[ch].selected) + ' ' + timeStr;
+    // Build slot display
+    const parts = [];
+    if (card.cpDate) parts.push('🏢 ' + card.cpDate);
+    if (card.grDate) parts.push('👥 ' + card.grDate);
+    if (card.waDate) parts.push('💬 ' + card.waDate);
+    card.slot = parts.join(' · ');
+    if (parts.length > 0) card.col = 'geplant';
+    saveCards();
+    const btn = document.getElementById(ch + 'Save');
+    btn.textContent = 'Eingeplant ✓';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = 'Einplanen'; btn.classList.remove('saved'); }, 1500);
+    renderBoard();
+  });
+}
+saveChannelDate('cp', 'cpDate', '10:00');
+saveChannelDate('gr', 'grDate', '10:00');
+saveChannelDate('wa', 'waDate', '08:00');
 
 function openPlanModal(cardId) {
   const card = cards.find(c => c.id === cardId);
   if (!card) return;
   planCardId = cardId;
   document.getElementById('planModalCardName').textContent = `„${card.title}" einplanen`;
-  document.getElementById('planWeek').value = card.postingWeek || '';
-  document.getElementById('planCp').value = card.cpSlot || 'Di 10:00';
-  document.getElementById('planGr').value = card.grSlot || 'Mi 10:00';
-  document.getElementById('planWa').checked = card.whatsapp !== false;
+
+  // Reset tabs
+  document.querySelectorAll('.plan-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+  document.querySelectorAll('.plan-panel').forEach((p, i) => p.classList.toggle('active', i === 0));
+
+  // Reset calendars to current month, restore saved dates
+  ['cp', 'gr', 'wa'].forEach(ch => {
+    calState[ch].month = new Date().getMonth();
+    calState[ch].year = new Date().getFullYear();
+    calState[ch].selected = null;
+  });
+
+  // Render all calendars
+  ['cp', 'gr', 'wa'].forEach(ch => renderCal(ch));
+
   document.getElementById('planModal').classList.add('open');
 }
-
-document.getElementById('planConfirm').addEventListener('click', () => {
-  const card = cards.find(c => c.id === planCardId);
-  if (!card) return;
-  card.postingWeek = document.getElementById('planWeek').value.trim();
-  card.cpSlot = document.getElementById('planCp').value;
-  card.grSlot = document.getElementById('planGr').value;
-  card.whatsapp = document.getElementById('planWa').checked;
-  // Build slot display string
-  const slots = [card.cpSlot, card.grSlot];
-  if (card.whatsapp) slots.push('Mi 08:00');
-  card.slot = slots.join(' · ');
-  card.col = 'geplant';
-  saveCards();
-  document.getElementById('planModal').classList.remove('open');
-  renderBoard();
-});
 
 document.getElementById('planCancel').addEventListener('click', () => {
   document.getElementById('planModal').classList.remove('open');
