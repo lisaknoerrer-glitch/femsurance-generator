@@ -612,20 +612,38 @@ if (b2.analytics) document.getElementById('b2Analytics').value = b2.analytics;
 if (b2.mode) document.getElementById('b2Mode').value = b2.mode;
 
 // ══════════ BLOCK 3: Follower-Ziel (synced with fem_konkurrenz_data) ══════════
-function loadKonkurrenz() {
+function loadShared() {
   try {
-    const data = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '[]');
-    return data;
-  } catch { return []; }
+    const raw = localStorage.getItem('fem_konkurrenz_data');
+    if (raw) {
+      const d = JSON.parse(raw);
+      // Handle old array format
+      if (Array.isArray(d)) {
+        const fem = d.find(a => a.isFem);
+        return { femFollower: (fem && parseInt(fem.followers)) || 0, goal: (fem && parseInt(fem.goal)) || 0 };
+      }
+      return { femFollower: d.femFollower ?? 0, goal: d.goal ?? 0 };
+    }
+  } catch {}
+  return { femFollower: 0, goal: 0 };
 }
-function saveKonkurrenzFollowers(current, goal) {
-  const accounts = loadKonkurrenz();
-  const fem = accounts.find(a => a.isFem);
-  if (fem) {
-    fem.followers = String(current);
-    fem.goal = goal;
+
+function saveShared(femFollower, goal) {
+  try {
+    const raw = localStorage.getItem('fem_konkurrenz_data');
+    const existing = raw ? JSON.parse(raw) : {};
+    // Preserve accounts array if present
+    if (Array.isArray(existing)) {
+      // Migrate old format
+      localStorage.setItem('fem_konkurrenz_data', JSON.stringify({ femFollower, goal, accounts: existing.filter(a => !a.isFem) }));
+    } else {
+      existing.femFollower = femFollower;
+      existing.goal = goal;
+      localStorage.setItem('fem_konkurrenz_data', JSON.stringify(existing));
+    }
+  } catch {
+    localStorage.setItem('fem_konkurrenz_data', JSON.stringify({ femFollower, goal }));
   }
-  localStorage.setItem('fem_konkurrenz_data', JSON.stringify(accounts));
 }
 
 function calcFollower() {
@@ -641,17 +659,16 @@ function calcFollower() {
     document.getElementById('b3Months').textContent = diff === 0 && goal > 0 ? 'Ziel erreicht!' : '–';
   }
   save('fem_wp_block3', { current, goal });
-  saveKonkurrenzFollowers(current, goal);
+  saveShared(current, goal);
 }
 document.getElementById('b3Current').addEventListener('input', calcFollower);
 document.getElementById('b3Goal').addEventListener('input', calcFollower);
 
-// Restore: prefer fem_konkurrenz_data, fallback to fem_wp_block3
-const konkurrenzAccounts = loadKonkurrenz();
-const femAccount = konkurrenzAccounts.find(a => a.isFem);
-const b3 = load('fem_wp_block3', {});
-document.getElementById('b3Current').value = (femAccount && femAccount.followers) ? parseInt(femAccount.followers) : (b3.current || '');
-document.getElementById('b3Goal').value = (femAccount && femAccount.goal) ? parseInt(femAccount.goal) : (b3.goal || '');
+// Restore from fem_konkurrenz_data
+const shared = loadShared();
+const b3fallback = load('fem_wp_block3', {});
+document.getElementById('b3Current').value = shared.femFollower || b3fallback.current || '';
+document.getElementById('b3Goal').value = shared.goal || b3fallback.goal || '';
 calcFollower();
 
 // ══════════ BLOCK 4: URLs ══════════
