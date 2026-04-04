@@ -455,6 +455,42 @@ body {
   cursor: pointer; transition: all 0.2s;
 }
 .gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
+
+/* ── Grafik Preview on Cards ── */
+.grafik-thumb {
+  width: 100%; max-height: 100px; object-fit: cover;
+  border-radius: 4px; margin-top: 8px; display: block;
+}
+/* ── Grafik Section in Modal ── */
+.cm-grafik-section {
+  display: none; margin-top: 4px; padding: 16px;
+  background: var(--bg-secondary); border-radius: var(--radius-sm);
+}
+.cm-grafik-section.open { display: block; }
+.cm-canva-row {
+  display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;
+}
+.cm-canva-row input { flex: 1; }
+.cm-canva-row .btn-canva-open {
+  padding: 8px 14px; border: 1px solid var(--fem-pink); border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--fem-pink); font-family: inherit;
+  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: all 0.2s;
+}
+.cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: #fff; }
+.cm-drop-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius-sm);
+  padding: 16px; text-align: center; color: var(--text-secondary);
+  font-size: 12px; cursor: pointer; transition: all 0.2s;
+}
+.cm-drop-zone:hover, .cm-drop-zone.drag-over {
+  border-color: var(--fem-pink); background: var(--fem-pink-light); color: var(--fem-pink);
+}
+.cm-drop-zone.has-file { border-style: solid; border-color: var(--fem-pink); }
+.cm-preview-img {
+  max-width: 100%; max-height: 140px; border-radius: var(--radius-sm);
+  margin-top: 8px; display: block;
+}
 </style>
 </head>
 <body>
@@ -629,6 +665,22 @@ body {
       <button class="btn-save-modal" id="cmGenPost" style="width:100%; margin-top:10px;">Post generieren</button>
       <div id="cmGenStatus" style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px;"></div>
     </div>
+    <div class="cm-grafik-section" id="cmGrafikSection">
+      <div class="cm-label" style="margin-bottom:10px; color:var(--fem-pink);">Grafik</div>
+      <div class="cm-canva-row">
+        <div style="flex:1;">
+          <div class="cm-label">Canva-Link</div>
+          <input type="url" id="cmCanvaLink" placeholder="https://www.canva.com/design/...">
+        </div>
+        <button class="btn-canva-open" id="cmCanvaOpen">🎨 In Canva öffnen</button>
+      </div>
+      <div class="cm-label">Grafik-Vorschau hochladen</div>
+      <div class="cm-drop-zone" id="cmGrafikDrop">
+        <div>PNG oder JPG hierher ziehen</div>
+      </div>
+      <input type="file" id="cmGrafikFile" accept="image/png,image/jpeg" style="display:none;">
+      <img id="cmGrafikPreview" class="cm-preview-img" style="display:none;">
+    </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
       <textarea id="cmBody"></textarea>
@@ -769,6 +821,18 @@ SPRACHE & TON:
 - Emotion + Klarheit
 - Zitate nur aus Quellmaterial – nie erfunden
 - Keine generischen Aussagen`;
+
+const CANVA_SYSTEM_PROMPT = `Du bist ein Canva Design-Experte für FemSurance. Erstelle einen präzisen Bildprompt für Canva Magic Media basierend auf dem Post-Text.
+
+Format:
+Stil: Modern, clean, FemSurance Pink (#E91E8C) und Lila, professionell
+Motiv: [Hauptmotiv beschreiben]
+Stimmung: [Empowernd / Faktenbasiert / Dialogisch]
+Elemente: [2-3 visuelle Elemente]
+Text auf Bild: [Kernaussage max. 8 Wörter]
+Format: 1:1 quadratisch für LinkedIn
+
+Schreibe den Prompt auf Englisch da Canva Magic Media Englisch bevorzugt.`;
 
 // ── Default Card Data ──
 const defaultCards = [
@@ -1031,6 +1095,55 @@ async function generatePostFromOutline(card, outlineText, btnEl, genArea) {
   }
 }
 
+// ── Generate Canva Prompt ──
+async function generateCanvaPrompt(card, btnEl, cardEl) {
+  btnEl.textContent = 'PROMPT WIRD GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const postText = card.body || card.outline || card.title;
+    const resultText = await callAnthropic(CANVA_SYSTEM_PROMPT, `Post-Text:\n${postText}`, 1024);
+
+    card.canvaPrompt = resultText;
+    saveCards();
+
+    // Show result below button
+    let resultArea = cardEl.querySelector('.canva-prompt-result');
+    if (!resultArea) {
+      resultArea = document.createElement('div');
+      resultArea.className = 'canva-prompt-result';
+      resultArea.style.cssText = 'margin-top:8px; padding:10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:11.5px;';
+      btnEl.after(resultArea);
+    }
+    resultArea.innerHTML = `
+      <div style="white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto;">${resultText}</div>
+      <button class="canva-prompt-copy" style="padding:5px 12px; border:1px solid var(--fem-pink); border-radius:4px; background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer;">📋 Kopieren</button>
+    `;
+    resultArea.querySelector('.canva-prompt-copy').addEventListener('click', e => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(resultText).then(() => {
+        const btn2 = resultArea.querySelector('.canva-prompt-copy');
+        btn2.textContent = 'Kopiert ✓';
+        btn2.style.background = '#dcfce7';
+        btn2.style.color = '#16a34a';
+        btn2.style.borderColor = '#16a34a';
+        setTimeout(() => { btn2.textContent = '📋 Kopieren'; btn2.style.background = ''; btn2.style.color = ''; btn2.style.borderColor = ''; }, 2000);
+      });
+    });
+
+    btnEl.textContent = 'Canva-Prompt generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btnEl.textContent = 'Canva-Prompt generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
+
 // ── Render Board ──
 function renderBoard() {
   const board = document.getElementById('kanbanBoard');
@@ -1072,7 +1185,12 @@ function renderBoard() {
       } else if (col.id === 'post') {
         generateBtn = `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
       } else if (col.id === 'grafik') {
-        generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
+        const previewHtml = card.previewImage
+          ? `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`
+          : `<button class="btn-generate btn-canva-card" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
+        generateBtn = previewHtml
+          + `<button class="btn-generate btn-canva-prompt" data-card-id="${card.id}" style="margin-top:6px;">Canva-Prompt generieren</button>`
+          + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
       } else if (col.id === 'geplant') {
         generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
       }
@@ -1118,6 +1236,20 @@ function renderBoard() {
         }
       }
       if (col.id === 'grafik') {
+        const canvaBtn = el.querySelector('.btn-canva-card');
+        if (canvaBtn) {
+          canvaBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
+          });
+        }
+        const promptBtn = el.querySelector('.btn-canva-prompt');
+        if (promptBtn) {
+          promptBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await generateCanvaPrompt(card, promptBtn, el);
+          });
+        }
         const btn = el.querySelector('.btn-plan-post');
         if (btn) {
           btn.addEventListener('click', (e) => {
@@ -1140,7 +1272,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
         openCardModal(card.id);
       });
 
@@ -1305,6 +1437,25 @@ function openCardModal(cardId) {
     planSection.style.display = 'none';
   }
 
+  // Grafik section — show for grafik/post/geplant/publish
+  const grafikSection = document.getElementById('cmGrafikSection');
+  if (['grafik', 'post', 'geplant', 'publish'].includes(card.col) || card.canvaLink || card.previewImage) {
+    grafikSection.classList.add('open');
+    document.getElementById('cmCanvaLink').value = card.canvaLink || '';
+    const preview = document.getElementById('cmGrafikPreview');
+    if (card.previewImage) {
+      preview.src = card.previewImage;
+      preview.style.display = 'block';
+      document.getElementById('cmGrafikDrop').classList.add('has-file');
+    } else {
+      preview.style.display = 'none';
+      preview.src = '';
+      document.getElementById('cmGrafikDrop').classList.remove('has-file');
+    }
+  } else {
+    grafikSection.classList.remove('open');
+  }
+
   // Body
   const bodyField = document.getElementById('cmBodyField');
   const bodyTa = document.getElementById('cmBody');
@@ -1337,6 +1488,11 @@ document.getElementById('cmSave').addEventListener('click', () => {
     card.grSlot = document.getElementById('cmGrSlot').value;
     card.whatsapp = document.getElementById('cmWhatsapp').checked;
   }
+  if (document.getElementById('cmGrafikSection').classList.contains('open')) {
+    card.canvaLink = document.getElementById('cmCanvaLink').value.trim();
+    const prev = document.getElementById('cmGrafikPreview');
+    if (prev.src && prev.style.display !== 'none') card.previewImage = prev.src;
+  }
   if (document.getElementById('cmBodyField').style.display !== 'none') {
     card.body = document.getElementById('cmBody').value;
   }
@@ -1363,6 +1519,48 @@ document.getElementById('cardModal').addEventListener('click', e => {
     e.currentTarget.classList.remove('open');
   }
 });
+
+// ── Grafik modal: Canva open + file upload ──
+document.getElementById('cmCanvaOpen').addEventListener('click', () => {
+  const link = document.getElementById('cmCanvaLink').value.trim();
+  if (link) {
+    window.open(link, '_blank');
+  } else {
+    window.open('https://www.canva.com/create/social-media/', '_blank');
+  }
+});
+
+const cmGrafikDrop = document.getElementById('cmGrafikDrop');
+const cmGrafikFile = document.getElementById('cmGrafikFile');
+
+cmGrafikDrop.addEventListener('click', () => cmGrafikFile.click());
+cmGrafikDrop.addEventListener('dragover', e => { e.preventDefault(); cmGrafikDrop.classList.add('drag-over'); });
+cmGrafikDrop.addEventListener('dragleave', () => cmGrafikDrop.classList.remove('drag-over'));
+cmGrafikDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  cmGrafikDrop.classList.remove('drag-over');
+  handleGrafikFile(e.dataTransfer.files[0]);
+});
+cmGrafikFile.addEventListener('change', e => handleGrafikFile(e.target.files[0]));
+
+function handleGrafikFile(file) {
+  if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('cmGrafikPreview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    cmGrafikDrop.classList.add('has-file');
+    cmGrafikDrop.innerHTML = '<div>Bild geladen ✓</div>';
+    // Auto-save to card
+    const card = cards.find(c => c.id === activeCardId);
+    if (card) {
+      card.previewImage = e.target.result;
+      saveCards();
+    }
+  };
+  reader.readAsDataURL(file);
+}
 
 // ── Plan Modal (Grafik → Geplant) ──
 let planCardId = null;
