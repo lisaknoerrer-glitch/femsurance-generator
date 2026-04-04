@@ -314,10 +314,12 @@ body {
         <div class="kpi-field"><label>Shares</label><input id="kf_post_shares" data-s="post" data-k="shares"></div>
       </div>
 
-      <div class="kpi-section-title">Seite (30 Tage)</div>
+      <div class="kpi-section-title">Inhalte (letzte 30 Tage)</div>
       <div class="kpi-grid">
-        <div class="kpi-field"><label>Impressions</label><input id="kf_site_impressions" data-s="site" data-k="impressions"></div>
-        <div class="kpi-field"><label>Engagement-Rate %</label><input id="kf_site_eng_rate" data-s="site" data-k="engagement_rate_pct"></div>
+        <div class="kpi-field"><label>Impressions (letzte 30 Tage)</label><input id="kf_site_impressions" data-s="site" data-k="impressions"></div>
+        <div class="kpi-field"><label>Reaktionen (letzte 30 Tage)</label><input id="kf_site_reaktionen" data-s="site" data-k="reaktionen"></div>
+        <div class="kpi-field"><label>Kommentare (letzte 30 Tage)</label><input id="kf_site_kommentare" data-s="site" data-k="kommentare"></div>
+        <div class="kpi-field"><label>Direkt geteilte Beiträge (letzte 30 Tage)</label><input id="kf_site_shares" data-s="site" data-k="shares"></div>
       </div>
 
       <div class="kpi-section-title">Suche (7 Tage)</div>
@@ -952,9 +954,11 @@ const KPI_DEFS = [
   { key: 'post_reaktionen', label: 'Reaktionen', defaultTarget: 50, paths: ['post.reaktionen', 'post_analytics.reaktionen', 'post_reaktionen'] },
   { key: 'post_kommentare', label: 'Kommentare', defaultTarget: 10, paths: ['post.kommentare', 'post_analytics.kommentare', 'post_kommentare'] },
   { key: 'post_shares', label: 'Shares', defaultTarget: 5, paths: ['post.shares', 'post_analytics.shares', 'post_shares'] },
-  { section: 'Seite' },
-  { key: 'site_impressions', label: 'Impressions 30 Tage', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
-  { key: 'site_eng_rate', label: 'Engagement-Rate 30T %', defaultTarget: 6, paths: ['site.engagement_rate_pct', 'content_summary.engagement_rate_pct', 'site_eng_rate'], pct: true },
+  { section: 'Inhalte (letzte 30 Tage)' },
+  { key: 'site_impressions', label: 'Impressions (letzte 30 Tage)', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
+  { key: 'site_reaktionen', label: 'Reaktionen (letzte 30 Tage)', defaultTarget: 200, paths: ['site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
+  { key: 'site_kommentare', label: 'Kommentare (letzte 30 Tage)', defaultTarget: 30, paths: ['site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
+  { key: 'site_shares', label: 'Direkt geteilte Beiträge (letzte 30 Tage)', defaultTarget: 15, paths: ['site.shares', 'content_summary.shares', 'site_shares'] },
   { section: 'Sichtbarkeit & Funnel' },
   { key: 'search_anzeigen', label: 'Suchanzeigen 7 Tage', defaultTarget: 200, paths: ['search.suchanzeigen', 'search_summary.suchanzeigen', 'search_anzeigen'] },
   { key: 'visitor_aufrufe', label: 'Seitenaufrufe 30 Tage', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },

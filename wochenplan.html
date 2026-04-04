@@ -569,13 +569,12 @@ textarea { resize: vertical; line-height: 1.6; }
           <div class="b2-kpi-field"><label>Gen. Follower</label><input data-b2="post_follower_gen"></div>
         </div>
 
-        <div class="b2-section">Seite (30 Tage)</div>
+        <div class="b2-section">Inhalte (letzte 30 Tage)</div>
         <div class="b2-kpi-grid">
-          <div class="b2-kpi-field"><label>Impressions 30T</label><input data-b2="site_impressions"></div>
-          <div class="b2-kpi-field"><label>Engagement-Rate 30T %</label><input data-b2="site_eng_rate"></div>
-          <div class="b2-kpi-field"><label>Reaktionen 30T</label><input data-b2="site_reaktionen"></div>
-          <div class="b2-kpi-field"><label>Kommentare 30T</label><input data-b2="site_kommentare"></div>
-          <div class="b2-kpi-field"><label>Shares 30T</label><input data-b2="site_shares"></div>
+          <div class="b2-kpi-field"><label>Impressions (letzte 30 Tage)</label><input data-b2="site_impressions"></div>
+          <div class="b2-kpi-field"><label>Reaktionen (letzte 30 Tage)</label><input data-b2="site_reaktionen"></div>
+          <div class="b2-kpi-field"><label>Kommentare (letzte 30 Tage)</label><input data-b2="site_kommentare"></div>
+          <div class="b2-kpi-field"><label>Direkt geteilte Beiträge (letzte 30 Tage)</label><input data-b2="site_shares"></div>
         </div>
 
         <div class="b2-section">Sichtbarkeit &amp; Funnel</div>
@@ -1125,7 +1124,6 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
     if (cs.shares) b2Auto.post_shares = cs.shares;
     // Site-level fields (same source for now)
     if (cs.impressions) b2Auto.site_impressions = cs.impressions;
-    if (cs.engagement_rate_pct) b2Auto.site_eng_rate = cs.engagement_rate_pct;
     if (cs.reaktionen) b2Auto.site_reaktionen = cs.reaktionen;
     if (cs.kommentare) b2Auto.site_kommentare = cs.kommentare;
     if (cs.shares) b2Auto.site_shares = cs.shares;
@@ -1265,10 +1263,9 @@ document.getElementById('b2LoadLast').addEventListener('click', () => {
     post_seitenbesucher: '',
     post_follower_gen: '',
     site_impressions: last.site?.impressions ?? last.content_summary?.impressions ?? '',
-    site_eng_rate: last.site?.engagement_rate_pct ?? last.content_summary?.engagement_rate_pct ?? '',
-    site_reaktionen: last.site?.reaktionen ?? '',
-    site_kommentare: last.site?.kommentare ?? '',
-    site_shares: last.site?.shares ?? '',
+    site_reaktionen: last.site?.reaktionen ?? last.content_summary?.reaktionen ?? '',
+    site_kommentare: last.site?.kommentare ?? last.content_summary?.kommentare ?? '',
+    site_shares: last.site?.shares ?? last.content_summary?.shares ?? '',
     search_anzeigen: last.search?.suchanzeigen ?? last.search_summary?.suchanzeigen ?? '',
     search_change: last.search?.change_pct ?? last.search_summary?.change_pct ?? '',
     visitor_aufrufe: last.visitor?.seitenaufrufe ?? last.visitor_summary?.seitenaufrufe ?? '',
@@ -1522,7 +1519,7 @@ function collectPrompt() {
     const lines = [`## Performance-Daten KW ${kwVal}`];
     const v = b2data;
     lines.push(`Post: Impressions ${v.post_impressions||'–'}, Indiv. ${v.post_ind_impressions||'–'}, Engagements ${v.post_engagements||'–'}, Eng-Rate ${v.post_eng_rate||'–'}%, Klicks ${v.post_klicks||'–'}, CTR ${v.post_ctr||'–'}%, Reaktionen ${v.post_reaktionen||'–'}, Kommentare ${v.post_kommentare||'–'}, Shares ${v.post_shares||'–'}`);
-    lines.push(`Seite 30T: Impressions ${v.site_impressions||'–'}, Eng-Rate ${v.site_eng_rate||'–'}%, Reaktionen ${v.site_reaktionen||'–'}, Kommentare ${v.site_kommentare||'–'}, Shares ${v.site_shares||'–'}`);
+    lines.push(`Inhalte (letzte 30 Tage): Impressions ${v.site_impressions||'–'}, Reaktionen ${v.site_reaktionen||'–'}, Kommentare ${v.site_kommentare||'–'}, Direkt geteilte Beiträge ${v.site_shares||'–'}`);
     lines.push(`Suche 7T: Suchanzeigen ${v.search_anzeigen||'–'}, Veränderung ${v.search_change||'–'}%`);
     lines.push(`Besucher 30T: Seitenaufrufe ${v.visitor_aufrufe||'–'}, Indiv. Besucher ${v.visitor_unique||'–'}`);
     lines.push(`Follower: gesamt ${v.follower_gesamt||'–'}, neu ${v.follower_neu||'–'}`);
