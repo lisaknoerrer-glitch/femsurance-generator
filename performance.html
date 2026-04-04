@@ -234,6 +234,22 @@ body {
     <div class="goal-diff" id="perfDiff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
   </div>
 
+  <!-- Kanal-Übersicht -->
+  <div class="fade-up" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:22px;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:22px; font-weight:700; color:var(--text-primary);" id="perfCompanyFollower">–</div>
+      <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Company Page Follower</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:22px; font-weight:700; color:var(--text-primary);" id="perfGruppeMembers">–</div>
+      <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">LinkedIn Gruppe Mitglieder</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:22px; font-weight:700; color:var(--text-primary);" id="perfWhatsappMembers">–</div>
+      <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">WhatsApp Community Mitglieder</div>
+    </div>
+  </div>
+
   <!-- Zeitraum-Filter + Chart -->
   <div class="card fade-up">
     <div class="card-title">Follower-Entwicklung</div>
@@ -417,17 +433,20 @@ document.getElementById('postTableBody').addEventListener('click', e => {
   btn.classList.add('sent');
 });
 
-// ── Reichweiten-Ziel from localStorage ──
+// ── Reichweiten-Ziel + Kanäle from localStorage ──
 try {
   const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-  let f, goal;
+  let f, goal, gm, wm;
   if (Array.isArray(raw)) {
     const fem = raw.find(a => a.isFem);
     f = fem ? parseInt(fem.followers) : 0;
     goal = fem ? (parseInt(fem.goal) || 2500) : 2500;
+    gm = 0; wm = 0;
   } else {
     f = parseInt(raw.femFollower) || 0;
     goal = parseInt(raw.goal) || 2500;
+    gm = parseInt(raw.gruppeMembers) || 0;
+    wm = parseInt(raw.whatsappMembers) || 0;
   }
   if (f > 0) {
     document.getElementById('perfCurrent').textContent = f.toLocaleString('de-DE');
@@ -437,6 +456,9 @@ try {
     document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
     document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
   }
+  document.getElementById('perfCompanyFollower').textContent = f > 0 ? f.toLocaleString('de-DE') : '–';
+  document.getElementById('perfGruppeMembers').textContent = gm > 0 ? gm.toLocaleString('de-DE') : '–';
+  document.getElementById('perfWhatsappMembers').textContent = wm > 0 ? wm.toLocaleString('de-DE') : '–';
 } catch (e) {}
 </script>
 </body>

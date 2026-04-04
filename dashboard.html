@@ -620,6 +620,28 @@ body {
     </div>
   </div>
 
+  <!-- ── Kanal-Übersicht ── -->
+  <div class="stats-row fade-up" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card" style="text-align:center;">
+      <div class="perf-stat">
+        <div class="perf-value" id="dashCompanyFollower">–</div>
+        <div class="perf-label">Company Page Follower</div>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="perf-stat">
+        <div class="perf-value" id="dashGruppeMembers">–</div>
+        <div class="perf-label">LinkedIn Gruppe Mitglieder</div>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="perf-stat">
+        <div class="perf-value" id="dashWhatsappMembers">–</div>
+        <div class="perf-label">WhatsApp Community Mitglieder</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Content Pipeline Kanban ── -->
   <div class="kanban-section card fade-up">
     <div class="card-title">Content Pipeline</div>
@@ -774,18 +796,20 @@ body {
     }
   } catch (e) {}
 
-  // Konkurrenz follower data — reads { femFollower, goal } from fem_konkurrenz_data
+  // Konkurrenz data — reads { femFollower, goal, gruppeMembers, whatsappMembers }
   try {
     const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-    // Handle both new { femFollower, goal } and legacy array format
-    let f, goal;
+    let f, goal, gm, wm;
     if (Array.isArray(raw)) {
       const fem = raw.find(a => a.isFem);
       f = fem ? parseInt(fem.followers) : 0;
       goal = fem ? (parseInt(fem.goal) || 2500) : 2500;
+      gm = 0; wm = 0;
     } else {
       f = parseInt(raw.femFollower) || 0;
       goal = parseInt(raw.goal) || 2500;
+      gm = parseInt(raw.gruppeMembers) || 0;
+      wm = parseInt(raw.whatsappMembers) || 0;
     }
     if (f > 0) {
       document.querySelectorAll('.perf-value')[0].textContent = f.toLocaleString('de-DE');
@@ -796,6 +820,9 @@ body {
       document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
       document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
     }
+    document.getElementById('dashCompanyFollower').textContent = f > 0 ? f.toLocaleString('de-DE') : '–';
+    document.getElementById('dashGruppeMembers').textContent = gm > 0 ? gm.toLocaleString('de-DE') : '–';
+    document.getElementById('dashWhatsappMembers').textContent = wm > 0 ? wm.toLocaleString('de-DE') : '–';
   } catch (e) {}
 })();
 </script>
