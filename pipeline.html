@@ -822,6 +822,18 @@ SPRACHE & TON:
 - Zitate nur aus Quellmaterial – nie erfunden
 - Keine generischen Aussagen`;
 
+const CANVA_SYSTEM_PROMPT = `Du bist ein Canva Design-Experte für FemSurance. Erstelle einen präzisen Bildprompt für Canva Magic Media basierend auf dem Post-Text.
+
+Format:
+Stil: Modern, clean, FemSurance Pink (#E91E8C) und Lila, professionell
+Motiv: [Hauptmotiv beschreiben]
+Stimmung: [Empowernd / Faktenbasiert / Dialogisch]
+Elemente: [2-3 visuelle Elemente]
+Text auf Bild: [Kernaussage max. 8 Wörter]
+Format: 1:1 quadratisch für LinkedIn
+
+Schreibe den Prompt auf Englisch da Canva Magic Media Englisch bevorzugt.`;
+
 // ── Default Card Data ──
 const defaultCards = [
   { id: 1,  col: 'ideen',    title: 'Podcast-Recap: Diversität in der Versicherung', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '10.04.', body: '' },
@@ -1083,6 +1095,55 @@ async function generatePostFromOutline(card, outlineText, btnEl, genArea) {
   }
 }
 
+// ── Generate Canva Prompt ──
+async function generateCanvaPrompt(card, btnEl, cardEl) {
+  btnEl.textContent = 'PROMPT WIRD GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const postText = card.body || card.outline || card.title;
+    const resultText = await callAnthropic(CANVA_SYSTEM_PROMPT, `Post-Text:\n${postText}`, 1024);
+
+    card.canvaPrompt = resultText;
+    saveCards();
+
+    // Show result below button
+    let resultArea = cardEl.querySelector('.canva-prompt-result');
+    if (!resultArea) {
+      resultArea = document.createElement('div');
+      resultArea.className = 'canva-prompt-result';
+      resultArea.style.cssText = 'margin-top:8px; padding:10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:11.5px;';
+      btnEl.after(resultArea);
+    }
+    resultArea.innerHTML = `
+      <div style="white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto;">${resultText}</div>
+      <button class="canva-prompt-copy" style="padding:5px 12px; border:1px solid var(--fem-pink); border-radius:4px; background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer;">📋 Kopieren</button>
+    `;
+    resultArea.querySelector('.canva-prompt-copy').addEventListener('click', e => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(resultText).then(() => {
+        const btn2 = resultArea.querySelector('.canva-prompt-copy');
+        btn2.textContent = 'Kopiert ✓';
+        btn2.style.background = '#dcfce7';
+        btn2.style.color = '#16a34a';
+        btn2.style.borderColor = '#16a34a';
+        setTimeout(() => { btn2.textContent = '📋 Kopieren'; btn2.style.background = ''; btn2.style.color = ''; btn2.style.borderColor = ''; }, 2000);
+      });
+    });
+
+    btnEl.textContent = 'Canva-Prompt generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btnEl.textContent = 'Canva-Prompt generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
+
 // ── Render Board ──
 function renderBoard() {
   const board = document.getElementById('kanbanBoard');
@@ -1127,7 +1188,9 @@ function renderBoard() {
         const previewHtml = card.previewImage
           ? `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`
           : `<button class="btn-generate btn-canva-card" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
-        generateBtn = previewHtml + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
+        generateBtn = previewHtml
+          + `<button class="btn-generate btn-canva-prompt" data-card-id="${card.id}" style="margin-top:6px;">Canva-Prompt generieren</button>`
+          + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
       } else if (col.id === 'geplant') {
         generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
       }
@@ -1180,6 +1243,13 @@ function renderBoard() {
             window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
           });
         }
+        const promptBtn = el.querySelector('.btn-canva-prompt');
+        if (promptBtn) {
+          promptBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await generateCanvaPrompt(card, promptBtn, el);
+          });
+        }
         const btn = el.querySelector('.btn-plan-post');
         if (btn) {
           btn.addEventListener('click', (e) => {
@@ -1202,7 +1272,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
         openCardModal(card.id);
       });
 
