@@ -274,41 +274,45 @@ body {
     </div>
   </div>
 
-  <!-- Zeitraum-Filter + Charts -->
-  <div class="card fade-up">
-    <div class="card-title">Follower-Entwicklung · LinkedIn Company Page</div>
-    <div class="filter-bar" id="chartFilter">
-      <button class="filter-btn" data-days="7">7 Tage</button>
-      <button class="filter-btn" data-days="30">30 Tage</button>
-      <button class="filter-btn active" data-days="90">90 Tage</button>
-    </div>
-    <div class="chart-container">
-      <svg id="followerChart" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
-    </div>
-  </div>
+  <!-- Entwicklungs-Charts (3 Spalten) -->
+  <div class="fade-up" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:22px;">
 
-  <div class="card fade-up">
-    <div class="card-title">Mitglieder-Entwicklung · LinkedIn Gruppe</div>
-    <div class="filter-bar" id="chartFilterGruppe">
-      <button class="filter-btn" data-days="7">7 Tage</button>
-      <button class="filter-btn" data-days="30">30 Tage</button>
-      <button class="filter-btn active" data-days="90">90 Tage</button>
+    <div class="card" style="padding:16px 18px;">
+      <div class="card-title" style="font-size:10px;">Follower · Company Page</div>
+      <div class="filter-bar" id="chartFilter" style="margin-bottom:10px;">
+        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
+        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
+        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+      </div>
+      <div class="chart-container" style="height:140px;">
+        <svg id="followerChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+      </div>
     </div>
-    <div class="chart-container">
-      <svg id="gruppeChart" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
-    </div>
-  </div>
 
-  <div class="card fade-up">
-    <div class="card-title">Mitglieder-Entwicklung · WhatsApp Community</div>
-    <div class="filter-bar" id="chartFilterWhatsapp">
-      <button class="filter-btn" data-days="7">7 Tage</button>
-      <button class="filter-btn" data-days="30">30 Tage</button>
-      <button class="filter-btn active" data-days="90">90 Tage</button>
+    <div class="card" style="padding:16px 18px;">
+      <div class="card-title" style="font-size:10px;">Mitglieder · LinkedIn Gruppe</div>
+      <div class="filter-bar" id="chartFilterGruppe" style="margin-bottom:10px;">
+        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
+        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
+        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+      </div>
+      <div class="chart-container" style="height:140px;">
+        <svg id="gruppeChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+      </div>
     </div>
-    <div class="chart-container">
-      <svg id="whatsappChart" viewBox="0 0 800 200" preserveAspectRatio="none"></svg>
+
+    <div class="card" style="padding:16px 18px;">
+      <div class="card-title" style="font-size:10px;">Mitglieder · WhatsApp Community</div>
+      <div class="filter-bar" id="chartFilterWhatsapp" style="margin-bottom:10px;">
+        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
+        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
+        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+      </div>
+      <div class="chart-container" style="height:140px;">
+        <svg id="whatsappChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+      </div>
     </div>
+
   </div>
 
   <!-- Posting-Schedule -->
@@ -378,7 +382,9 @@ try {
 // ── Generic Chart Drawing ──
 function drawGrowthChart(svgId, gradId, base, growthPct, days) {
   const svg = document.getElementById(svgId);
-  const W = 800, H = 200, padT = 20, padB = 30, padL = 50, padR = 10;
+  const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+  const W = vb[2], H = vb[3];
+  const padT = 14, padB = 22, padL = 36, padR = 6;
   const startVal = Math.round(base * (1 - growthPct));
   const data = [];
   for (let i = days; i >= 0; i--) {
@@ -393,18 +399,19 @@ function drawGrowthChart(svgId, gradId, base, growthPct, days) {
   const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / (maxV - minV));
 
   let gridLines = '';
-  for (let i = 0; i <= 5; i++) {
-    const v = minV + (maxV - minV) * (i / 5);
+  const gridSteps = W > 400 ? 5 : 3;
+  for (let i = 0; i <= gridSteps; i++) {
+    const v = minV + (maxV - minV) * (i / gridSteps);
     const y = yScale(v);
     gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" class="chart-grid"/>`;
-    gridLines += `<text x="${padL - 6}" y="${y + 3}" text-anchor="end" class="chart-label">${Math.round(v)}</text>`;
+    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${Math.round(v)}</text>`;
   }
-  const labelCount = Math.min(days <= 7 ? 7 : 6, data.length);
+  const labelCount = Math.min(days <= 7 ? 7 : W > 400 ? 6 : 4, data.length);
   const labelStep = Math.floor((data.length - 1) / labelCount);
   for (let i = 0; i < data.length; i += labelStep) {
     const x = padL + i * xStep;
     const d = new Date(); d.setDate(d.getDate() - (data.length - 1 - i));
-    gridLines += `<text x="${x}" y="${H - 6}" text-anchor="middle" class="chart-label">${d.getDate()}.${d.getMonth() + 1}.</text>`;
+    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
   }
   const points = data.map((v, i) => `${padL + i * xStep},${yScale(v)}`);
   const line = points.join(' ');

@@ -1061,10 +1061,12 @@ function renderBoard() {
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
 
-      // Generate button for Ideen column / Plan button for Grafik column
+      // Action button per column
       let generateBtn = '';
       if (col.id === 'ideen') {
         generateBtn = `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
+      } else if (col.id === 'entwurf') {
+        generateBtn = `<button class="btn-generate btn-entwurf-gen" data-card-id="${card.id}">Post generieren</button>`;
       } else if (col.id === 'grafik') {
         generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
       }
@@ -1091,6 +1093,15 @@ function renderBoard() {
           });
         }
       }
+      if (col.id === 'entwurf') {
+        const btn = el.querySelector('.btn-entwurf-gen');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openCardModal(card.id);
+          });
+        }
+      }
       if (col.id === 'grafik') {
         const btn = el.querySelector('.btn-plan-post');
         if (btn) {
@@ -1103,7 +1114,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.gen-result-area')) return;
         openCardModal(card.id);
       });
 
