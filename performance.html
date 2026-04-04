@@ -221,17 +221,17 @@ body {
     <div class="goal-row">
       <div class="goal-current">
         <div class="goal-label">FemSurance Follower aktuell</div>
-        <div class="goal-value">1.847</div>
+        <div class="goal-value" id="perfCurrent">1.847</div>
       </div>
       <div class="goal-target">
         <div class="goal-label">Ziel-Follower</div>
-        <div class="goal-value">2.500</div>
+        <div class="goal-value" id="perfGoal">2.500</div>
       </div>
     </div>
     <div class="progress-track">
-      <div class="progress-fill" style="width: 73.9%;"></div>
+      <div class="progress-fill" id="perfFill" style="width: 73.9%;"></div>
     </div>
-    <div class="goal-diff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
+    <div class="goal-diff" id="perfDiff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
   </div>
 
   <!-- Zeitraum-Filter + Chart -->
@@ -416,6 +416,28 @@ document.getElementById('postTableBody').addEventListener('click', e => {
   btn.textContent = 'Gesendet!';
   btn.classList.add('sent');
 });
+
+// ── Reichweiten-Ziel from localStorage ──
+try {
+  const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+  let f, goal;
+  if (Array.isArray(raw)) {
+    const fem = raw.find(a => a.isFem);
+    f = fem ? parseInt(fem.followers) : 0;
+    goal = fem ? (parseInt(fem.goal) || 2500) : 2500;
+  } else {
+    f = parseInt(raw.femFollower) || 0;
+    goal = parseInt(raw.goal) || 2500;
+  }
+  if (f > 0) {
+    document.getElementById('perfCurrent').textContent = f.toLocaleString('de-DE');
+    document.getElementById('perfGoal').textContent = goal.toLocaleString('de-DE');
+    const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
+    const remaining = Math.max(goal - f, 0);
+    document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
+    document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+  }
+} catch (e) {}
 </script>
 </body>
 </html>
