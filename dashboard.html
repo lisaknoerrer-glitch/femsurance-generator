@@ -598,6 +598,7 @@ body {
           <path d="M0,38 L50,32 L100,35 L150,24 L200,18 L250,14 L300,8 L300,48 L0,48 Z" fill="url(#sparkGrad)"/>
         </svg>
       </div>
+      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:8px;">Posts/Woche: <strong style="color:var(--text-primary);" id="dashCompanyPpw">0</strong></div>
     </div>
 
     <!-- Reichweiten-Ziel -->
@@ -839,6 +840,30 @@ body {
       document.getElementById('dashPublish').textContent = publish;
       document.getElementById('dashPlanned').textContent = geplant;
       document.getElementById('dashTasks').textContent = ideen + entwurf + review + grafik;
+
+      // Count published posts by platform in last 7 days
+      const now7 = new Date();
+      const weekAgo = new Date(now7.getTime() - 7 * 24 * 60 * 60 * 1000);
+      function parseDue(d) {
+        if (!d) return null;
+        const parts = d.replace(/\.$/, '').split('.');
+        if (parts.length < 2) return null;
+        const day = parseInt(parts[0]), month = parseInt(parts[1]) - 1;
+        const year = parts[2] ? parseInt(parts[2]) : now7.getFullYear();
+        return new Date(year, month, day);
+      }
+      const published = cards.filter(c => c.col === 'publish');
+      let cpCount = 0, grCount = 0, waCount = 0;
+      published.forEach(c => {
+        const d = parseDue(c.due);
+        const recent = !d || d >= weekAgo;
+        if (c.format === 'Company Page' && recent) cpCount++;
+        else if (c.format === 'Gruppe' && recent) grCount++;
+        else if (c.format === 'WhatsApp' && recent) waCount++;
+      });
+      document.getElementById('dashCompanyPpw').textContent = cpCount;
+      document.getElementById('dashGruppePpw').textContent = grCount;
+      document.getElementById('dashWhatsappPpw').textContent = waCount;
     }
   } catch (e) {}
 
@@ -867,10 +892,9 @@ body {
     }
 
     // Row 2: LinkedIn Gruppe
-    function updateGoalBlock(current, goal, countId, ppwId, ppwVal, currentId, goalValId, barId, diffId, label) {
+    function updateGoalBlock(current, goal, countId, currentId, goalValId, barId, diffId, label) {
       const c = parseInt(current) || 0, g = parseInt(goal) || 0;
       document.getElementById(countId).textContent = c > 0 ? c.toLocaleString('de-DE') : '–';
-      document.getElementById(ppwId).textContent = ppwVal > 0 ? ppwVal : '–';
       document.getElementById(currentId).textContent = c > 0 ? c.toLocaleString('de-DE') : '–';
       document.getElementById(goalValId).textContent = g > 0 ? g.toLocaleString('de-DE') : '–';
       const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
@@ -880,8 +904,8 @@ body {
         ? `Noch <strong>${remaining.toLocaleString('de-DE')} ${label}</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`
         : '–';
     }
-    updateGoalBlock(gm, gg, 'dashGruppeCount', 'dashGruppePpw', gpw, 'dashGruppeCurrent', 'dashGruppeGoalVal', 'dashGruppeBar', 'dashGruppeDiff', 'Mitglieder');
-    updateGoalBlock(wm, wg, 'dashWhatsappCount', 'dashWhatsappPpw', wpw, 'dashWhatsappCurrent', 'dashWhatsappGoalVal', 'dashWhatsappBar', 'dashWhatsappDiff', 'Mitglieder');
+    updateGoalBlock(gm, gg, 'dashGruppeCount', 'dashGruppeCurrent', 'dashGruppeGoalVal', 'dashGruppeBar', 'dashGruppeDiff', 'Mitglieder');
+    updateGoalBlock(wm, wg, 'dashWhatsappCount', 'dashWhatsappCurrent', 'dashWhatsappGoalVal', 'dashWhatsappBar', 'dashWhatsappDiff', 'Mitglieder');
   } catch (e) {}
 })();
 </script>
