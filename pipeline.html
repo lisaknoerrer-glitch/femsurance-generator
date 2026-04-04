@@ -840,7 +840,8 @@ Antworte NUR im JSON-Format ohne weitere Erklärungen:
       "uhrzeit": "10:00" oder "08:00",
       "begruendung": "[1 Satz warum dieser Kanal für diesen Inhalt]",
       "text": "[fertiger Post im richtigen Format für den Kanal]",
-      "grafikBriefing": "[kurze visuelle Beschreibung]"
+      "grafikBriefing": "[kurze visuelle Beschreibung auf Deutsch]",
+      "canvaPrompt": "[detaillierter Bildprompt auf Englisch für Canva Magic Media: style, subject, mood, colors FemSurance Pink #E91E8C and purple, elements, text overlay max 8 words, format 1:1 square LinkedIn]"
     }
   ],
   "geschichteDerWoche": "[2-3 Sätze wie die Posts zusammenhängen]"
@@ -858,6 +859,14 @@ ENTSCHEIDUNGSLOGIK:
 - Hat der Inhalt mehrere Aspekte? → mehrere Posts auf verschiedenen Kanälen
 - Nutze jeden Kanal max. 2x pro Outline
 - Minimum 2 Posts, Maximum 5 Posts
+
+CANVA PROMPT REGELN:
+- Immer auf Englisch
+- FemSurance Pink (#E91E8C) und Lila als Hauptfarben
+- Professionell, clean, modern, B2B
+- 1:1 Format für LinkedIn
+- Passend zum Post-Inhalt und Tonfall
+- Konkrete visuelle Elemente beschreiben
 
 Direkte Du-Ansprache. Warm, klar, empowernd. Zitate nur aus dem Quellmaterial.`;
 
@@ -1173,6 +1182,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
         body: p.text,
         begruendung: p.begruendung || '',
         grafikBriefing: p.grafikBriefing || '',
+        canvaPrompt: p.canvaPrompt || '',
         slot: `${dayShort} ${p.uhrzeit}`,
         geschichteDerWoche: result.geschichteDerWoche || '',
         sourceCardId: card.id
@@ -1242,7 +1252,11 @@ function renderBoard() {
       } else if (col.id === 'entwurf') {
         generateBtn = `<button class="btn-generate btn-entwurf-gen" data-card-id="${card.id}">Post generieren</button>`;
       } else if (col.id === 'post') {
-        generateBtn = `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
+        const canvaPromptBtn = card.canvaPrompt
+          ? `<button class="btn-generate btn-copy-canva" data-card-id="${card.id}" style="margin-bottom:4px;">📋 Canva-Prompt kopieren</button>`
+          : '';
+        generateBtn = canvaPromptBtn
+          + `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 In Canva öffnen</button>`;
       } else if (col.id === 'grafik') {
         const previewHtml = card.previewImage
           ? `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`
@@ -1289,11 +1303,22 @@ function renderBoard() {
         }
       }
       if (col.id === 'post') {
-        const btn = el.querySelector('.btn-canva');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
+        const copyBtn = el.querySelector('.btn-copy-canva');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            window.open('https://www.canva.com/create/social-media/', '_blank');
+            navigator.clipboard.writeText(card.canvaPrompt).then(() => {
+              copyBtn.textContent = 'Kopiert ✓';
+              copyBtn.style.background = '#dcfce7'; copyBtn.style.color = '#16a34a';
+              setTimeout(() => { copyBtn.textContent = '📋 Canva-Prompt kopieren'; copyBtn.style.background = ''; copyBtn.style.color = ''; }, 2000);
+            });
+          });
+        }
+        const canvaBtn = el.querySelector('.btn-canva');
+        if (canvaBtn) {
+          canvaBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
           });
         }
       }
@@ -1334,7 +1359,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-card') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
         openCardModal(card.id);
       });
 
