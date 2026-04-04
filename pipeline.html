@@ -84,7 +84,7 @@ body {
 /* ── Kanban ── */
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 14px;
   align-items: start;
 }
@@ -523,6 +523,42 @@ body {
   </div>
 </div>
 
+<!-- ══════════ Post Planen Modal (Grafik → Geplant) ══════════ -->
+<div class="modal-overlay" id="planModal">
+  <div class="modal" style="width:420px;">
+    <h3>Post planen</h3>
+    <p id="planModalCardName" style="margin-bottom:14px;"></p>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Posting-Woche</div>
+      <input type="text" id="planWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">Company Page</div>
+        <select id="planCp" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+          <option value="Di 10:00">Dienstag 10:00</option>
+          <option value="Do 10:00">Donnerstag 10:00</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">LinkedIn Gruppe</div>
+        <select id="planGr" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;">
+          <option value="Mi 10:00">Mittwoch 10:00</option>
+          <option value="Fr 10:00">Freitag 10:00</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <input type="checkbox" id="planWa" checked style="accent-color:var(--fem-pink);">
+      <label for="planWa" style="font-size:13px;cursor:pointer;">WhatsApp Community Mi 08:00</label>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="planConfirm" style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--fem-pink);color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Einplanen</button>
+      <button id="planCancel" class="btn-cancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ Card Detail Modal ══════════ -->
 <div class="card-modal-overlay" id="cardModal">
   <div class="card-modal">
@@ -547,8 +583,51 @@ body {
       <input type="url" id="cmUrl" placeholder="https://asscompact.de/...">
     </div>
     <div class="cm-field">
-      <div class="cm-label">Notizen / Ideen / Stichpunkte (optional)</div>
-      <textarea id="cmNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
+      <div class="cm-label">Referenzmaterial / Ideen / Zitate</div>
+      <textarea id="cmRefmaterial" rows="5" placeholder="z. B. Kernaussagen, Zitate, Statistiken, Stichpunkte..."></textarea>
+    </div>
+    <div class="cm-field">
+      <div class="cm-label">Themenwelt</div>
+      <select id="cmThemenwelt">
+        <option value="Alle 4">Alle 4</option>
+        <option value="Business & Vertrieb">Business &amp; Vertrieb</option>
+        <option value="Marketing & Sichtbarkeit">Marketing &amp; Sichtbarkeit</option>
+        <option value="Fachliche Weiterbildung">Fachliche Weiterbildung</option>
+        <option value="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</option>
+      </select>
+    </div>
+    <div class="cm-field" id="cmOutlineField" style="display:none;">
+      <div class="cm-label">Outline</div>
+      <textarea id="cmOutline" rows="8"></textarea>
+    </div>
+    <div id="cmPlanSection" style="display:none; margin-top:4px; padding:16px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
+      <div class="cm-label" style="margin-bottom:10px; color:var(--fem-pink);">Post planen</div>
+      <div class="cm-field">
+        <div class="cm-label">Posting-Woche</div>
+        <input type="text" id="cmPostingWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr">
+      </div>
+      <div class="cm-row">
+        <div class="cm-field">
+          <div class="cm-label">Company Page</div>
+          <select id="cmCpSlot">
+            <option value="Dienstag 10:00">Dienstag 10:00</option>
+            <option value="Donnerstag 10:00">Donnerstag 10:00</option>
+          </select>
+        </div>
+        <div class="cm-field">
+          <div class="cm-label">LinkedIn Gruppe</div>
+          <select id="cmGrSlot">
+            <option value="Mittwoch 10:00">Mittwoch 10:00</option>
+            <option value="Freitag 10:00">Freitag 10:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="cm-field" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="cmWhatsapp" checked style="width:auto; accent-color:var(--fem-pink);">
+        <label for="cmWhatsapp" style="font-size:12.5px; cursor:pointer;">WhatsApp Community Mi 08:00</label>
+      </div>
+      <button class="btn-save-modal" id="cmGenPost" style="width:100%; margin-top:10px;">Post generieren</button>
+      <div id="cmGenStatus" style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px;"></div>
     </div>
     <div class="cm-field" id="cmBodyField" style="display:none;">
       <div class="cm-label">Post-Text</div>
@@ -558,26 +637,6 @@ body {
       <button class="btn-save-modal" id="cmSave">Speichern</button>
       <button class="btn-close-modal" id="cmClose">Schließen</button>
       <button class="btn-delete-modal" id="cmDelete">🗑 Karte löschen</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ Generate Prep Modal ══════════ -->
-<div class="gen-prep-overlay" id="genPrepModal">
-  <div class="gen-prep">
-    <h3 id="genPrepTitle">Post generieren</h3>
-    <div class="gen-prep-sub">Optionale Zusatzinfos für bessere Ergebnisse</div>
-    <div class="gp-field">
-      <div class="gp-label">Artikel-URL (optional)</div>
-      <input type="url" id="genPrepUrl" placeholder="https://asscompact.de/...">
-    </div>
-    <div class="gp-field">
-      <div class="gp-label">Zusätzliche Notizen (optional)</div>
-      <textarea id="genPrepNotes" rows="3" placeholder="z. B. Kernaussagen, Zitate, Statistiken..."></textarea>
-    </div>
-    <div class="gen-prep-btns">
-      <button class="btn-gen-go" id="genPrepGo">Generieren</button>
-      <button class="btn-gen-cancel" id="genPrepCancel">Abbrechen</button>
     </div>
   </div>
 </div>
@@ -598,9 +657,33 @@ body {
 // ── Config ──
 const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
 
+const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
+
+Themenwelten:
+1. Business & Vertrieb - klar, lösungsorientiert, strategisch
+2. Marketing & Sichtbarkeit - inspirierend, mutig, menschlich
+3. Fachliche Weiterbildung - ruhig, vertrauensvoll, sachlich
+4. Persönlichkeitsentwicklung - reflektiert, warm, emotional
+
+Für jede Outline:
+- Kernparadox
+- Reformuliert (Lang / Mittel / Kurz)
+- Schlüsselzitate
+- Transformation (Zweifel → Erkenntnis → Selbstbestimmung)
+- Alltagsprobleme (3)
+- Beispiele (2)
+- Einwände / Zweifel
+- Aspirationsaussage
+- Handlungsschritte (3)
+- Große Idee
+- Abschließende Erkenntnis
+
+Am Ende: Analyse-Notizen mit Themen, Sprachmuster, Empfehlung.
+Direkte Du-Ansprache. Warm, klar, empowernd. Keine Floskeln.`;
+
 const POST_SYSTEM_PROMPT = `Du bist ein LinkedIn-Content-Experte für FemSurance (Visibility. Network. Impact.), eine Initiative von AssCompact / bbg Betriebsberatungs GmbH für Frauen in der Versicherungsbranche.
 
-Erstelle für jedes Thema DREI Post-Varianten:
+Erstelle aus der gegebenen Outline DREI Post-Varianten:
 
 1. **Company Page Post** (1000–1500 Zeichen):
    - Professioneller Ton, Thought-Leadership-Stil
@@ -621,6 +704,71 @@ Erstelle für jedes Thema DREI Post-Varianten:
 
 Trenne die drei Varianten mit --- auf einer eigenen Zeile.
 Schreibe ausschließlich auf Deutsch.`;
+
+const POST_STORYTELLING_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Marke: FemSurance – Visibility. Network. Impact. Zielgruppe: Frauen in der Versicherungsbranche und Finanzberatung. Stil: warm · klar · empowernd · direkt · keine Floskeln.
+
+Du bekommst eine Outline und schreibst daraus 3 fertige Posts – einen pro Plattform.
+
+POSTING-SCHEDULE:
+LinkedIn Company Page: Di & Do · 10:00 Uhr
+LinkedIn Gruppe: Mi & Fr · 10:00 Uhr
+WhatsApp Community: Mi · 08:00 Uhr
+
+PLATTFORM-REGELN:
+🏢 LinkedIn Company Page · 1.000–1.500 Zeichen:
+- Starker Hook Zeile 1
+- Story mit Zeilenumbrüchen
+- 3–5 Punkte mit Pfeil (→)
+- Zitat aus Quellmaterial
+- Reflexionsfrage am Ende
+- 5–7 Hashtags
+- Tonfall: professionell · empowernd · markenstark
+
+👥 LinkedIn Gruppe · 600–800 Zeichen:
+- Bezug auf Company Page Post
+- Zeigt unbequeme Wahrheit
+- Endet IMMER mit offener Frage
+- Tonfall: persönlich · ehrlich · einladend
+
+💬 WhatsApp · max. 250 Zeichen:
+- Kurz und warm
+- Eine Frage oder Impuls
+- Endet mit 🩷
+- Tonfall: warm · direkt · neugierig
+
+OUTPUT-FORMAT:
+FemSurance Posts – [Posting-Woche]
+────────────────────────────────
+🏢 LINKEDIN COMPANY PAGE
+Datum: [gewählter Tag] · 10:00 Uhr
+[Fertiger Post]
+Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
+────────────────────────────────
+💬 WHATSAPP COMMUNITY
+Datum: Mi · 08:00 Uhr
+[Kurze Nachricht max. 250 Zeichen]
+────────────────────────────────
+👥 LINKEDIN GRUPPE
+Datum: [gewählter Tag] · 10:00 Uhr
+[Fertiger Post mit offener Frage]
+Grafik-Briefing: Format: 1:1 · Stil: FemSurance Pink/Lila · Motiv: [Kurzbeschreibung]
+────────────────────────────────
+🔗 DIE GESCHICHTE DER WOCHE
+[2–3 Sätze wie Posts zusammenhängen]
+────────────────────────────────
+✅ KANBAN-CHECKLISTE
+☐ Post-Text geprüft
+☐ Grafik erstellt
+☐ Freigabe erteilt
+☐ In Buffer eingeplant
+☐ Veröffentlicht
+
+SPRACHE & TON:
+- Direkte Du-Ansprache
+- Kurze Sätze + Zeilenumbrüche
+- Emotion + Klarheit
+- Zitate nur aus Quellmaterial – nie erfunden
+- Keine generischen Aussagen`;
 
 // ── Default Card Data ──
 const defaultCards = [
@@ -681,6 +829,7 @@ const colDefs = [
   { id: 'ideen',   label: 'Ideen' },
   { id: 'entwurf', label: 'Entwurf' },
   { id: 'review',  label: 'Review' },
+  { id: 'grafik',  label: 'Grafik' },
   { id: 'geplant', label: 'Geplant' },
   { id: 'publish', label: 'Veröffentlicht' },
 ];
@@ -704,101 +853,81 @@ function buildPlatformCounters(text) {
   </div>`;
 }
 
-// ── Generate posts via Anthropic API ──
-let pendingGenCardId = null;
-let pendingGenBtnEl = null;
-
-function generatePosts(cardId, btnEl) {
-  const card = cards.find(c => c.id === cardId);
-  if (!card) return;
-  pendingGenCardId = cardId;
-  pendingGenBtnEl = btnEl;
-  document.getElementById('genPrepTitle').textContent = `Post generieren: ${card.title}`;
-  document.getElementById('genPrepUrl').value = card.url || '';
-  document.getElementById('genPrepNotes').value = card.notes || '';
-  document.getElementById('genPrepModal').classList.add('open');
+// ── Fetch article helper ──
+async function fetchArticleText(url) {
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const resp = await fetch(proxyUrl);
+    if (resp.ok) {
+      const html = await resp.text();
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return (tmp.textContent || tmp.innerText || '').substring(0, 3000).trim();
+    }
+  } catch {}
+  return null;
 }
 
-document.getElementById('genPrepCancel').addEventListener('click', () => {
-  document.getElementById('genPrepModal').classList.remove('open');
-  pendingGenCardId = null;
-  pendingGenBtnEl = null;
-});
-document.getElementById('genPrepModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('open');
-    pendingGenCardId = null;
-    pendingGenBtnEl = null;
+// ── Call Anthropic API ──
+async function callAnthropic(systemPrompt, userPrompt, maxTokens) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens || 3000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
+  });
+  if (!resp.ok) {
+    const errBody = await resp.text();
+    throw new Error('API-Fehler: ' + resp.status + ' – ' + errBody);
   }
-});
+  const data = await resp.json();
+  return data.content[0].text;
+}
 
-document.getElementById('genPrepGo').addEventListener('click', async () => {
-  const card = cards.find(c => c.id === pendingGenCardId);
-  const btnEl = pendingGenBtnEl;
-  if (!card || !btnEl) return;
+// ── Step 1: Generate Outline ──
+async function generateOutline(cardId, btnEl) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
 
-  const notes = document.getElementById('genPrepNotes').value.trim();
-  const url = document.getElementById('genPrepUrl').value.trim();
-  document.getElementById('genPrepModal').classList.remove('open');
-
-  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
   btnEl.classList.add('loading');
   btnEl.disabled = true;
 
   try {
-    // Build prompt
+    // Build prompt from card data
     let userPrompt = `Thema: ${card.title}`;
-    if (notes) userPrompt += `\n\nReferenzmaterial / Notizen:\n${notes}`;
+    if (card.themenwelt && card.themenwelt !== 'Alle 4') {
+      userPrompt += `\nThemenwelt: ${card.themenwelt}`;
+    }
+    if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
 
     // Fetch article if URL provided
-    if (url) {
+    if (card.url) {
       btnEl.textContent = 'ARTIKEL WIRD GELADEN...';
-      try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const articleResp = await fetch(proxyUrl);
-        if (articleResp.ok) {
-          let articleText = await articleResp.text();
-          // Strip HTML tags to get plain text
-          const tmp = document.createElement('div');
-          tmp.innerHTML = articleText;
-          articleText = tmp.textContent || tmp.innerText || '';
-          // Limit to first 3000 chars
-          articleText = articleText.substring(0, 3000).trim();
-          if (articleText) {
-            userPrompt += `\n\nArtikel-Inhalt (${url}):\n${articleText}`;
-          }
-        }
-      } catch (fetchErr) {
-        userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${url}]`;
+      const articleText = await fetchArticleText(card.url);
+      if (articleText) {
+        userPrompt += `\n\nArtikel-Inhalt (${card.url}):\n${articleText}`;
+      } else {
+        userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${card.url}]`;
       }
-      btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+      btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
     }
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2048,
-        system: POST_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
+    const resultText = await callAnthropic(OUTLINE_SYSTEM_PROMPT, userPrompt, 3000);
 
-    if (!resp.ok) {
-      const errBody = await resp.text();
-      throw new Error('API-Fehler: ' + resp.status + ' – ' + errBody);
-    }
+    // Save outline to card and show result
+    card.outline = resultText;
+    saveCards();
 
-    const data = await resp.json();
-    const resultText = data.content[0].text;
-
-    // Insert textarea + counters + save button after the button
     const wrapper = btnEl.parentElement;
     const genArea = document.createElement('div');
     genArea.className = 'gen-result-area';
@@ -806,45 +935,99 @@ document.getElementById('genPrepGo').addEventListener('click', async () => {
     const ta = document.createElement('textarea');
     ta.className = 'gen-textarea';
     ta.value = resultText;
+    ta.addEventListener('input', () => { card.outline = ta.value; saveCards(); });
     genArea.appendChild(ta);
 
-    const countersDiv = document.createElement('div');
-    countersDiv.innerHTML = buildPlatformCounters(resultText);
-    genArea.appendChild(countersDiv.firstElementChild);
-
-    // Update counters on edit
-    ta.addEventListener('input', () => {
-      const pc = genArea.querySelector('.platform-counters');
-      if (pc) {
-        const newCounters = document.createElement('div');
-        newCounters.innerHTML = buildPlatformCounters(ta.value);
-        pc.replaceWith(newCounters.firstElementChild);
-      }
-    });
-
+    // Save outline + move to Entwurf
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn-save-draft';
-    saveBtn.textContent = 'Speichern & als Entwurf';
-    saveBtn.addEventListener('click', (e) => {
+    saveBtn.textContent = 'Outline speichern & als Entwurf';
+    saveBtn.addEventListener('click', e => {
       e.stopPropagation();
-      card.body = ta.value;
+      card.outline = ta.value;
       card.col = 'entwurf';
       saveCards();
       renderBoard();
     });
     genArea.appendChild(saveBtn);
 
-    // Remove old generate button and add result
+    // Step 2 button: Post generieren (from outline)
+    const postBtn = document.createElement('button');
+    postBtn.className = 'btn-generate';
+    postBtn.style.marginTop = '8px';
+    postBtn.textContent = 'Post generieren';
+    postBtn.addEventListener('click', async e => {
+      e.stopPropagation();
+      await generatePostFromOutline(card, ta.value, postBtn, genArea);
+    });
+    genArea.appendChild(postBtn);
+
     btnEl.style.display = 'none';
     wrapper.appendChild(genArea);
 
   } catch (err) {
     alert('Fehler beim Generieren: ' + err.message);
+    btnEl.textContent = 'Entwurf generieren';
+    btnEl.classList.remove('loading');
+    btnEl.disabled = false;
+  }
+}
+
+// ── Step 2: Generate Post from Outline ──
+async function generatePostFromOutline(card, outlineText, btnEl, genArea) {
+  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
+  btnEl.classList.add('loading');
+  btnEl.disabled = true;
+
+  try {
+    const userPrompt = `Thema: ${card.title}\n\nOutline:\n${outlineText}`;
+    const resultText = await callAnthropic(POST_SYSTEM_PROMPT, userPrompt, 2048);
+
+    // Replace outline textarea with post textarea + counters
+    const oldTa = genArea.querySelector('.gen-textarea');
+    if (oldTa) oldTa.remove();
+    const oldCounters = genArea.querySelector('.platform-counters');
+    if (oldCounters) oldCounters.remove();
+
+    const ta = document.createElement('textarea');
+    ta.className = 'gen-textarea';
+    ta.value = resultText;
+    genArea.insertBefore(ta, genArea.firstChild);
+
+    const countersDiv = document.createElement('div');
+    countersDiv.innerHTML = buildPlatformCounters(resultText);
+    ta.after(countersDiv.firstElementChild);
+
+    ta.addEventListener('input', () => {
+      const pc = genArea.querySelector('.platform-counters');
+      if (pc) {
+        const nc = document.createElement('div');
+        nc.innerHTML = buildPlatformCounters(ta.value);
+        pc.replaceWith(nc.firstElementChild);
+      }
+    });
+
+    // Update save button to save body
+    const saveBtn = genArea.querySelector('.btn-save-draft');
+    if (saveBtn) {
+      saveBtn.textContent = 'Post speichern & als Entwurf';
+      saveBtn.onclick = e => {
+        e.stopPropagation();
+        card.body = ta.value;
+        card.col = 'entwurf';
+        saveCards();
+        renderBoard();
+      };
+    }
+    btnEl.style.display = 'none';
+
+  } catch (err) {
+    alert('Fehler: ' + err.message);
     btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
   }
-});
+}
 
 // ── Render Board ──
 function renderBoard() {
@@ -878,9 +1061,13 @@ function renderBoard() {
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
 
-      // Generate button for Ideen column
-      const generateBtn = (col.id === 'ideen') ?
-        `<button class="btn-generate" data-card-id="${card.id}">Post generieren</button>` : '';
+      // Generate button for Ideen column / Plan button for Grafik column
+      let generateBtn = '';
+      if (col.id === 'ideen') {
+        generateBtn = `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
+      } else if (col.id === 'grafik') {
+        generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
+      }
 
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
@@ -894,20 +1081,29 @@ function renderBoard() {
         ${generateBtn}
       `;
 
-      // Generate button click handler (must be before general click)
+      // Generate / Plan button click handler (must be before general click)
       if (col.id === 'ideen') {
         const btn = el.querySelector('.btn-generate');
         if (btn) {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            generatePosts(card.id, btn);
+            generateOutline(card.id, btn);
+          });
+        }
+      }
+      if (col.id === 'grafik') {
+        const btn = el.querySelector('.btn-plan-post');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openPlanModal(card.id);
           });
         }
       }
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.gen-result-area')) return;
         openCardModal(card.id);
       });
 
@@ -1039,11 +1235,38 @@ function openCardModal(cardId) {
   document.getElementById('cmAssignee').value = card.assignee || '';
   document.getElementById('cmDue').value = card.due || '';
   document.getElementById('cmUrl').value = card.url || '';
-  document.getElementById('cmNotes').value = card.notes || '';
+  document.getElementById('cmRefmaterial').value = card.refmaterial || '';
+  document.getElementById('cmThemenwelt').value = card.themenwelt || 'Alle 4';
 
   // Badge
   const badgeClass = formatTagClass(card.format);
   document.getElementById('cmBadge').innerHTML = `<span class="cm-badge ${badgeClass}">${card.format}</span>`;
+
+  // Outline
+  const outlineField = document.getElementById('cmOutlineField');
+  const outlineTa = document.getElementById('cmOutline');
+  if (card.outline) {
+    outlineField.style.display = 'block';
+    outlineTa.value = card.outline;
+  } else {
+    outlineField.style.display = 'none';
+    outlineTa.value = '';
+  }
+
+  // Plan section — show for Entwurf cards with outline
+  const planSection = document.getElementById('cmPlanSection');
+  if (card.outline && (card.col === 'entwurf' || card.col === 'ideen')) {
+    planSection.style.display = 'block';
+    document.getElementById('cmPostingWeek').value = card.postingWeek || '';
+    document.getElementById('cmCpSlot').value = card.cpSlot || 'Dienstag 10:00';
+    document.getElementById('cmGrSlot').value = card.grSlot || 'Mittwoch 10:00';
+    document.getElementById('cmWhatsapp').checked = card.whatsapp !== false;
+    document.getElementById('cmGenStatus').textContent = '';
+    document.getElementById('cmGenPost').disabled = false;
+    document.getElementById('cmGenPost').textContent = 'Post generieren';
+  } else {
+    planSection.style.display = 'none';
+  }
 
   // Body
   const bodyField = document.getElementById('cmBodyField');
@@ -1066,7 +1289,17 @@ document.getElementById('cmSave').addEventListener('click', () => {
   card.assignee = document.getElementById('cmAssignee').value.trim();
   card.due = document.getElementById('cmDue').value.trim();
   card.url = document.getElementById('cmUrl').value.trim();
-  card.notes = document.getElementById('cmNotes').value.trim();
+  card.refmaterial = document.getElementById('cmRefmaterial').value.trim();
+  card.themenwelt = document.getElementById('cmThemenwelt').value;
+  if (document.getElementById('cmOutlineField').style.display !== 'none') {
+    card.outline = document.getElementById('cmOutline').value;
+  }
+  if (document.getElementById('cmPlanSection').style.display !== 'none') {
+    card.postingWeek = document.getElementById('cmPostingWeek').value.trim();
+    card.cpSlot = document.getElementById('cmCpSlot').value;
+    card.grSlot = document.getElementById('cmGrSlot').value;
+    card.whatsapp = document.getElementById('cmWhatsapp').checked;
+  }
   if (document.getElementById('cmBodyField').style.display !== 'none') {
     card.body = document.getElementById('cmBody').value;
   }
@@ -1091,6 +1324,94 @@ document.getElementById('cmDelete').addEventListener('click', () => {
 document.getElementById('cardModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) {
     e.currentTarget.classList.remove('open');
+  }
+});
+
+// ── Plan Modal (Grafik → Geplant) ──
+let planCardId = null;
+
+function openPlanModal(cardId) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+  planCardId = cardId;
+  document.getElementById('planModalCardName').textContent = `„${card.title}" einplanen`;
+  document.getElementById('planWeek').value = card.postingWeek || '';
+  document.getElementById('planCp').value = card.cpSlot || 'Di 10:00';
+  document.getElementById('planGr').value = card.grSlot || 'Mi 10:00';
+  document.getElementById('planWa').checked = card.whatsapp !== false;
+  document.getElementById('planModal').classList.add('open');
+}
+
+document.getElementById('planConfirm').addEventListener('click', () => {
+  const card = cards.find(c => c.id === planCardId);
+  if (!card) return;
+  card.postingWeek = document.getElementById('planWeek').value.trim();
+  card.cpSlot = document.getElementById('planCp').value;
+  card.grSlot = document.getElementById('planGr').value;
+  card.whatsapp = document.getElementById('planWa').checked;
+  // Build slot display string
+  const slots = [card.cpSlot, card.grSlot];
+  if (card.whatsapp) slots.push('Mi 08:00');
+  card.slot = slots.join(' · ');
+  card.col = 'geplant';
+  saveCards();
+  document.getElementById('planModal').classList.remove('open');
+  renderBoard();
+});
+
+document.getElementById('planCancel').addEventListener('click', () => {
+  document.getElementById('planModal').classList.remove('open');
+});
+document.getElementById('planModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+// ── Post generieren from Entwurf modal ──
+document.getElementById('cmGenPost').addEventListener('click', async () => {
+  const card = cards.find(c => c.id === activeCardId);
+  if (!card || !card.outline) return;
+
+  const btn = document.getElementById('cmGenPost');
+  const status = document.getElementById('cmGenStatus');
+  btn.disabled = true;
+  btn.textContent = 'WIRD GENERIERT...';
+  status.textContent = '';
+
+  // Collect planning data
+  const postingWeek = document.getElementById('cmPostingWeek').value.trim() || 'Aktuelle Woche';
+  const cpSlot = document.getElementById('cmCpSlot').value;
+  const grSlot = document.getElementById('cmGrSlot').value;
+  const waEnabled = document.getElementById('cmWhatsapp').checked;
+
+  // Save planning to card
+  card.postingWeek = postingWeek;
+  card.cpSlot = cpSlot;
+  card.grSlot = grSlot;
+  card.whatsapp = waEnabled;
+  saveCards();
+
+  try {
+    const userPrompt = `Outline:\n${document.getElementById('cmOutline').value}\n\nPosting-Woche: ${postingWeek}\nCompany Page: ${cpSlot}\nLinkedIn Gruppe: ${grSlot}\nWhatsApp: ${waEnabled ? 'Ja' : 'Nein'}`;
+
+    const resultText = await callAnthropic(POST_STORYTELLING_PROMPT, userPrompt, 4000);
+
+    // Show result
+    card.body = resultText;
+    saveCards();
+
+    document.getElementById('cmBodyField').style.display = 'block';
+    document.getElementById('cmBody').value = resultText;
+
+    btn.textContent = 'Post generieren';
+    btn.disabled = false;
+    status.textContent = 'Posts erfolgreich generiert ✓';
+    status.style.color = '#16a34a';
+
+  } catch (err) {
+    btn.textContent = 'Post generieren';
+    btn.disabled = false;
+    status.textContent = 'Fehler: ' + err.message;
+    status.style.color = '#dc2626';
   }
 });
 
