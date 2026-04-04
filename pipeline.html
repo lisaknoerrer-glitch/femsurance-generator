@@ -777,8 +777,8 @@ const defaultCards = [
   { id: 3,  col: 'ideen',    title: 'Umfrage: Welches Thema interessiert euch?',     format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 2', due: '14.04.', body: '' },
   { id: 4,  col: 'entwurf',  title: 'Interview: Frauen in der Versicherungsbranche', format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 2', due: '08.04.', body: 'Frauen machen nur 25 % der Führungskräfte in der Versicherungsbranche aus – doch das ändert sich.\n\nIm Interview mit Maria K. sprechen wir über:\n✅ Karrierewege für Maklerinnen\n✅ Netzwerken als Schlüsselkompetenz\n✅ Die Rolle von Mentoring\n\n#FemSurance #FrauenInFührung #Versicherung' },
   { id: 5,  col: 'entwurf',  title: 'Karussell: 3 Mythen über Maklerinnen',          format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 3', due: '09.04.', body: 'Mythos 1: „Frauen verkaufen weniger."\nRealität: Studien zeigen, dass Maklerinnen höhere Abschlussquoten bei Beratungsgesprächen erzielen.\n\nMythos 2: „Teilzeit = weniger Erfolg."\nRealität: Flexible Modelle steigern die Kundenbindung.\n\nMythos 3: „Netzwerken ist nicht so wichtig."\nRealität: 80 % der Top-Maklerinnen nennen Netzwerk als Erfolgsfaktor #1.\n\n#FemSurance #Mythen #Maklerinnen' },
-  { id: 6,  col: 'review',   title: 'Beitrag: Netzwerk-Studie Ergebnisse',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 4', due: '07.04.', body: '' },
-  { id: 7,  col: 'review',   title: 'Video-Skript: Nachhaltige Vorsorge',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 3', due: '07.04.', body: '' },
+  { id: 6,  col: 'post',     title: 'Beitrag: Netzwerk-Studie Ergebnisse',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 4', due: '07.04.', body: '' },
+  { id: 7,  col: 'post',     title: 'Video-Skript: Nachhaltige Vorsorge',            format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 3', due: '07.04.', body: '' },
   { id: 8,  col: 'geplant',  title: 'Post: FemSurance Award Rückblick',              format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 1', due: '08.04.', body: '', slot: 'Di 10:00' },
   { id: 9,  col: 'geplant',  title: 'Zitat-Grafik: Empowerment-Reihe #4',           format: 'Gruppe',       tag: 'tag-purple', assignee: 'Name 2', due: '09.04.', body: '', slot: 'Mi 10:00' },
   { id: 10, col: 'publish',  title: '5 Tipps für Maklerinnen im Vertrieb',           format: 'Company Page', tag: 'tag-pink',   assignee: 'Name 1', due: '01.04.', body: '' },
@@ -798,6 +798,8 @@ function saveCards() {
 }
 
 let cards = loadCards();
+// Migrate old "review" column to "post"
+cards.forEach(c => { if (c.col === 'review') c.col = 'post'; });
 
 // ── Import ideas from other pages ──
 function importPipelineIdeas() {
@@ -828,7 +830,7 @@ importPipelineIdeas();
 const colDefs = [
   { id: 'ideen',   label: 'Ideen' },
   { id: 'entwurf', label: 'Entwurf' },
-  { id: 'review',  label: 'Review' },
+  { id: 'post',    label: 'Post' },
   { id: 'grafik',  label: 'Grafik' },
   { id: 'geplant', label: 'Geplant' },
   { id: 'publish', label: 'Veröffentlicht' },
@@ -1067,6 +1069,8 @@ function renderBoard() {
         generateBtn = `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
       } else if (col.id === 'entwurf') {
         generateBtn = `<button class="btn-generate btn-entwurf-gen" data-card-id="${card.id}">Post generieren</button>`;
+      } else if (col.id === 'post') {
+        generateBtn = `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 Grafik erstellen</button>`;
       } else if (col.id === 'grafik') {
         generateBtn = `<button class="btn-generate btn-plan-post" data-card-id="${card.id}">Post planen</button>`;
       }
@@ -1102,6 +1106,15 @@ function renderBoard() {
           });
         }
       }
+      if (col.id === 'post') {
+        const btn = el.querySelector('.btn-canva');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.open('https://www.canva.com/create/social-media/', '_blank');
+          });
+        }
+      }
       if (col.id === 'grafik') {
         const btn = el.querySelector('.btn-plan-post');
         if (btn) {
@@ -1114,7 +1127,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.gen-result-area')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.gen-result-area')) return;
         openCardModal(card.id);
       });
 
