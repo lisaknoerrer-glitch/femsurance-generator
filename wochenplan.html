@@ -623,6 +623,7 @@ function saveKonkurrenzFollowers(current, goal) {
   const fem = accounts.find(a => a.isFem);
   if (fem) {
     fem.followers = String(current);
+    fem.goal = goal;
   }
   localStorage.setItem('fem_konkurrenz_data', JSON.stringify(accounts));
 }
@@ -650,7 +651,7 @@ const konkurrenzAccounts = loadKonkurrenz();
 const femAccount = konkurrenzAccounts.find(a => a.isFem);
 const b3 = load('fem_wp_block3', {});
 document.getElementById('b3Current').value = (femAccount && femAccount.followers) ? parseInt(femAccount.followers) : (b3.current || '');
-document.getElementById('b3Goal').value = b3.goal || '';
+document.getElementById('b3Goal').value = (femAccount && femAccount.goal) ? parseInt(femAccount.goal) : (b3.goal || '');
 calcFollower();
 
 // ══════════ BLOCK 4: URLs ══════════

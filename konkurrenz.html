@@ -221,7 +221,7 @@ body {
     <div class="hero-label">FemSurance Follower-Fortschritt</div>
     <div class="hero-row">
       <div class="hero-value" id="heroCurrentVal">1.847</div>
-      <div class="hero-target">Ziel: <span id="heroGoalVal">2.500</span></div>
+      <div class="hero-target">Ziel: <input type="number" id="heroGoalInput" value="2500" style="font-weight:600;font-size:inherit;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:2px 8px;width:90px;background:rgba(255,255,255,0.15);color:#fff;"></div>
     </div>
     <div class="hero-track">
       <div class="hero-fill" id="heroFill" style="width:73.9%"></div>
@@ -260,10 +260,16 @@ body {
 <script>
 const STORAGE_KEY = 'fem_konkurrenz_data';
 const femFollowers = 1847;
-const femGoal = 2500;
+const defaultGoal = 2500;
+
+function getGoal() {
+  const accounts = loadAccounts();
+  const fem = accounts.find(a => a.isFem);
+  return (fem && parseInt(fem.goal)) || defaultGoal;
+}
 
 const defaultAccounts = [
-  { name: 'FemSurance', followers: 1847, engagement: '5.4', postsWeek: '4', isFem: true },
+  { name: 'FemSurance', followers: 1847, engagement: '5.4', postsWeek: '4', goal: 2500, isFem: true },
   { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
   { name: '', followers: '', engagement: '', postsWeek: '', isFem: false },
 ];
@@ -295,7 +301,8 @@ function renderTable() {
 
   const femAcc = accounts.find(a => a.isFem);
   const femCurrent = (femAcc && parseInt(femAcc.followers)) || femFollowers;
-  const maxFollowers = Math.max(...accounts.map(a => parseInt(a.followers) || 0), femGoal);
+  const currentGoal = (femAcc && parseInt(femAcc.goal)) || defaultGoal;
+  const maxFollowers = Math.max(...accounts.map(a => parseInt(a.followers) || 0), currentGoal);
 
   accounts.forEach((acc, i) => {
     const tr = document.createElement('tr');
@@ -330,10 +337,10 @@ function renderTable() {
   // Update hero
   {
     const current = femCurrent;
-    const pct = Math.min((current / femGoal) * 100, 100);
-    const remaining = Math.max(femGoal - current, 0);
+    const pct = currentGoal > 0 ? Math.min((current / currentGoal) * 100, 100) : 0;
+    const remaining = Math.max(currentGoal - current, 0);
     document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
-    document.getElementById('heroGoalVal').textContent = femGoal.toLocaleString('de-DE');
+    document.getElementById('heroGoalInput').value = currentGoal;
     document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
     document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
   }
@@ -348,11 +355,12 @@ document.getElementById('compBody').addEventListener('input', e => {
     accounts[i][field] = e.target.value;
     saveAccounts(accounts);
 
-    // If FemSurance follower changed, update hero immediately
-    if (accounts[i].isFem && field === 'followers') {
+    // If FemSurance field changed, update hero immediately
+    if (accounts[i].isFem && (field === 'followers')) {
       const current = parseInt(e.target.value) || 0;
-      const pct = Math.min((current / femGoal) * 100, 100);
-      const remaining = Math.max(femGoal - current, 0);
+      const goal = getGoal();
+      const pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
+      const remaining = Math.max(goal - current, 0);
       document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
       document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
       document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
@@ -385,6 +393,22 @@ document.getElementById('btnAdd').addEventListener('click', () => {
 });
 
 renderTable();
+
+// Hero goal input
+document.getElementById('heroGoalInput').addEventListener('input', e => {
+  const newGoal = parseInt(e.target.value) || 0;
+  const accounts = loadAccounts();
+  const fem = accounts.find(a => a.isFem);
+  if (fem) {
+    fem.goal = newGoal;
+    saveAccounts(accounts);
+  }
+  const current = (fem && parseInt(fem.followers)) || femFollowers;
+  const pct = newGoal > 0 ? Math.min((current / newGoal) * 100, 100) : 0;
+  const remaining = Math.max(newGoal - current, 0);
+  document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
+  document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+});
 </script>
 </body>
 </html>

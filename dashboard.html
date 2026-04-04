@@ -780,11 +780,12 @@ body {
     const fem = accounts.find(a => a.isFem);
     if (fem && fem.followers) {
       const f = parseInt(fem.followers);
+      const goal = (fem.goal && parseInt(fem.goal)) || 2500;
       if (f > 0) {
         document.querySelectorAll('.perf-value')[0].textContent = f.toLocaleString('de-DE');
         document.querySelector('.goal-current .goal-value').textContent = f.toLocaleString('de-DE');
-        const goal = 2500;
-        const pct = Math.min((f / goal) * 100, 100);
+        document.querySelector('.goal-target .goal-value').textContent = goal.toLocaleString('de-DE');
+        const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
         const remaining = Math.max(goal - f, 0);
         document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
         document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
