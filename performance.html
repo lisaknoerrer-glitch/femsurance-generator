@@ -234,57 +234,42 @@ body {
     <div class="goal-diff" id="perfDiff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
   </div>
 
-  <!-- Kanal-Übersicht -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="card-title">Kanal-Übersicht</div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0;">
-
-      <div style="padding:16px 20px; text-align:center;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">LinkedIn Company Page</div>
-        <input type="number" id="perfCompanyFollower" placeholder="0" style="width:90px; padding:3px 6px; border:1px solid var(--fem-pink); border-radius:4px; font-size:26px; font-weight:700; font-family:inherit; text-align:center; color:var(--fem-pink);">
-        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Follower</div>
-        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
-          <span style="font-size:11px; color:var(--text-secondary);">Ziel:</span>
-          <input type="number" id="perfCompanyGoal" placeholder="2500" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
-        </div>
-        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
-          <div id="perfCompanyBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
-        </div>
-        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="perfCompanyPct"></div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Di &amp; Do 10:00 · 2 Posts/Woche</div>
+  <!-- LinkedIn Gruppe Ziel -->
+  <div class="card fade-up">
+    <div class="card-title">LinkedIn Gruppe</div>
+    <div class="goal-row">
+      <div class="goal-current">
+        <div class="goal-label">Mitglieder aktuell</div>
+        <div class="goal-value" id="perfGruppeVal" style="color:var(--fem-pink);">–</div>
       </div>
-
-      <div style="padding:16px 20px; text-align:center; border-left:1px solid var(--border); border-right:1px solid var(--border);">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">LinkedIn Gruppe</div>
-        <input type="number" id="perfGruppeMembers" placeholder="0" style="width:90px; padding:3px 6px; border:1px solid var(--fem-pink); border-radius:4px; font-size:26px; font-weight:700; font-family:inherit; text-align:center; color:var(--fem-pink);">
-        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
-        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
-          <span style="font-size:11px; color:var(--text-secondary);">Ziel:</span>
-          <input type="number" id="perfGruppeGoal" placeholder="500" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
-        </div>
-        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
-          <div id="perfGruppeBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
-        </div>
-        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="perfGruppePct"></div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Mi &amp; Fr 10:00 · 2 Posts/Woche</div>
+      <div class="goal-target">
+        <div class="goal-label">Ziel-Mitglieder</div>
+        <div class="goal-value" id="perfGruppeGoalVal">–</div>
       </div>
-
-      <div style="padding:16px 20px; text-align:center;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px;">WhatsApp Community</div>
-        <input type="number" id="perfWhatsappMembers" placeholder="0" style="width:90px; padding:3px 6px; border:1px solid var(--fem-pink); border-radius:4px; font-size:26px; font-weight:700; font-family:inherit; text-align:center; color:var(--fem-pink);">
-        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Mitglieder</div>
-        <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-top:10px;">
-          <span style="font-size:11px; color:var(--text-secondary);">Ziel:</span>
-          <input type="number" id="perfWhatsappGoal" placeholder="200" style="width:70px; padding:3px 6px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; text-align:center;">
-        </div>
-        <div style="width:100%; height:6px; background:var(--bg-secondary); border-radius:3px; margin-top:8px; overflow:hidden;">
-          <div id="perfWhatsappBar" style="height:100%; border-radius:3px; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); width:0%; transition:width 0.5s;"></div>
-        </div>
-        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:4px;" id="perfWhatsappPct"></div>
-        <div style="font-size:12px; color:var(--text-secondary); margin-top:8px;">Mi 08:00 · 1 Post/Woche</div>
-      </div>
-
     </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="perfGruppeFill" style="width:0%;"></div>
+    </div>
+    <div class="goal-diff" id="perfGruppeDiff">–</div>
+  </div>
+
+  <!-- WhatsApp Community Ziel -->
+  <div class="card fade-up">
+    <div class="card-title">WhatsApp Community</div>
+    <div class="goal-row">
+      <div class="goal-current">
+        <div class="goal-label">Mitglieder aktuell</div>
+        <div class="goal-value" id="perfWhatsappVal" style="color:var(--fem-pink);">–</div>
+      </div>
+      <div class="goal-target">
+        <div class="goal-label">Ziel-Mitglieder</div>
+        <div class="goal-value" id="perfWhatsappGoalVal">–</div>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="perfWhatsappFill" style="width:0%;"></div>
+    </div>
+    <div class="goal-diff" id="perfWhatsappDiff">–</div>
   </div>
 
   <!-- Zeitraum-Filter + Chart -->
@@ -470,81 +455,42 @@ document.getElementById('postTableBody').addEventListener('click', e => {
   btn.classList.add('sent');
 });
 
-// ── Reichweiten-Ziel + Kanäle from localStorage ──
-function loadKD() {
-  try {
-    const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-    if (Array.isArray(raw)) {
-      const fem = raw.find(a => a.isFem);
-      return { femFollower: fem ? parseInt(fem.followers) : 0, goal: fem ? (parseInt(fem.goal) || 2500) : 2500 };
-    }
-    return raw;
-  } catch { return {}; }
-}
-function saveKD(patch) {
-  const d = loadKD();
-  Object.assign(d, patch);
-  localStorage.setItem('fem_konkurrenz_data', JSON.stringify(d));
-}
-function pctBar(current, goal, barId, labelId) {
-  const c = parseInt(current) || 0, g = parseInt(goal) || 0;
-  const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
-  document.getElementById(barId).style.width = pct.toFixed(1) + '%';
-  document.getElementById(labelId).textContent = g > 0 ? pct.toFixed(1) + ' % erreicht' : '';
-}
+// ── Reichweiten-Ziel + Kanal-Blöcke from localStorage ──
+try {
+  const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+  const kd = Array.isArray(raw) ? {} : raw;
+  const f = parseInt(kd.femFollower) || 0;
+  const goal = parseInt(kd.goal) || 2500;
+  const gm = parseInt(kd.gruppeMembers) || 0;
+  const gg = parseInt(kd.gruppeGoal) || 0;
+  const wm = parseInt(kd.whatsappMembers) || 0;
+  const wg = parseInt(kd.whatsappGoal) || 0;
 
-const kd = loadKD();
-const f = parseInt(kd.femFollower) || 0;
-const goal = parseInt(kd.goal) || 2500;
+  // Company Page / Reichweiten-Ziel
+  if (f > 0) {
+    document.getElementById('perfCurrent').textContent = f.toLocaleString('de-DE');
+    document.getElementById('perfGoal').textContent = goal.toLocaleString('de-DE');
+    const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
+    const remaining = Math.max(goal - f, 0);
+    document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
+    document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
+  }
 
-// Reichweiten-Ziel card
-if (f > 0) {
-  document.getElementById('perfCurrent').textContent = f.toLocaleString('de-DE');
-  document.getElementById('perfGoal').textContent = goal.toLocaleString('de-DE');
-  const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
-  const remaining = Math.max(goal - f, 0);
-  document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
-  document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
-}
-
-// Kanal-Übersicht — populate
-document.getElementById('perfCompanyFollower').value = f || '';
-document.getElementById('perfCompanyGoal').value = goal || '';
-pctBar(f, goal, 'perfCompanyBar', 'perfCompanyPct');
-
-document.getElementById('perfGruppeMembers').value = parseInt(kd.gruppeMembers) || '';
-document.getElementById('perfGruppeGoal').value = parseInt(kd.gruppeGoal) || '';
-pctBar(kd.gruppeMembers, kd.gruppeGoal, 'perfGruppeBar', 'perfGruppePct');
-
-document.getElementById('perfWhatsappMembers').value = parseInt(kd.whatsappMembers) || '';
-document.getElementById('perfWhatsappGoal').value = parseInt(kd.whatsappGoal) || '';
-pctBar(kd.whatsappMembers, kd.whatsappGoal, 'perfWhatsappBar', 'perfWhatsappPct');
-
-// Editable inputs — save on change
-document.getElementById('perfCompanyFollower').addEventListener('input', e => {
-  saveKD({ femFollower: parseInt(e.target.value) || 0 });
-  pctBar(e.target.value, document.getElementById('perfCompanyGoal').value, 'perfCompanyBar', 'perfCompanyPct');
-});
-document.getElementById('perfCompanyGoal').addEventListener('input', e => {
-  saveKD({ goal: parseInt(e.target.value) || 0 });
-  pctBar(document.getElementById('perfCompanyFollower').value, e.target.value, 'perfCompanyBar', 'perfCompanyPct');
-});
-document.getElementById('perfGruppeMembers').addEventListener('input', e => {
-  saveKD({ gruppeMembers: parseInt(e.target.value) || 0 });
-  pctBar(e.target.value, document.getElementById('perfGruppeGoal').value, 'perfGruppeBar', 'perfGruppePct');
-});
-document.getElementById('perfGruppeGoal').addEventListener('input', e => {
-  saveKD({ gruppeGoal: parseInt(e.target.value) || 0 });
-  pctBar(document.getElementById('perfGruppeMembers').value, e.target.value, 'perfGruppeBar', 'perfGruppePct');
-});
-document.getElementById('perfWhatsappMembers').addEventListener('input', e => {
-  saveKD({ whatsappMembers: parseInt(e.target.value) || 0 });
-  pctBar(e.target.value, document.getElementById('perfWhatsappGoal').value, 'perfWhatsappBar', 'perfWhatsappPct');
-});
-document.getElementById('perfWhatsappGoal').addEventListener('input', e => {
-  saveKD({ whatsappGoal: parseInt(e.target.value) || 0 });
-  pctBar(document.getElementById('perfWhatsappMembers').value, e.target.value, 'perfWhatsappBar', 'perfWhatsappPct');
-});
+  // LinkedIn Gruppe block
+  function updateBlock(current, goal, valId, goalValId, fillId, diffId, label) {
+    const c = parseInt(current) || 0, g = parseInt(goal) || 0;
+    document.getElementById(valId).textContent = c > 0 ? c.toLocaleString('de-DE') : '–';
+    document.getElementById(goalValId).textContent = g > 0 ? g.toLocaleString('de-DE') : '–';
+    const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
+    const remaining = Math.max(g - c, 0);
+    document.getElementById(fillId).style.width = pct.toFixed(1) + '%';
+    document.getElementById(diffId).innerHTML = g > 0
+      ? `Noch <strong>${remaining.toLocaleString('de-DE')} ${label}</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`
+      : '–';
+  }
+  updateBlock(gm, gg, 'perfGruppeVal', 'perfGruppeGoalVal', 'perfGruppeFill', 'perfGruppeDiff', 'Mitglieder');
+  updateBlock(wm, wg, 'perfWhatsappVal', 'perfWhatsappGoalVal', 'perfWhatsappFill', 'perfWhatsappDiff', 'Mitglieder');
+} catch (e) {}
 </script>
 </body>
 </html>

@@ -241,6 +241,7 @@ body {
           <tr>
             <th>Account-Name</th>
             <th>Follower</th>
+            <th>Ziel</th>
             <th>Eng.-Rate (%)</th>
             <th>Posts/Woche</th>
             <th>Vergleich zu FemSurance</th>
@@ -334,6 +335,7 @@ function renderTable() {
     tr.innerHTML = `
       <td class="comp-name-cell">FemSurance</td>
       <td><input type="number" id="femFollowerInput" value="${femCurrent}" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+      <td><input type="number" id="femGoalInput" value="${currentGoal}" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
       <td>—</td>
       <td>—</td>
       <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
@@ -349,7 +351,9 @@ function renderTable() {
     trG.innerHTML = `
       <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ LinkedIn Gruppe</td>
       <td><input type="number" id="gruppeMembers" value="${data.gruppeMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td colspan="2"><input type="number" id="gruppePostsPerWeek" value="${data.gruppePostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"> <span style="font-size:11px;color:var(--text-secondary)">Posts/Woche</span></td>
+      <td><input type="number" id="gruppeGoalInput" value="${data.gruppeGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td>—</td>
+      <td><input type="number" id="gruppePostsPerWeek" value="${data.gruppePostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
       <td></td>
       <td></td>
     `;
@@ -363,7 +367,9 @@ function renderTable() {
     trW.innerHTML = `
       <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ WhatsApp Community</td>
       <td><input type="number" id="whatsappMembers" value="${data.whatsappMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td colspan="2"><input type="number" id="whatsappPostsPerWeek" value="${data.whatsappPostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"> <span style="font-size:11px;color:var(--text-secondary)">Posts/Woche</span></td>
+      <td><input type="number" id="whatsappGoalInput" value="${data.whatsappGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td>—</td>
+      <td><input type="number" id="whatsappPostsPerWeek" value="${data.whatsappPostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
       <td></td>
       <td></td>
     `;
@@ -380,6 +386,7 @@ function renderTable() {
     tr.innerHTML = `
       <td><input type="text" value="${acc.name}" placeholder="Account-Name" data-i="${i}" data-field="name"></td>
       <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers"></td>
+      <td><input type="number" value="${acc.goal || ''}" placeholder="0" data-i="${i}" data-field="goal" style="width:80px;"></td>
       <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
       <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
       <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
@@ -400,6 +407,14 @@ function renderTable() {
     window._renderTimer = setTimeout(renderTable, 600);
   });
 
+  // Bind FemSurance goal input
+  document.getElementById('femGoalInput').addEventListener('input', e => {
+    const data = loadData();
+    data.goal = parseInt(e.target.value) || 0;
+    saveData(data);
+    updateHero(data.femFollower, data.goal);
+  });
+
   // Bind Gruppe inputs
   ['gruppeMembers', 'gruppePostsPerWeek'].forEach(field => {
     document.getElementById(field).addEventListener('input', e => {
@@ -407,6 +422,11 @@ function renderTable() {
       data[field] = parseInt(e.target.value) || 0;
       saveData(data);
     });
+  });
+  document.getElementById('gruppeGoalInput').addEventListener('input', e => {
+    const data = loadData();
+    data.gruppeGoal = parseInt(e.target.value) || 0;
+    saveData(data);
   });
 
   // Bind WhatsApp inputs
@@ -416,6 +436,11 @@ function renderTable() {
       data[field] = parseInt(e.target.value) || 0;
       saveData(data);
     });
+  });
+  document.getElementById('whatsappGoalInput').addEventListener('input', e => {
+    const data = loadData();
+    data.whatsappGoal = parseInt(e.target.value) || 0;
+    saveData(data);
   });
 }
 
@@ -450,12 +475,14 @@ document.getElementById('btnAdd').addEventListener('click', () => {
   renderTable();
 });
 
-// Hero goal input
+// Hero goal input — sync with table
 document.getElementById('heroGoalInput').addEventListener('input', e => {
   const data = loadData();
   data.goal = parseInt(e.target.value) || 0;
   saveData(data);
   updateHero(data.femFollower, data.goal);
+  const tableGoal = document.getElementById('femGoalInput');
+  if (tableGoal) tableGoal.value = data.goal;
 });
 
 renderTable();
