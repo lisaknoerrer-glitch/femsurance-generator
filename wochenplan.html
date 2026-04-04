@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --fem-pink: #E91E8C;
@@ -324,7 +325,94 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .archiv-section select:focus { outline: none; border-color: var(--fem-pink); }
 
-/* ── Scrollbar ── */
+/* ── Multi-Screenshot Slots ── */
+.screenshot-slots {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  margin-bottom: 12px;
+}
+.screenshot-slots .ss-slot:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.ss-slot {
+  background: var(--bg-secondary); border: 1px dashed var(--border);
+  border-radius: var(--radius-sm); padding: 10px; text-align: center;
+  cursor: pointer; transition: all 0.2s; position: relative;
+}
+.ss-slot:hover { border-color: var(--fem-pink); }
+.ss-slot.has-file { border-style: solid; border-color: var(--fem-pink); }
+.ss-slot .ss-label {
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.ss-slot .ss-hint { font-size: 10px; color: var(--text-secondary); opacity: 0.7; }
+.ss-slot .ss-preview {
+  max-width: 100%; max-height: 70px; border-radius: 4px; margin-top: 6px;
+}
+.ss-slot.drag-over { border-color: var(--fem-pink); background: var(--fem-pink-light); }
+
+/* ── Extract Button + Results ── */
+.btn-extract {
+  display: block; width: 100%; padding: 10px; border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
+  color: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+}
+.btn-extract:hover { opacity: 0.9; }
+.btn-extract:disabled { opacity: 0.5; cursor: not-allowed; }
+.extract-results {
+  margin-top: 12px; padding: 14px; background: var(--bg-secondary);
+  border-radius: var(--radius-sm); display: none;
+}
+.extract-results.open { display: block; }
+.extract-results .er-section {
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.extract-results .er-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.extract-results .er-title {
+  font-size: 11px; font-weight: 600; color: var(--fem-pink);
+  text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px;
+}
+.extract-results .er-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.extract-results .er-field label {
+  font-size: 10px; color: var(--text-secondary); display: block;
+}
+.extract-results .er-field input {
+  width: 100%; padding: 4px 8px; border: 1px solid var(--border);
+  border-radius: 3px; font-size: 12px; font-family: inherit;
+}
+.extract-results .er-field input:focus { outline: none; border-color: var(--fem-pink); }
+.extract-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 600; background: #dcfce7; color: #16a34a;
+  margin-left: 8px;
+}
+/* Export preview table */
+#exportTable th, #exportTable td {
+  padding: 4px 8px; border: 1px solid var(--border); text-align: left;
+  font-size: 11px; white-space: nowrap;
+}
+#exportTable th {
+  background: var(--bg-secondary); font-weight: 600;
+  color: var(--text-secondary); font-size: 10px; text-transform: uppercase;
+}
+#exportTable tr:hover td { background: var(--fem-pink-light); }
+
+/* ── Block 2 KPI Fields ── */
+.b2-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px 10px; margin-bottom:10px; }
+.b2-kpi-field label { display:block; font-size:10px; color:var(--text-secondary); margin-bottom:2px; }
+.b2-kpi-field input { width:100%; padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
+.b2-kpi-field input:focus { outline:none; border-color:var(--fem-pink); }
+.b2-section { font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; letter-spacing:0.03em; margin:10px 0 6px; padding-top:8px; border-top:1px solid var(--border); }
+.b2-section:first-of-type { border-top:none; padding-top:0; }
+.btn-load-last { padding:7px 16px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; margin-bottom:12px; }
+.btn-load-last:hover { background:var(--fem-pink); color:#fff; }
+.b2-top-posts { font-size:12px; color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
+.b2-top-posts strong { color:var(--text-primary); }
+
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -375,16 +463,10 @@ textarea { resize: vertical; line-height: 1.6; }
     <!-- ════ LEFT PANEL ════ -->
     <div class="col-left">
 
-      <!-- BLOCK 1: Screenshot + KW + Datum -->
+      <!-- BLOCK 1: Datenquellen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">1</span> Wochenstatistik</div>
-        <div class="drop-zone" id="dropZone">
-          <span class="drop-icon">📊</span>
-          <span class="drop-label">Screenshot Wochenstatistik hierher ziehen</span>
-          <span class="drop-hint">PNG oder JPG · max. 5 MB</span>
-        </div>
-        <input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none">
-        <div class="row-2">
+        <div class="block-title"><span class="block-num">1</span> Datenquellen</div>
+        <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
             <input type="number" id="b1Kw" min="1" max="53" placeholder="z. B. 14">
@@ -394,23 +476,68 @@ textarea { resize: vertical; line-height: 1.6; }
             <input type="date" id="b1Date">
           </div>
         </div>
+
+        <!-- Part A: Screenshots -->
+        <label class="field-label" style="margin-bottom:6px;">A) Screenshots (LinkedIn Analytics)</label>
+        <div class="screenshot-slots" id="ssSlots"></div>
+
+        <!-- Part B: Export Upload -->
+        <label class="field-label" style="margin-top:14px; margin-bottom:6px;">B) LinkedIn Analytics Export (CSV/XLSX)</label>
+        <div class="drop-zone" id="exportDropZone" style="padding:16px; margin-bottom:0;">
+          <span class="drop-label" id="exportLabel">CSV oder XLSX hierher ziehen</span>
+          <span class="drop-hint">.csv · .xlsx · .xls</span>
+        </div>
+        <input type="file" id="exportFileInput" accept=".csv,.xlsx,.xls" style="display:none">
+        <div id="exportPreview" style="display:none; margin-top:8px; overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:11px;" id="exportTable"></table>
+        </div>
+
+        <!-- Extract Button -->
+        <button class="btn-extract" id="btnExtract">📊 Daten extrahieren</button>
+        <div class="extract-results" id="extractResults"></div>
       </div>
 
-      <!-- BLOCK 2: LinkedIn Analytics -->
+      <!-- BLOCK 2: Performance-Daten -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">2</span> LinkedIn Analytics</div>
-        <div class="field">
-          <label class="field-label">Analytics-Export (Text einfügen)</label>
-          <textarea id="b2Analytics" rows="10" placeholder="LinkedIn Analytics-Daten hier einfügen..."></textarea>
+        <div class="block-title"><span class="block-num">2</span> Performance-Daten</div>
+        <button class="btn-load-last" id="b2LoadLast">📥 Letzte Woche übernehmen</button>
+
+        <div class="b2-section">Post-Ebene</div>
+        <div class="b2-kpi-grid">
+          <div class="b2-kpi-field"><label>Impressions</label><input data-b2="post_impressions"></div>
+          <div class="b2-kpi-field"><label>Indiv. Impressions</label><input data-b2="post_ind_impressions"></div>
+          <div class="b2-kpi-field"><label>Engagements</label><input data-b2="post_engagements"></div>
+          <div class="b2-kpi-field"><label>Engagement-Rate %</label><input data-b2="post_eng_rate"></div>
+          <div class="b2-kpi-field"><label>Klicks</label><input data-b2="post_klicks"></div>
+          <div class="b2-kpi-field"><label>CTR %</label><input data-b2="post_ctr"></div>
+          <div class="b2-kpi-field"><label>Reaktionen</label><input data-b2="post_reaktionen"></div>
+          <div class="b2-kpi-field"><label>Kommentare</label><input data-b2="post_kommentare"></div>
+          <div class="b2-kpi-field"><label>Shares</label><input data-b2="post_shares"></div>
+          <div class="b2-kpi-field"><label>Gen. Seitenbesucher</label><input data-b2="post_seitenbesucher"></div>
+          <div class="b2-kpi-field"><label>Gen. Follower</label><input data-b2="post_follower_gen"></div>
         </div>
-        <div class="field">
-          <label class="field-label">Modus</label>
-          <select id="b2Mode">
-            <option value="Prompt-System">Prompt-System</option>
-            <option value="Redaktion">Redaktion</option>
-            <option value="Gemischt" selected>Gemischt</option>
-          </select>
+
+        <div class="b2-section">Seite (30 Tage)</div>
+        <div class="b2-kpi-grid">
+          <div class="b2-kpi-field"><label>Impressions 30T</label><input data-b2="site_impressions"></div>
+          <div class="b2-kpi-field"><label>Engagement-Rate 30T %</label><input data-b2="site_eng_rate"></div>
+          <div class="b2-kpi-field"><label>Reaktionen 30T</label><input data-b2="site_reaktionen"></div>
+          <div class="b2-kpi-field"><label>Kommentare 30T</label><input data-b2="site_kommentare"></div>
+          <div class="b2-kpi-field"><label>Shares 30T</label><input data-b2="site_shares"></div>
         </div>
+
+        <div class="b2-section">Sichtbarkeit &amp; Funnel</div>
+        <div class="b2-kpi-grid">
+          <div class="b2-kpi-field"><label>Suchanzeigen 7T</label><input data-b2="search_anzeigen"></div>
+          <div class="b2-kpi-field"><label>Veränderung %</label><input data-b2="search_change"></div>
+          <div class="b2-kpi-field"><label>Seitenaufrufe 30T</label><input data-b2="visitor_aufrufe"></div>
+          <div class="b2-kpi-field"><label>Indiv. Besucher 30T</label><input data-b2="visitor_unique"></div>
+          <div class="b2-kpi-field"><label>Neue Follower 30T</label><input data-b2="follower_neu"></div>
+          <div class="b2-kpi-field"><label>Follower gesamt</label><input data-b2="follower_gesamt"></div>
+        </div>
+
+        <div class="b2-section">Top-Posts</div>
+        <div class="b2-top-posts" id="b2TopPosts">–</div>
       </div>
 
       <!-- BLOCK 3: Follower-Ziel -->
@@ -557,59 +684,409 @@ function load(key, fallback) {
 }
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
-// ══════════ BLOCK 1: Screenshot + KW + Date ══════════
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
-let uploadedImage = null;
+// ══════════ BLOCK 1: Datenquellen ══════════
 
-function handleFile(file) {
+// ── Part A: Screenshots ──
+const SS_CATEGORIES = ['Beitrag-Analyse', 'Seitenübersicht', 'Besucher:innen', 'Follower:innen', 'Top-Posts / Chart'];
+let screenshots = [];
+
+function renderScreenshotSlots() {
+  const container = document.getElementById('ssSlots');
+  container.innerHTML = '';
+  SS_CATEGORIES.forEach(cat => {
+    const existing = screenshots.find(s => s.category === cat);
+    const slot = document.createElement('div');
+    slot.className = 'ss-slot' + (existing ? ' has-file' : '');
+    if (existing) {
+      slot.innerHTML = `<div class="ss-label">${cat}</div><img class="ss-preview" src="${existing.image}" alt="${cat}"><div class="ss-hint">${existing.imageName}</div>`;
+    } else {
+      slot.innerHTML = `<div class="ss-label">${cat}</div><div class="ss-hint">PNG / JPG</div>`;
+    }
+    const fileIn = document.createElement('input');
+    fileIn.type = 'file'; fileIn.accept = 'image/png,image/jpeg'; fileIn.style.display = 'none';
+    slot.appendChild(fileIn);
+    slot.addEventListener('click', e => { if (!e.target.closest('.ss-preview')) fileIn.click(); });
+    fileIn.addEventListener('change', e => handleSSFile(cat, e.target.files[0]));
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); handleSSFile(cat, e.dataTransfer.files[0]); });
+    container.appendChild(slot);
+  });
+}
+
+function handleSSFile(category, file) {
   if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
   if (file.size > 5 * 1024 * 1024) { alert('Datei zu groß (max. 5 MB)'); return; }
   const reader = new FileReader();
   reader.onload = e => {
-    uploadedImage = e.target.result;
-    dropZone.classList.add('has-file');
-    dropZone.innerHTML = `<span class="drop-label">${file.name}</span><img class="drop-preview" src="${uploadedImage}" alt="Preview">`;
+    const idx = screenshots.findIndex(s => s.category === category);
+    const entry = { category, image: e.target.result, imageType: file.type, imageName: file.name };
+    if (idx >= 0) screenshots[idx] = entry; else screenshots.push(entry);
+    save('fem_wp_screenshots', screenshots);
     saveBlock1();
+    renderScreenshotSlots();
   };
   reader.readAsDataURL(file);
 }
 
-dropZone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+// ── Part B: Export File ──
+let exportData = null; // parsed rows: [{ headers, rows }]
+const exportDropZone = document.getElementById('exportDropZone');
+const exportFileInput = document.getElementById('exportFileInput');
 
+exportDropZone.addEventListener('click', () => exportFileInput.click());
+exportDropZone.addEventListener('dragover', e => { e.preventDefault(); exportDropZone.classList.add('drag-over'); });
+exportDropZone.addEventListener('dragleave', () => exportDropZone.classList.remove('drag-over'));
+exportDropZone.addEventListener('drop', e => { e.preventDefault(); exportDropZone.classList.remove('drag-over'); handleExportFile(e.dataTransfer.files[0]); });
+exportFileInput.addEventListener('change', e => handleExportFile(e.target.files[0]));
+
+function handleExportFile(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  document.getElementById('exportLabel').textContent = file.name;
+  exportDropZone.classList.add('has-file');
+
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      const sep = text.includes(';') ? ';' : ',';
+      const lines = text.split('\n').filter(l => l.trim());
+      const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
+      const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
+      exportData = { headers, rows, fileName: file.name };
+      save('fem_wp_export_data', exportData);
+      renderExportPreview();
+      saveBlock1();
+    };
+    reader.readAsText(file, 'UTF-8');
+  } else if (['xlsx', 'xls'].includes(ext)) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const headers = json[0] ? json[0].map(String) : [];
+        const rows = json.slice(1).map(r => r.map(c => c != null ? String(c) : ''));
+        exportData = { headers, rows, fileName: file.name };
+        save('fem_wp_export_data', exportData);
+        renderExportPreview();
+        saveBlock1();
+      } catch (err) {
+        alert('XLSX-Fehler: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function renderExportPreview() {
+  if (!exportData || !exportData.rows.length) return;
+  const preview = document.getElementById('exportPreview');
+  const table = document.getElementById('exportTable');
+  preview.style.display = 'block';
+  const showRows = exportData.rows.slice(0, 5);
+  table.innerHTML = `
+    <thead><tr>${exportData.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${showRows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+  `;
+  if (exportData.rows.length > 5) {
+    table.innerHTML += `<tfoot><tr><td colspan="${exportData.headers.length}" style="text-align:center;font-size:10px;color:var(--text-secondary);padding:6px;">... und ${exportData.rows.length - 5} weitere Zeilen</td></tr></tfoot>`;
+  }
+}
+
+// ── Save / Restore Block 1 ──
 function saveBlock1() {
   save('fem_wp_block1', {
     kw: document.getElementById('b1Kw').value,
-    date: document.getElementById('b1Date').value,
-    image: uploadedImage
+    date: document.getElementById('b1Date').value
   });
 }
 document.getElementById('b1Kw').addEventListener('input', saveBlock1);
 document.getElementById('b1Date').addEventListener('input', saveBlock1);
 
-// Restore
 const b1 = load('fem_wp_block1', {});
 if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
 if (b1.date) document.getElementById('b1Date').value = b1.date;
-if (b1.image) { uploadedImage = b1.image; dropZone.classList.add('has-file'); dropZone.innerHTML = `<span class="drop-label">Bild geladen</span><img class="drop-preview" src="${b1.image}" alt="Preview">`; }
 
-// ══════════ BLOCK 2: Analytics ══════════
-function saveBlock2() {
-  save('fem_wp_block2', {
-    analytics: document.getElementById('b2Analytics').value,
-    mode: document.getElementById('b2Mode').value
+// Restore screenshots
+const savedSS = load('fem_wp_screenshots', []);
+if (savedSS.length) screenshots = savedSS;
+// Migration: old format
+const oldB1 = load('fem_wp_block1', {});
+if (oldB1.screenshots && !savedSS.length) { screenshots = oldB1.screenshots; save('fem_wp_screenshots', screenshots); }
+if (oldB1.image && !savedSS.length) { screenshots = [{ category: 'Beitrag-Analyse', image: oldB1.image, imageType: oldB1.imageType || 'image/png', imageName: oldB1.imageName || 'screenshot' }]; save('fem_wp_screenshots', screenshots); }
+renderScreenshotSlots();
+
+// Restore export
+exportData = load('fem_wp_export_data', null);
+if (exportData) {
+  document.getElementById('exportLabel').textContent = exportData.fileName || 'Datei geladen';
+  exportDropZone.classList.add('has-file');
+  renderExportPreview();
+}
+
+// ══════════ EXTRACT / MERGE ANALYTICS ══════════
+const EXTRACT_PROMPT = `Du analysierst LinkedIn-Screenshots einer Unternehmensseite (FemSurance von AssCompact).
+
+Extrahiere nur sichtbare Kennzahlen. Trenne strikt zwischen Post-Ebene, Seitenebene, Suche, Besucher, Follower. Erfinde keine Zahlen. Markiere unsichere Werte.
+
+Gib ausschließlich valides JSON zurück:
+{
+  "posts": [{ "titel": "", "datum": "", "impressions": 0, "engagements": 0, "engagement_rate_pct": 0, "klicks": 0, "reaktionen": 0, "kommentare": 0 }],
+  "content_summary": { "impressions": 0, "engagement_rate_pct": 0, "reaktionen": 0, "kommentare": 0, "shares": 0 },
+  "search_summary": { "suchanzeigen": 0, "change_pct": 0 },
+  "visitor_summary": { "seitenaufrufe": 0, "change_pct": 0, "individuelle_besucher": 0 },
+  "follower_summary": { "follower_gesamt": 0, "neue_follower": 0, "change_pct": 0 },
+  "top_posts": [{ "titel": "", "impressions": 0, "engagement_rate_pct": 0 }],
+  "unsicherheiten": []
+}`;
+
+function extractFromExport(data) {
+  if (!data || !data.headers || !data.rows.length) return null;
+  const h = data.headers.map(s => s.toLowerCase());
+  const result = { posts: [], content_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
+  data.rows.forEach(row => {
+    const obj = {};
+    h.forEach((key, i) => { obj[key] = row[i] || ''; });
+    const post = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k.includes('titel') || k.includes('title') || k.includes('post')) post.titel = v;
+      if (k.includes('datum') || k.includes('date')) post.datum = v;
+      if (k.includes('impression')) post.impressions = parseInt(v) || 0;
+      if (k.includes('engagement') && k.includes('rate')) post.engagement_rate_pct = parseFloat(v) || 0;
+      if (k.includes('klick') || k.includes('click')) post.klicks = parseInt(v) || 0;
+      if (k.includes('reaktion') || k.includes('reaction') || k.includes('like')) post.reaktionen = parseInt(v) || 0;
+      if (k.includes('kommentar') || k.includes('comment')) post.kommentare = parseInt(v) || 0;
+    }
+    if (post.titel || post.impressions) result.posts.push(post);
+  });
+  if (result.posts.length) {
+    result.top_posts = [...result.posts].sort((a, b) => (b.impressions || 0) - (a.impressions || 0)).slice(0, 5);
+    const totalImp = result.posts.reduce((s, p) => s + (p.impressions || 0), 0);
+    const avgEng = result.posts.reduce((s, p) => s + (p.engagement_rate_pct || 0), 0) / result.posts.length;
+    result.content_summary = { impressions: totalImp, engagement_rate_pct: Math.round(avgEng * 100) / 100 };
+  }
+  return result;
+}
+
+document.getElementById('btnExtract').addEventListener('click', async () => {
+  const hasScreenshots = screenshots.length > 0;
+  const hasExport = exportData && exportData.rows && exportData.rows.length > 0;
+  if (!hasScreenshots && !hasExport) { alert('Bitte Screenshots hochladen oder Export-Datei importieren.'); return; }
+
+  const btn = document.getElementById('btnExtract');
+  btn.disabled = true;
+  btn.textContent = 'Wird extrahiert...';
+
+  let merged = { posts: [], content_summary: {}, search_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
+
+  try {
+    // 1. Extract from export file
+    if (hasExport) {
+      const fromExport = extractFromExport(exportData);
+      if (fromExport) {
+        merged.posts = fromExport.posts;
+        merged.content_summary = fromExport.content_summary;
+        merged.top_posts = fromExport.top_posts;
+      }
+    }
+
+    // 2. Extract from screenshots via API
+    if (hasScreenshots) {
+      const userContent = [{ type: 'text', text: 'Analysiere diese LinkedIn-Screenshots und extrahiere die Kennzahlen als JSON.' }];
+      screenshots.forEach(s => {
+        userContent.push({ type: 'image', source: { type: 'base64', media_type: s.imageType || 'image/png', data: s.image.split(',')[1] } });
+      });
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: EXTRACT_PROMPT, messages: [{ role: 'user', content: userContent }] })
+      });
+
+      if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
+      const data = await resp.json();
+      let jsonStr = data.content[0].text.trim();
+      if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+      const fromAPI = JSON.parse(jsonStr);
+
+      // Merge: API data takes priority for visual-only fields
+      if (fromAPI.visitor_summary) merged.visitor_summary = fromAPI.visitor_summary;
+      if (fromAPI.follower_summary) merged.follower_summary = fromAPI.follower_summary;
+      if (fromAPI.search_summary) merged.search_summary = fromAPI.search_summary;
+      if (!merged.posts.length && fromAPI.posts) merged.posts = fromAPI.posts;
+      if (!merged.top_posts.length && fromAPI.top_posts) merged.top_posts = fromAPI.top_posts;
+      if (fromAPI.content_summary && !merged.content_summary.impressions) merged.content_summary = fromAPI.content_summary;
+      if (fromAPI.unsicherheiten) merged.unsicherheiten = fromAPI.unsicherheiten;
+    }
+
+    localStorage.setItem('fem_wp_analytics', JSON.stringify(merged));
+    renderExtractResults(merged);
+    btn.textContent = '📊 Daten extrahieren';
+    btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
+
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = '📊 Daten extrahieren';
+  }
+  btn.disabled = false;
+});
+
+function renderExtractResults(a) {
+  const container = document.getElementById('extractResults');
+  container.classList.add('open');
+
+  function field(label, key, section, val) {
+    return `<div class="er-field"><label>${label}</label><input type="text" data-section="${section}" data-key="${key}" value="${val ?? ''}"></div>`;
+  }
+
+  const cs = a.content_summary || {};
+  const vs = a.visitor_summary || {};
+  const fs = a.follower_summary || {};
+  const ss = a.search_summary || {};
+  const tp = a.top_posts || [];
+  const posts = a.posts || [];
+
+  container.innerHTML = `
+    <div class="er-section">
+      <div class="er-title">Inhalte (Zusammenfassung)</div>
+      <div class="er-grid">
+        ${field('Impressions','impressions','content_summary',cs.impressions)}
+        ${field('Engagement-Rate %','engagement_rate_pct','content_summary',cs.engagement_rate_pct)}
+        ${field('Reaktionen','reaktionen','content_summary',cs.reaktionen)}
+        ${field('Kommentare','kommentare','content_summary',cs.kommentare)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Besucher</div>
+      <div class="er-grid">
+        ${field('Seitenaufrufe','seitenaufrufe','visitor_summary',vs.seitenaufrufe)}
+        ${field('Veränderung %','change_pct','visitor_summary',vs.change_pct)}
+        ${field('Individuelle Besucher','individuelle_besucher','visitor_summary',vs.individuelle_besucher)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Follower</div>
+      <div class="er-grid">
+        ${field('Gesamt','follower_gesamt','follower_summary',fs.follower_gesamt)}
+        ${field('Neu','neue_follower','follower_summary',fs.neue_follower)}
+        ${field('Veränderung %','change_pct','follower_summary',fs.change_pct)}
+      </div>
+    </div>
+    <div class="er-section">
+      <div class="er-title">Top-Posts (${tp.length})</div>
+      ${tp.map((p, i) => `<div class="er-grid" style="margin-bottom:4px;">
+        ${field('Titel','titel','top_posts_'+i,p.titel)}
+        ${field('Impressions','impressions','top_posts_'+i,p.impressions)}
+        ${field('Eng. %','engagement_rate_pct','top_posts_'+i,p.engagement_rate_pct)}
+      </div>`).join('')}
+    </div>
+    ${posts.length ? `<div class="er-section"><div class="er-title">Einzelne Posts (${posts.length})</div><div style="font-size:11px;color:var(--text-secondary);max-height:80px;overflow-y:auto;">${posts.map(p => `${p.titel || '–'}: ${p.impressions || 0} Imp.`).join('<br>')}</div></div>` : ''}
+    ${a.unsicherheiten && a.unsicherheiten.length ? `<div class="er-section"><div class="er-title">Unsicherheiten</div><div style="font-size:12px;color:var(--text-secondary);">${a.unsicherheiten.join(', ')}</div></div>` : ''}
+  `;
+
+  container.addEventListener('input', () => {
+    const updated = JSON.parse(localStorage.getItem('fem_wp_analytics') || '{}');
+    container.querySelectorAll('input[data-section]').forEach(inp => {
+      const sec = inp.dataset.section;
+      const key = inp.dataset.key;
+      if (sec.startsWith('top_posts_')) {
+        const idx = parseInt(sec.split('_')[2]);
+        if (!updated.top_posts) updated.top_posts = [];
+        if (!updated.top_posts[idx]) updated.top_posts[idx] = {};
+        updated.top_posts[idx][key] = inp.value;
+      } else {
+        if (!updated[sec]) updated[sec] = {};
+        updated[sec][key] = inp.value;
+      }
+    });
+    localStorage.setItem('fem_wp_analytics', JSON.stringify(updated));
   });
 }
-document.getElementById('b2Analytics').addEventListener('input', saveBlock2);
-document.getElementById('b2Mode').addEventListener('change', saveBlock2);
 
-const b2 = load('fem_wp_block2', {});
-if (b2.analytics) document.getElementById('b2Analytics').value = b2.analytics;
-if (b2.mode) document.getElementById('b2Mode').value = b2.mode;
+// Restore on load
+const savedAnalytics = load('fem_wp_analytics', null);
+if (savedAnalytics) {
+  renderExtractResults(savedAnalytics);
+  document.getElementById('btnExtract').innerHTML = '📊 Daten extrahieren<span class="extract-badge">✓ Extrahiert</span>';
+}
+
+// ══════════ BLOCK 2: Performance-Daten ══════════
+function saveBlock2() {
+  const data = {};
+  document.querySelectorAll('input[data-b2]').forEach(inp => { data[inp.dataset.b2] = inp.value; });
+  save('fem_wp_block2', data);
+}
+document.querySelectorAll('input[data-b2]').forEach(inp => inp.addEventListener('input', saveBlock2));
+
+function loadBlock2(data) {
+  if (!data) return;
+  document.querySelectorAll('input[data-b2]').forEach(inp => {
+    if (data[inp.dataset.b2] != null) inp.value = data[inp.dataset.b2];
+  });
+}
+
+// Load last week from performance history
+document.getElementById('b2LoadLast').addEventListener('click', () => {
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  if (!history.length) { alert('Keine gespeicherte Woche gefunden.'); return; }
+  const last = history[0];
+  const mapping = {
+    post_impressions: last.post?.impressions ?? last.post_analytics?.impressions ?? '',
+    post_ind_impressions: last.post?.individuelle_impressions ?? last.post_analytics?.individuelle_impressions ?? '',
+    post_engagements: last.post?.engagements ?? last.post_analytics?.engagements ?? '',
+    post_eng_rate: last.post?.engagement_rate_pct ?? last.post_analytics?.engagement_rate_pct ?? '',
+    post_klicks: last.post?.klicks ?? last.post_analytics?.klicks ?? '',
+    post_ctr: last.post?.ctr_pct ?? last.post_analytics?.ctr_pct ?? '',
+    post_reaktionen: last.post?.reaktionen ?? last.post_analytics?.reaktionen ?? '',
+    post_kommentare: last.post?.kommentare ?? last.post_analytics?.kommentare ?? '',
+    post_shares: last.post?.shares ?? last.post_analytics?.shares ?? '',
+    post_seitenbesucher: '',
+    post_follower_gen: '',
+    site_impressions: last.site?.impressions ?? last.content_summary?.impressions ?? '',
+    site_eng_rate: last.site?.engagement_rate_pct ?? last.content_summary?.engagement_rate_pct ?? '',
+    site_reaktionen: last.site?.reaktionen ?? '',
+    site_kommentare: last.site?.kommentare ?? '',
+    site_shares: last.site?.shares ?? '',
+    search_anzeigen: last.search?.suchanzeigen ?? last.search_summary?.suchanzeigen ?? '',
+    search_change: last.search?.change_pct ?? last.search_summary?.change_pct ?? '',
+    visitor_aufrufe: last.visitor?.seitenaufrufe ?? last.visitor_summary?.seitenaufrufe ?? '',
+    visitor_unique: last.visitor?.individuelle_besucher ?? last.visitor_summary?.individuelle_besucher ?? '',
+    follower_neu: last.follower?.neue_follower ?? last.follower_summary?.neue_follower ?? '',
+    follower_gesamt: last.follower?.follower_gesamt ?? last.follower_summary?.follower_gesamt ?? ''
+  };
+  loadBlock2(mapping);
+  saveBlock2();
+
+  // Top posts
+  const tp = last.top_posts || [];
+  const tpEl = document.getElementById('b2TopPosts');
+  if (tp.length) {
+    tpEl.innerHTML = tp.map(p => `<strong>${p.titel || '–'}</strong> · ${p.impressions || '–'} Imp. · ${p.engagement_rate_pct || '–'}%`).join('<br>');
+  }
+
+  const btn = document.getElementById('b2LoadLast');
+  btn.textContent = `KW ${last.kw || '?'} geladen ✓`;
+  btn.style.background = '#dcfce7'; btn.style.color = '#16a34a'; btn.style.borderColor = '#16a34a';
+  setTimeout(() => { btn.textContent = '📥 Letzte Woche übernehmen'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+});
+
+// Restore Block 2
+const b2saved = load('fem_wp_block2', {});
+loadBlock2(b2saved);
+
+// Show top posts from history on load
+const histForTP = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+if (histForTP.length && histForTP[0].top_posts) {
+  document.getElementById('b2TopPosts').innerHTML = histForTP[0].top_posts.map(p => `<strong>${p.titel || '–'}</strong> · ${p.impressions || '–'} Imp. · ${p.engagement_rate_pct || '–'}%`).join('<br>');
+}
 
 // ══════════ BLOCK 3: Follower-Ziel (synced with fem_konkurrenz_data) ══════════
 function loadShared() {
@@ -831,15 +1308,35 @@ archivSelect.addEventListener('change', () => {
 function collectPrompt() {
   const parts = [];
 
-  // Block 1
+  // Block 1 — KW + extracted analytics
   const kw = document.getElementById('b1Kw').value;
   const date = document.getElementById('b1Date').value;
   if (kw || date) parts.push(`## Kalenderwoche\nKW ${kw || '?'}, Montag: ${date || '?'}`);
 
-  // Block 2
-  const analytics = document.getElementById('b2Analytics').value.trim();
-  const mode = document.getElementById('b2Mode').value;
-  if (analytics) parts.push(`## LinkedIn Analytics (Modus: ${mode})\n${analytics}`);
+  const extractedAnalytics = load('fem_wp_analytics', null);
+  if (extractedAnalytics) {
+    parts.push(`## Extrahierte Analytics\n${JSON.stringify(extractedAnalytics, null, 2)}`);
+  }
+
+  // Block 2 — Performance-Daten
+  const b2data = load('fem_wp_block2', {});
+  const hasB2 = Object.values(b2data).some(v => v && v !== '');
+  if (hasB2) {
+    const kwVal = document.getElementById('b1Kw').value || '?';
+    const lines = [`## Performance-Daten KW ${kwVal}`];
+    const v = b2data;
+    lines.push(`Post: Impressions ${v.post_impressions||'–'}, Indiv. ${v.post_ind_impressions||'–'}, Engagements ${v.post_engagements||'–'}, Eng-Rate ${v.post_eng_rate||'–'}%, Klicks ${v.post_klicks||'–'}, CTR ${v.post_ctr||'–'}%, Reaktionen ${v.post_reaktionen||'–'}, Kommentare ${v.post_kommentare||'–'}, Shares ${v.post_shares||'–'}`);
+    lines.push(`Seite 30T: Impressions ${v.site_impressions||'–'}, Eng-Rate ${v.site_eng_rate||'–'}%, Reaktionen ${v.site_reaktionen||'–'}, Kommentare ${v.site_kommentare||'–'}, Shares ${v.site_shares||'–'}`);
+    lines.push(`Suche 7T: Suchanzeigen ${v.search_anzeigen||'–'}, Veränderung ${v.search_change||'–'}%`);
+    lines.push(`Besucher 30T: Seitenaufrufe ${v.visitor_aufrufe||'–'}, Indiv. Besucher ${v.visitor_unique||'–'}`);
+    lines.push(`Follower: gesamt ${v.follower_gesamt||'–'}, neu ${v.follower_neu||'–'}`);
+    // Top posts from history
+    const hist = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+    if (hist.length && hist[0].top_posts) {
+      lines.push(`Top-Posts: ${hist[0].top_posts.map(p => `${p.titel||'–'} (${p.impressions||'–'} Imp., ${p.engagement_rate_pct||'–'}%)`).join('; ')}`);
+    }
+    parts.push(lines.join('\n'));
+  }
 
   // Block 3
   const current = document.getElementById('b3Current').value;
@@ -880,22 +1377,18 @@ function collectPrompt() {
 }
 
 // ══════════ SYSTEM PROMPT ══════════
-const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator. Analysiere die Wochendaten und erstelle:
+const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator.
 
-1. **Auswertung der vergangenen Woche** – Was lief gut, was kann verbessert werden
-2. **Posting-Plan für die kommende Woche:**
-   - Dienstag 10:00 – Company Page
-   - Mittwoch 08:00 – WhatsApp
-   - Mittwoch 10:00 – Gruppe
-   - Donnerstag 10:00 – Company Page
-   - Freitag 10:00 – Gruppe
-3. **Fünf Content-Outlines im FemSurance-Stil** – Jedes Outline enthält: Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis
-4. **Aktualisierten Lernstand** – Beginne mit "AKTUALISIERTER LERNSTAND:" auf einer eigenen Zeile
+Wenn ein Screenshot der Wochenstatistik mitgesendet wurde, analysiere ihn aktiv. Extrahiere daraus soweit sichtbar: Reichweite, Impressionen, Engagement, Klicks, Follower-Entwicklung, auffällige Trends. Falls Daten unleserlich sind, kennzeichne das kurz. Erfinde keine Zahlen.
+
+Erstelle auf Deutsch:
+1. Auswertung der vergangenen Woche (inkl. Screenshot-Analyse)
+2. Posting-Plan für die kommende Woche (Di 10:00 Company Page, Mi 08:00 WhatsApp, Mi 10:00 Gruppe, Do 10:00 Company Page, Fr 10:00 Gruppe)
+3. Fünf Content-Outlines im FemSurance-Stil (Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis)
+4. Aktualisierten Lernstand — beginne mit: AKTUALISIERTER LERNSTAND:
 
 Marke: FemSurance – Visibility. Network. Impact.
-Herausgeber: AssCompact / bbg Betriebsberatungs GmbH
-Stil: warm, empowernd, praxisnah, fachkundig.
-Schreibe ausschließlich auf Deutsch.`;
+Stil: warm, empowernd, praxisnah. Schreibe auf Deutsch.`;
 
 // ══════════ GENERATE ══════════
 document.getElementById('btnGenerate').addEventListener('click', async () => {
