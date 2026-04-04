@@ -527,6 +527,7 @@ textarea { resize: vertical; line-height: 1.6; }
           <span class="drop-hint">.csv · .xlsx · .xls</span>
         </div>
         <input type="file" id="exportFileInput" accept=".csv,.xlsx,.xls" style="display:none">
+        <div id="exportMappingStatus" style="display:none; font-size:11px; margin-top:6px; color:var(--text-secondary);"></div>
         <div id="exportPreview" style="display:none; margin-top:8px; overflow-x:auto;">
           <table style="width:100%; border-collapse:collapse; font-size:11px;" id="exportTable"></table>
         </div>
@@ -743,6 +744,16 @@ function handleExportFile(file) {
   document.getElementById('exportLabel').textContent = file.name;
   exportDropZone.classList.add('has-file');
 
+  function onParsed(headers, rows) {
+    console.log('Export Spalten:', headers);
+    exportData = { headers, rows, fileName: file.name, columnMap: null };
+    save('fem_wp_export_data', exportData);
+    renderExportPreview();
+    saveBlock1();
+    // Auto-detect columns via API
+    detectColumns(headers, rows.slice(0, 5));
+  }
+
   if (ext === 'csv') {
     const reader = new FileReader();
     reader.onload = e => {
@@ -750,12 +761,8 @@ function handleExportFile(file) {
       const sep = text.includes(';') ? ';' : ',';
       const lines = text.split('\n').filter(l => l.trim());
       const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
-      console.log('LinkedIn Export Spalten:', headers);
       const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
-      exportData = { headers, rows, fileName: file.name };
-      save('fem_wp_export_data', exportData);
-      renderExportPreview();
-      saveBlock1();
+      onParsed(headers, rows);
     };
     reader.readAsText(file, 'UTF-8');
   } else if (['xlsx', 'xls'].includes(ext)) {
@@ -766,17 +773,68 @@ function handleExportFile(file) {
         const ws = wb.Sheets[wb.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
         const headers = json[0] ? json[0].map(String) : [];
-        console.log('LinkedIn Export Spalten:', headers);
         const rows = json.slice(1).map(r => r.map(c => c != null ? String(c) : ''));
-        exportData = { headers, rows, fileName: file.name };
-        save('fem_wp_export_data', exportData);
-        renderExportPreview();
-        saveBlock1();
+        onParsed(headers, rows);
       } catch (err) {
         alert('XLSX-Fehler: ' + err.message);
       }
     };
     reader.readAsArrayBuffer(file);
+  }
+}
+
+async function detectColumns(headers, sampleRows) {
+  const statusEl = document.getElementById('exportMappingStatus');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '⏳ Spalten werden erkannt...';
+
+  try {
+    const sampleData = sampleRows.map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+      return obj;
+    });
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 512,
+        system: `Du bekommst Spaltennamen und Beispieldaten aus einer Excel/CSV-Datei.
+Ordne die Spalten den folgenden KPIs zu soweit möglich:
+impressions, clicks, reactions, comments, shares, engagement_rate, date, post_title
+Gib NUR valides JSON zurück: { "impressions": "Spaltenname", "clicks": "Spaltenname", ... }
+Wenn eine Spalte nicht zugeordnet werden kann, setze null.
+Wähle bevorzugt organische (nicht gesponserte) Spalten.`,
+        messages: [{ role: 'user', content: `Spalten: ${JSON.stringify(headers)}\n\nBeispieldaten:\n${JSON.stringify(sampleData, null, 2)}` }]
+      })
+    });
+
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    let jsonStr = data.content[0].text.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const mapping = JSON.parse(jsonStr);
+
+    console.log('AI Column Mapping:', mapping);
+    exportData.columnMap = mapping;
+    save('fem_wp_export_data', exportData);
+
+    const recognized = Object.values(mapping).filter(v => v !== null).length;
+    statusEl.innerHTML = `<span class="extract-badge">✓ ${recognized} Spalten erkannt</span> ${Object.entries(mapping).filter(([,v]) => v).map(([k,v]) => `${k}→${v}`).join(' · ')}`;
+
+  } catch (err) {
+    console.error('Column detection failed:', err);
+    statusEl.innerHTML = '⚠️ Spaltenerkennung fehlgeschlagen — Fallback wird verwendet';
+    // Set null mapping so extractFromExport uses fallback
+    exportData.columnMap = null;
+    save('fem_wp_export_data', exportData);
   }
 }
 
@@ -824,6 +882,13 @@ if (exportData) {
   document.getElementById('exportLabel').textContent = exportData.fileName || 'Datei geladen';
   exportDropZone.classList.add('has-file');
   renderExportPreview();
+  // Restore mapping status
+  if (exportData.columnMap) {
+    const recognized = Object.values(exportData.columnMap).filter(v => v !== null).length;
+    const statusEl = document.getElementById('exportMappingStatus');
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `<span class="extract-badge">✓ ${recognized} Spalten erkannt</span> ${Object.entries(exportData.columnMap).filter(([,v]) => v).map(([k,v]) => `${k}→${v}`).join(' · ')}`;
+  }
 }
 
 // ══════════ EXTRACT / MERGE ANALYTICS ══════════
@@ -842,95 +907,85 @@ Gib ausschließlich valides JSON zurück:
   "unsicherheiten": []
 }`;
 
+function parseNum(v) {
+  return parseFloat(String(v || '').replace(/\./g, '').replace(',', '.').replace('%', '')) || 0;
+}
+
 function extractFromExport(data) {
   if (!data || !data.headers || !data.rows.length) return null;
 
-  // LinkedIn German column name mapping
-  const COL_MAP = {
-    'impressionen (organische updates)': 'impressions',
-    'impressionen (gesponserte updates)': 'sponsored_impressions',
-    'impressionen (gesamt)': 'total_impressions',
-    'klicks (organische updates)': 'clicks',
-    'klicks (gesponserte updates)': 'sponsored_clicks',
-    'reaktionen (organische updates)': 'reactions',
-    'reaktionen (gesponserte updates)': 'sponsored_reactions',
-    'kommentare (organische updates)': 'comments',
-    'kommentare (gesponserte updates)': 'sponsored_comments',
-    'geteilt (organische updates)': 'shares',
-    'geteilt (gesponserte updates)': 'sponsored_shares',
-    'engagement-rate (organische updates)': 'engagement_rate',
-    'engagement-rate (gesponserte updates)': 'sponsored_engagement_rate',
-    'datum': 'date',
-    'date': 'date',
-    'titel des updates': 'title',
-    'update-titel': 'title',
-    'titel': 'title',
-    'title': 'title',
-    'impressionen': 'impressions',
-    'klicks': 'clicks',
-    'reaktionen': 'reactions',
-    'kommentare': 'comments',
-    'shares': 'shares',
-    'engagement-rate': 'engagement_rate',
-    'follower': 'follower',
-    'neue follower': 'new_follower',
-  };
+  // Use AI-detected mapping if available, otherwise try fuzzy fallback
+  const map = data.columnMap || {};
+  const colIdx = {};
+  const KPI_KEYS = ['impressions', 'clicks', 'reactions', 'comments', 'shares', 'engagement_rate', 'date', 'post_title'];
 
-  // Map headers to normalized keys
-  const normalizedHeaders = data.headers.map(h => {
-    const lower = h.toLowerCase().trim();
-    return COL_MAP[lower] || lower;
+  KPI_KEYS.forEach(kpi => {
+    const mappedName = map[kpi];
+    if (mappedName) {
+      const idx = data.headers.findIndex(h => h === mappedName);
+      if (idx >= 0) colIdx[kpi] = idx;
+    }
   });
-  console.log('Mapped columns:', normalizedHeaders);
+
+  // Fuzzy fallback for unmapped columns
+  if (Object.keys(colIdx).length < 3) {
+    const lower = data.headers.map(h => h.toLowerCase());
+    lower.forEach((h, i) => {
+      if (!colIdx.impressions && h.includes('impression') && !h.includes('gespons')) colIdx.impressions = i;
+      if (!colIdx.clicks && (h.includes('klick') || h.includes('click')) && !h.includes('gespons')) colIdx.clicks = i;
+      if (!colIdx.reactions && (h.includes('reaktion') || h.includes('reaction')) && !h.includes('gespons')) colIdx.reactions = i;
+      if (!colIdx.comments && (h.includes('kommentar') || h.includes('comment')) && !h.includes('gespons')) colIdx.comments = i;
+      if (!colIdx.shares && (h.includes('geteil') || h.includes('share')) && !h.includes('gespons')) colIdx.shares = i;
+      if (!colIdx.engagement_rate && h.includes('engagement') && h.includes('rate') && !h.includes('gespons')) colIdx.engagement_rate = i;
+      if (!colIdx.date && (h.includes('datum') || h === 'date')) colIdx.date = i;
+      if (!colIdx.post_title && (h.includes('titel') || h.includes('title'))) colIdx.post_title = i;
+    });
+  }
+
+  console.log('Column index mapping:', colIdx);
 
   const result = { posts: [], content_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
-
-  // Parse each row
-  let totalImpressions = 0, totalClicks = 0, totalReactions = 0, totalComments = 0, totalShares = 0;
+  let totals = { impressions: 0, clicks: 0, reactions: 0, comments: 0, shares: 0 };
   let engRateSum = 0, engRateCount = 0;
 
   data.rows.forEach(row => {
-    const obj = {};
-    normalizedHeaders.forEach((key, i) => { obj[key] = row[i] || ''; });
+    const imp = colIdx.impressions != null ? parseNum(row[colIdx.impressions]) : 0;
+    const clicks = colIdx.clicks != null ? parseNum(row[colIdx.clicks]) : 0;
+    const reactions = colIdx.reactions != null ? parseNum(row[colIdx.reactions]) : 0;
+    const comments = colIdx.comments != null ? parseNum(row[colIdx.comments]) : 0;
+    const shares = colIdx.shares != null ? parseNum(row[colIdx.shares]) : 0;
+    const engRate = colIdx.engagement_rate != null ? parseNum(row[colIdx.engagement_rate]) : 0;
+    const title = colIdx.post_title != null ? (row[colIdx.post_title] || '') : '';
+    const date = colIdx.date != null ? (row[colIdx.date] || '') : '';
 
-    const imp = parseFloat(String(obj.impressions || obj.total_impressions || '').replace(/\./g, '').replace(',', '.')) || 0;
-    const clicks = parseFloat(String(obj.clicks || '').replace(/\./g, '').replace(',', '.')) || 0;
-    const reactions = parseFloat(String(obj.reactions || '').replace(/\./g, '').replace(',', '.')) || 0;
-    const comments = parseFloat(String(obj.comments || '').replace(/\./g, '').replace(',', '.')) || 0;
-    const shares = parseFloat(String(obj.shares || '').replace(/\./g, '').replace(',', '.')) || 0;
-    const engRate = parseFloat(String(obj.engagement_rate || '').replace('%', '').replace(',', '.')) || 0;
-
-    totalImpressions += imp;
-    totalClicks += clicks;
-    totalReactions += reactions;
-    totalComments += comments;
-    totalShares += shares;
+    totals.impressions += imp;
+    totals.clicks += clicks;
+    totals.reactions += reactions;
+    totals.comments += comments;
+    totals.shares += shares;
     if (engRate > 0) { engRateSum += engRate; engRateCount++; }
 
-    const post = {
-      titel: obj.title || obj.date || '',
-      datum: obj.date || '',
-      impressions: Math.round(imp),
-      klicks: Math.round(clicks),
-      reaktionen: Math.round(reactions),
-      kommentare: Math.round(comments),
-      shares: Math.round(shares),
-      engagement_rate_pct: Math.round(engRate * 100) / 100
-    };
-    if (post.impressions > 0 || post.titel) result.posts.push(post);
+    if (imp > 0 || title) {
+      result.posts.push({
+        titel: title || date, datum: date,
+        impressions: Math.round(imp), klicks: Math.round(clicks),
+        reaktionen: Math.round(reactions), kommentare: Math.round(comments),
+        shares: Math.round(shares),
+        engagement_rate_pct: Math.round(engRate * 100) / 100
+      });
+    }
   });
 
-  console.log('Export Totals:', { totalImpressions, totalClicks, totalReactions, totalComments, totalShares, avgEngRate: engRateCount ? (engRateSum / engRateCount).toFixed(2) : 0 });
+  console.log('Export Totals:', totals, 'Avg Eng:', engRateCount ? (engRateSum / engRateCount).toFixed(2) : 0);
 
-  // Build summaries
-  const avgEngRate = engRateCount > 0 ? Math.round((engRateSum / engRateCount) * 100) / 100 : 0;
+  const avgEng = engRateCount > 0 ? Math.round((engRateSum / engRateCount) * 100) / 100 : 0;
   result.content_summary = {
-    impressions: Math.round(totalImpressions),
-    engagement_rate_pct: avgEngRate,
-    reaktionen: Math.round(totalReactions),
-    kommentare: Math.round(totalComments),
-    shares: Math.round(totalShares),
-    klicks: Math.round(totalClicks)
+    impressions: Math.round(totals.impressions),
+    engagement_rate_pct: avgEng,
+    reaktionen: Math.round(totals.reactions),
+    kommentare: Math.round(totals.comments),
+    shares: Math.round(totals.shares),
+    klicks: Math.round(totals.clicks)
   };
   if (result.posts.length) {
     result.top_posts = [...result.posts].sort((a, b) => (b.impressions || 0) - (a.impressions || 0)).slice(0, 5);
