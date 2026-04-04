@@ -293,6 +293,8 @@ function renderTable() {
   const tbody = document.getElementById('compBody');
   tbody.innerHTML = '';
 
+  const femAcc = accounts.find(a => a.isFem);
+  const femCurrent = (femAcc && parseInt(femAcc.followers)) || femFollowers;
   const maxFollowers = Math.max(...accounts.map(a => parseInt(a.followers) || 0), femGoal);
 
   accounts.forEach((acc, i) => {
@@ -300,15 +302,15 @@ function renderTable() {
     if (acc.isFem) tr.className = 'comp-highlight';
     const followers = parseInt(acc.followers) || 0;
     const barW = maxFollowers > 0 ? (followers / maxFollowers * 100) : 0;
-    const diff = followers - femFollowers;
+    const diff = followers - femCurrent;
     const diffText = acc.isFem ? '—' : (followers ? (diff > 0 ? `+${diff.toLocaleString('de-DE')} voraus` : diff < 0 ? `${Math.abs(diff).toLocaleString('de-DE')} weniger` : 'Gleichauf') : '—');
 
     if (acc.isFem) {
       tr.innerHTML = `
         <td class="comp-name-cell">FemSurance</td>
-        <td><strong>${femFollowers.toLocaleString('de-DE')}</strong></td>
-        <td>5,4 %</td>
-        <td>4</td>
+        <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers" style="font-weight:700;"></td>
+        <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
+        <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
         <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
         <td></td>
       `;
@@ -326,9 +328,8 @@ function renderTable() {
   });
 
   // Update hero
-  const femAcc = accounts.find(a => a.isFem);
-  if (femAcc) {
-    const current = parseInt(femAcc.followers) || femFollowers;
+  {
+    const current = femCurrent;
     const pct = Math.min((current / femGoal) * 100, 100);
     const remaining = Math.max(femGoal - current, 0);
     document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
