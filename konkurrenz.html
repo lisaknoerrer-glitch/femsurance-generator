@@ -261,7 +261,7 @@ body {
 <script>
 // ══════════ Shared data: { femFollower, goal, accounts } ══════════
 const STORAGE_KEY = 'fem_konkurrenz_data';
-const DEFAULTS = { femFollower: 1847, goal: 2500, gruppeMembers: 0, gruppePostsPerWeek: 0, whatsappMembers: 0, whatsappPostsPerWeek: 0 };
+const DEFAULTS = { femFollower: 1847, goal: 2500, gruppeMembers: 0, gruppePostsPerWeek: 0, whatsappMembers: 0, whatsappPostsPerWeek: 0, newsletterSubscribers: 0, newsletterGoal: 0 };
 
 const defaultAccounts = [
   { name: '', followers: '', engagement: '', postsWeek: '' },
@@ -289,6 +289,8 @@ function loadData() {
         gruppePostsPerWeek: d.gruppePostsPerWeek ?? DEFAULTS.gruppePostsPerWeek,
         whatsappMembers: d.whatsappMembers ?? DEFAULTS.whatsappMembers,
         whatsappPostsPerWeek: d.whatsappPostsPerWeek ?? DEFAULTS.whatsappPostsPerWeek,
+        newsletterSubscribers: d.newsletterSubscribers ?? DEFAULTS.newsletterSubscribers,
+        newsletterGoal: d.newsletterGoal ?? DEFAULTS.newsletterGoal,
         accounts: d.accounts || JSON.parse(JSON.stringify(defaultAccounts))
       };
     }
@@ -376,6 +378,22 @@ function renderTable() {
     tbody.appendChild(trW);
   }
 
+  // Newsletter row
+  {
+    const trN = document.createElement('tr');
+    trN.className = 'comp-highlight';
+    trN.innerHTML = `
+      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ Newsletter</td>
+      <td><input type="number" id="newsletterSubscribers" value="${data.newsletterSubscribers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
+      <td><input type="number" id="newsletterGoalInput" value="${data.newsletterGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td>—</td>
+      <td>—</td>
+      <td></td>
+      <td></td>
+    `;
+    tbody.appendChild(trN);
+  }
+
   // Competitor rows
   data.accounts.forEach((acc, i) => {
     const followers = parseInt(acc.followers) || 0;
@@ -440,6 +458,18 @@ function renderTable() {
   document.getElementById('whatsappGoalInput').addEventListener('input', e => {
     const data = loadData();
     data.whatsappGoal = parseInt(e.target.value) || 0;
+    saveData(data);
+  });
+
+  // Bind Newsletter inputs
+  document.getElementById('newsletterSubscribers').addEventListener('input', e => {
+    const data = loadData();
+    data.newsletterSubscribers = parseInt(e.target.value) || 0;
+    saveData(data);
+  });
+  document.getElementById('newsletterGoalInput').addEventListener('input', e => {
+    const data = loadData();
+    data.newsletterGoal = parseInt(e.target.value) || 0;
     saveData(data);
   });
 }

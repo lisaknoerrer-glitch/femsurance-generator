@@ -515,7 +515,7 @@ body {
   </div>
 
   <!-- Entwicklungs-Charts (3 Spalten) -->
-  <div class="fade-up" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:22px;">
+  <div class="fade-up" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;">
 
     <div class="card" style="padding:16px 18px;">
       <div class="card-title" style="font-size:10px;">Follower · Company Page</div>
@@ -550,6 +550,18 @@ body {
       </div>
       <div class="chart-container" style="height:140px;">
         <svg id="whatsappChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px 18px;">
+      <div class="card-title" style="font-size:10px;">Abonnenten · Newsletter</div>
+      <div class="filter-bar" id="chartFilterNewsletter" style="margin-bottom:10px;">
+        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
+        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
+        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+      </div>
+      <div class="chart-container" style="height:140px;">
+        <svg id="newsletterChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
       </div>
     </div>
 
@@ -723,8 +735,9 @@ function getHistoryDataPoints(valuePaths) {
   // Add current value from konkurrenz data as latest point
   const currentMap = {
     'follower.gesamt': parseInt(Array.isArray(kd) ? 0 : kd.femFollower) || 0,
-    'follower.gruppe_members': parseInt(Array.isArray(kd) ? 0 : kd.gruppeMembers) || 0,
-    'follower.whatsapp_members': parseInt(Array.isArray(kd) ? 0 : kd.whatsappMembers) || 0,
+    'follower.gruppeMembers': parseInt(Array.isArray(kd) ? 0 : kd.gruppeMembers) || 0,
+    'follower.whatsappMembers': parseInt(Array.isArray(kd) ? 0 : kd.whatsappMembers) || 0,
+    'newsletter.subscribers': parseInt(Array.isArray(kd) ? 0 : kd.newsletterSubscribers) || 0,
   };
   const currentKey = valuePaths[0];
   const currentVal = currentMap[currentKey] || 0;
@@ -800,21 +813,23 @@ function drawRealChart(svgId, gradId, dataPoints, days) {
 const CHART_PATHS = {
   follower: ['follower.gesamt', 'follower.follower_gesamt', 'follower_summary.follower_gesamt'],
   gruppe: ['follower.gruppeMembers', 'follower.gruppe_members'],
-  whatsapp: ['follower.whatsappMembers', 'follower.whatsapp_members']
+  whatsapp: ['follower.whatsappMembers', 'follower.whatsapp_members'],
+  newsletter: ['newsletter.subscribers', 'newsletterSubscribers']
 };
 
 // Load data
 const dpFollower = getHistoryDataPoints(CHART_PATHS.follower);
 const dpGruppe = getHistoryDataPoints(CHART_PATHS.gruppe);
 const dpWhatsapp = getHistoryDataPoints(CHART_PATHS.whatsapp);
+const dpNewsletter = getHistoryDataPoints(CHART_PATHS.newsletter);
 
 function drawAllCharts(days) {
   drawRealChart('followerChart', 'areaGradF', dpFollower, days);
   drawRealChart('gruppeChart', 'areaGradG', dpGruppe, days);
   drawRealChart('whatsappChart', 'areaGradW', dpWhatsapp, days);
+  drawRealChart('newsletterChart', 'areaGradN', dpNewsletter, days);
 }
 
-// Filter buttons
 function setupFilter(filterId, svgId, gradId, dp) {
   document.getElementById(filterId).addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
@@ -827,6 +842,7 @@ function setupFilter(filterId, svgId, gradId, dp) {
 setupFilter('chartFilter', 'followerChart', 'areaGradF', dpFollower);
 setupFilter('chartFilterGruppe', 'gruppeChart', 'areaGradG', dpGruppe);
 setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', dpWhatsapp);
+setupFilter('chartFilterNewsletter', 'newsletterChart', 'areaGradN', dpNewsletter);
 
 drawAllCharts(90);
 
@@ -1436,6 +1452,8 @@ const KPI_DEFS = [
   { key: 'follower_premium', label: 'Neue via Premium-Einladung', defaultTarget: 5, paths: ['follower.neue_premium', 'follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
   { section: 'Seiten-Suche (letzte 7 Tage)' },
   { key: 'suche_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['suche_7d.seitensuchen', 'search.seitensuchen', 'search_summary.seitensuchen', 'search_seitensuchen'] },
+  { section: 'Newsletter' },
+  { key: 'newsletter_subscribers', label: 'Newsletter Abonnenten', defaultTarget: 500, paths: ['newsletter.subscribers', 'newsletterSubscribers'] },
 ];
 
 function getNestedVal(obj, path) {
