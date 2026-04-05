@@ -839,6 +839,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
       <div class="cm-label">Post-Text</div>
       <textarea id="cmBody"></textarea>
     </div>
+    <div id="cmColumnActions" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);"></div>
     <div class="cm-actions">
       <button class="btn-save-modal" id="cmSave">Speichern</button>
       <button class="btn-close-modal" id="cmClose">Schließen</button>
@@ -1430,62 +1431,20 @@ function renderBoard() {
       const bodySection = (col.id === 'entwurf' && card.body) ?
         `<div class="kanban-card-body">${card.body}</div>` : '';
 
-      // Action button per column
-      let generateBtn = '';
-      if (col.id === 'ideen') {
-        let scoreHtml = '';
-        if (card.score) {
-          const sc = card.score;
-          const cls = sc.score >= 8 ? 'score-green' : sc.score >= 5 ? 'score-yellow' : 'score-red';
-          const emoji = sc.score >= 8 ? '🟢' : sc.score >= 5 ? '🟡' : '🔴';
-          scoreHtml = `<span class="score-badge ${cls}" data-score-id="${card.id}">${emoji} Score: ${sc.score}/10</span>`;
-          scoreHtml += `<div class="score-detail" id="scoreDetail_${card.id}">
-            <div class="sd-row"><span class="sd-label">Trend</span><span class="sd-val">${sc.trend?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.trend?.begruendung || ''}</div>
-            <div class="sd-row"><span class="sd-label">Performance</span><span class="sd-val">${sc.performance?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.performance?.begruendung || ''}</div>
-            <div class="sd-row"><span class="sd-label">Lücke</span><span class="sd-val">${sc.luecke?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.luecke?.begruendung || ''}</div>
-            <div class="sd-row"><span class="sd-label">Relevanz</span><span class="sd-val">${sc.relevanz?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.relevanz?.begruendung || ''}</div>
-            ${sc.empfehlung ? `<div class="sd-rec">${sc.empfehlung}</div>` : ''}
-            ${sc.beste_plattform ? `<div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">Beste Plattform: ${sc.beste_plattform}</div>` : ''}
-          </div>`;
-        }
-        generateBtn = scoreHtml
-          + `<button class="score-btn" data-score-card="${card.id}">🎯 Score berechnen</button>`
-          + `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
-      } else if (col.id === 'entwurf') {
-        generateBtn = `<button class="btn-generate btn-entwurf-gen" data-card-id="${card.id}">Post generieren</button>`;
-      } else if (col.id === 'post') {
-        const canvaPromptBtn = card.canvaPrompt
-          ? `<button class="btn-generate btn-copy-canva" data-card-id="${card.id}" style="margin-bottom:4px;">📋 Canva-Prompt kopieren</button>`
-          : '';
-        generateBtn = canvaPromptBtn
-          + `<button class="btn-generate btn-canva" data-card-id="${card.id}">🎨 In Canva öffnen</button>`;
-      } else if (col.id === 'grafik') {
-        const previewHtml = card.previewImage
-          ? `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`
-          : '';
-        generateBtn = previewHtml
-          + `<button class="btn-generate btn-canva-prompt" data-card-id="${card.id}" style="margin-top:6px;">Canva-Prompt generieren</button>`
-          + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
-      } else if (col.id === 'geplant') {
-        generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
-      } else if (col.id === 'publish' && !card.archivedOutline) {
-        let pubHtml = '';
-        if (card.publishedAt) {
-          const pd = new Date(card.publishedAt);
-          pubHtml += `<div class="pub-meta">📅 ${pd.toLocaleDateString('de-DE')} ${pd.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
-          if (card.postUrl) pubHtml += ` · <a href="${card.postUrl}" target="_blank">🔗 Post öffnen</a>`;
-          pubHtml += '</div>';
-        }
-        // 7-day performance reminder
-        if (card.publishedAt) {
-          const daysSince = Math.floor((Date.now() - new Date(card.publishedAt).getTime()) / 86400000);
-          const postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
-          const hasPerf = postPerf[card.id] && postPerf[card.id].impressions;
-          if (daysSince >= 7 && !hasPerf) {
-            pubHtml += `<span class="perf-reminder" data-perf-id="${card.id}">📊 Performance eintragen</span>`;
-          }
-        }
-        generateBtn = pubHtml;
+      // Minimal status indicators on card (buttons moved to modal)
+      let cardStatus = '';
+      if (col.id === 'ideen' && card.score) {
+        const sc = card.score;
+        const cls = sc.score >= 8 ? 'score-green' : sc.score >= 5 ? 'score-yellow' : 'score-red';
+        const emoji = sc.score >= 8 ? '🟢' : sc.score >= 5 ? '🟡' : '🔴';
+        cardStatus = `<span class="score-badge ${cls}">${emoji} ${sc.score}/10</span>`;
+      }
+      if (col.id === 'grafik' && card.previewImage) {
+        cardStatus = `<img class="grafik-thumb" src="${card.previewImage}" alt="Grafik">`;
+      }
+      if (col.id === 'publish' && !card.archivedOutline && card.publishedAt) {
+        const pd = new Date(card.publishedAt);
+        cardStatus = `<div class="pub-meta">📅 ${pd.toLocaleDateString('de-DE')}${card.postUrl ? ` · <a href="${card.postUrl}" target="_blank">🔗</a>` : ''}</div>`;
       }
 
       const begruendungHtml = card.begruendung ? `<div class="card-begruendung">${card.begruendung}</div>` : '';
@@ -1501,94 +1460,12 @@ function renderBoard() {
         </div>
         ${begruendungHtml}
         ${bodySection}
-        ${generateBtn}
+        ${cardStatus}
       `;
 
-      // Generate / Plan button click handler (must be before general click)
-      if (col.id === 'ideen') {
-        const btn = el.querySelector('.btn-generate');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            generateOutline(card.id, btn);
-          });
-        }
-        // Score badge toggle
-        const scoreBadge = el.querySelector('.score-badge');
-        if (scoreBadge) {
-          scoreBadge.addEventListener('click', e => {
-            e.stopPropagation();
-            const detail = document.getElementById('scoreDetail_' + card.id);
-            if (detail) detail.classList.toggle('open');
-          });
-        }
-        // Score button
-        const scoreBtn = el.querySelector('.score-btn');
-        if (scoreBtn) {
-          scoreBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            calculateScore(card.id, scoreBtn);
-          });
-        }
-      }
-      if (col.id === 'entwurf') {
-        const btn = el.querySelector('.btn-entwurf-gen');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            generatePostsFromOutline(card.id, btn);
-          });
-        }
-      }
-      if (col.id === 'post') {
-        const copyBtn = el.querySelector('.btn-copy-canva');
-        if (copyBtn) {
-          copyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            navigator.clipboard.writeText(card.canvaPrompt).then(() => {
-              copyBtn.textContent = 'Kopiert ✓';
-              copyBtn.style.background = '#dcfce7'; copyBtn.style.color = '#16a34a';
-              setTimeout(() => { copyBtn.textContent = '📋 Canva-Prompt kopieren'; copyBtn.style.background = ''; copyBtn.style.color = ''; }, 2000);
-            });
-          });
-        }
-        const canvaBtn = el.querySelector('.btn-canva');
-        if (canvaBtn) {
-          canvaBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
-          });
-        }
-      }
-      if (col.id === 'grafik') {
-        const promptBtn = el.querySelector('.btn-canva-prompt');
-        if (promptBtn) {
-          promptBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            await generateCanvaPrompt(card, promptBtn, el);
-          });
-        }
-        const btn = el.querySelector('.btn-plan-post');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openPlanModal(card.id);
-          });
-        }
-      }
-      if (col.id === 'geplant') {
-        const btn = el.querySelector('.btn-publish');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openPublishModal(card.id);
-          });
-        }
-      }
-
-      // Click to open detail modal
+      // Click card → open modal (all actions are inside the modal now)
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result') || e.target.closest('.perf-reminder') || e.target.closest('.pub-meta a') || e.target.closest('.score-btn') || e.target.closest('.score-badge') || e.target.closest('.score-detail')) return;
+        if (e.target.closest('.pub-meta a')) return; // Allow link clicks
         openCardModal(card.id);
       });
 
@@ -1789,6 +1666,69 @@ function openCardModal(cardId) {
   } else {
     bodyField.style.display = 'none';
     bodyTa.value = '';
+  }
+
+  // Column-specific action buttons in modal
+  const actionsDiv = document.getElementById('cmColumnActions');
+  actionsDiv.innerHTML = '';
+  if (card.col === 'ideen') {
+    actionsDiv.innerHTML = `
+      <button class="btn-save-modal" id="cmScoreBtn" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">🎯 Score berechnen</button>
+      <button class="btn-save-modal" id="cmOutlineBtn" style="width:100%;">Entwurf generieren</button>
+    `;
+    document.getElementById('cmScoreBtn').addEventListener('click', () => {
+      const btn = document.getElementById('cmScoreBtn');
+      calculateScore(card.id, btn);
+    });
+    document.getElementById('cmOutlineBtn').addEventListener('click', () => {
+      document.getElementById('cardModal').classList.remove('open');
+      // Find a dummy button element for the loading state
+      const dummyBtn = document.createElement('button');
+      generateOutline(card.id, dummyBtn);
+    });
+  } else if (card.col === 'entwurf') {
+    actionsDiv.innerHTML = `<button class="btn-save-modal" id="cmPostGenBtn" style="width:100%;">Post generieren</button>`;
+    document.getElementById('cmPostGenBtn').addEventListener('click', () => {
+      if (document.getElementById('cmOutlineField').style.display !== 'none') card.outline = document.getElementById('cmOutline').value;
+      saveCards();
+      document.getElementById('cardModal').classList.remove('open');
+      const dummyBtn = document.createElement('button');
+      generatePostsFromOutline(card.id, dummyBtn);
+    });
+  } else if (card.col === 'post') {
+    let btns = '';
+    if (card.canvaPrompt) btns += `<button class="btn-save-modal" id="cmCopyCanva" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">📋 Canva-Prompt kopieren</button>`;
+    btns += `<button class="btn-save-modal" id="cmOpenCanva" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">🎨 In Canva öffnen</button>`;
+    actionsDiv.innerHTML = btns;
+    document.getElementById('cmCopyCanva')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(card.canvaPrompt);
+      document.getElementById('cmCopyCanva').textContent = 'Kopiert ✓';
+      setTimeout(() => { document.getElementById('cmCopyCanva').textContent = '📋 Canva-Prompt kopieren'; }, 1500);
+    });
+    document.getElementById('cmOpenCanva').addEventListener('click', () => {
+      window.open(card.canvaLink || 'https://www.canva.com/create/social-media/', '_blank');
+    });
+  } else if (card.col === 'grafik') {
+    actionsDiv.innerHTML = `
+      <button class="btn-save-modal" id="cmCanvaPromptBtn2" style="width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff;">Canva-Prompt generieren</button>
+      <button class="btn-save-modal" id="cmPlanBtn" style="width:100%;">Post planen</button>
+    `;
+    document.getElementById('cmCanvaPromptBtn2').addEventListener('click', async () => {
+      const btn = document.getElementById('cmCanvaPromptBtn2');
+      btn.textContent = '⏳...'; btn.disabled = true;
+      try { const result = await callAnthropic(CANVA_SYSTEM_PROMPT, 'Post-Text:\n' + (card.body || card.outline || card.title), 1024); card.canvaPrompt = result; saveCards(); btn.textContent = '✓ Generiert'; } catch(e) { btn.textContent = 'Fehler'; }
+      setTimeout(() => { btn.textContent = 'Canva-Prompt generieren'; btn.disabled = false; }, 1500);
+    });
+    document.getElementById('cmPlanBtn').addEventListener('click', () => {
+      document.getElementById('cardModal').classList.remove('open');
+      openPlanModal(card.id);
+    });
+  } else if (card.col === 'geplant') {
+    actionsDiv.innerHTML = `<button class="btn-save-modal" id="cmPublishBtn" style="width:100%;">✓ Post veröffentlichen</button>`;
+    document.getElementById('cmPublishBtn').addEventListener('click', () => {
+      document.getElementById('cardModal').classList.remove('open');
+      openPublishModal(card.id);
+    });
   }
 
   document.getElementById('cardModal').classList.add('open');
