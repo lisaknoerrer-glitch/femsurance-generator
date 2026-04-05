@@ -450,6 +450,12 @@ body {
 .insight-output { margin-top:14px; padding:18px 22px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; color:var(--text-primary); }
 .insight-output strong { color:var(--fem-pink); }
 .insight-actions { display:flex; gap:8px; margin-top:12px; }
+/* ── Dark Mode ── */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+body.dark-mode .sidebar-right { background:var(--bg-card); }
+.dm-toggle { position:fixed; top:12px; right:284px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
 /* Nicht posten */
 .np-header { display:flex; align-items:center; cursor:pointer; user-select:none; }
 .np-header .card-title { margin-bottom:0; flex:1; }
@@ -467,6 +473,8 @@ body {
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem('fem_dark_mode')==='true'){document.body.classList.add('dark-mode');document.getElementById('dmToggle').textContent='☀️';}document.getElementById('dmToggle').addEventListener('click',function(){document.body.classList.toggle('dark-mode');const on=document.body.classList.contains('dark-mode');localStorage.setItem('fem_dark_mode',on);this.textContent=on?'☀️':'🌙';});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">

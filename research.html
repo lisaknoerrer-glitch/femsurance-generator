@@ -224,9 +224,16 @@ body {
 .ki-section.vermeiden .ki-section-title { color:#dc2626; }
 .ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
 .ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
+/* -- Dark Mode -- */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
