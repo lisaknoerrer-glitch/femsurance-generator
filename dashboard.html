@@ -624,6 +624,34 @@ body {
     </div>
   </div>
 
+  <!-- ── Newsletter ── -->
+  <div class="stats-row">
+    <div class="card fade-up">
+      <div class="card-title">Newsletter</div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashNewsletterCount">–</div>
+        <div style="font-size:12px; color:var(--text-secondary);">Abonnenten</div>
+      </div>
+    </div>
+    <div class="card fade-up">
+      <div class="card-title">Newsletter – Abonnenten-Ziel</div>
+      <div class="goal-row">
+        <div class="goal-current">
+          <div class="goal-label">Abonnenten aktuell</div>
+          <div class="goal-value" style="color:var(--fem-pink);" id="dashNewsletterCurrent">–</div>
+        </div>
+        <div class="goal-target">
+          <div class="goal-label">Ziel-Abonnenten</div>
+          <div class="goal-value" id="dashNewsletterGoalVal">–</div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="dashNewsletterBar" style="width:0%;"></div>
+      </div>
+      <div class="goal-diff" id="dashNewsletterDiff">–</div>
+    </div>
+  </div>
+
   <!-- ── Content Pipeline Kanban ── -->
   <div class="kanban-section card fade-up">
     <div class="card-title">Content Pipeline</div>
@@ -851,6 +879,11 @@ body {
     }
     updateGoalBlock(gm, gg, 'dashGruppeCount', 'dashGruppeCurrent', 'dashGruppeGoalVal', 'dashGruppeBar', 'dashGruppeDiff', 'Mitglieder');
     updateGoalBlock(wm, wg, 'dashWhatsappCount', 'dashWhatsappCurrent', 'dashWhatsappGoalVal', 'dashWhatsappBar', 'dashWhatsappDiff', 'Mitglieder');
+
+    // Newsletter
+    const ns = parseInt(kd.newsletterSubscribers) || 0;
+    const ng = parseInt(kd.newsletterGoal) || 0;
+    updateGoalBlock(ns, ng, 'dashNewsletterCount', 'dashNewsletterCurrent', 'dashNewsletterGoalVal', 'dashNewsletterBar', 'dashNewsletterDiff', 'Abonnenten');
   } catch (e) {}
   // ══════════ AKTIVITÄTS-FEED ══════════
   function relTime(dateStr) {
