@@ -123,7 +123,28 @@ body {
   overflow-y: auto;
   padding: 24px 18px;
   z-index: 90;
+  transition: width 0.3s ease, padding 0.3s ease;
 }
+.sidebar-right.collapsed {
+  width: 40px; padding: 24px 6px; overflow: hidden;
+}
+.sidebar-right.collapsed h3,
+.sidebar-right.collapsed .activity-feed { display: none; }
+.feed-toggle {
+  width: 28px; height: 28px; border: 1px solid var(--border);
+  border-radius: 50%; background: var(--fem-pink); color: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; margin-bottom: 12px; transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.feed-toggle:hover { opacity: 0.9; }
+.sidebar-right.collapsed .feed-toggle { margin: 0 auto 8px; }
+.feed-label {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  text-align: center; display: none;
+}
+.sidebar-right.collapsed .feed-label { display: block; margin: 0 auto; }
 .sidebar-right h3 {
   font-size: 13px;
   font-weight: 600;
@@ -166,6 +187,7 @@ body {
   margin-right: 272px;
   padding: 28px 32px 40px;
   min-height: 100vh;
+  transition: margin-right 0.3s ease;
 }
 .page-header {
   display: flex;
@@ -498,7 +520,9 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
 </nav>
 
 <!-- ══════════ Right Sidebar – Aktivitäts-Feed ══════════ -->
-<aside class="sidebar-right">
+<aside class="sidebar-right" id="feedSidebar">
+  <button class="feed-toggle" id="feedToggle" title="Feed ein-/ausblenden">→</button>
+  <div class="feed-label">Feed</div>
   <h3>Aktivitäts-Feed</h3>
   <div class="activity-feed" id="activityFeed"></div>
 </aside>
@@ -528,66 +552,6 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
       <div class="label">Top-Post der letzten 7 Tage</div>
       <div class="value" style="font-size:15px; line-height:1.35; margin-top:2px;">„5 Tipps für Maklerinnen im Vertrieb"</div>
       <div class="sub">1.240 Impressionen · 6,2 % Engagement</div>
-    </div>
-  </div>
-
-  <!-- ── Insight Engine ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header" id="insightHeader">
-      <div class="card-title">🧠 Weekly Insights</div>
-      <span class="insight-timestamp" id="insightTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body" id="insightBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
-      </div>
-      <div id="insightOutput"></div>
-      <div class="insight-actions" id="insightActions" style="display:none;">
-        <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Positionierungs-Check ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header" id="posHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
-      <span class="insight-timestamp" id="posTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body collapsed" id="posBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
-      </div>
-      <div id="posOutput"></div>
-      <div class="insight-actions" id="posActions" style="display:none;">
-        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Content-DNA ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
-      <span class="insight-timestamp" id="dnaTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body collapsed" id="dnaBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
-      </div>
-      <div id="dnaOutput"></div>
-      <div class="insight-actions" id="dnaActions" style="display:none;">
-        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
-      </div>
     </div>
   </div>
 
@@ -742,6 +706,98 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
+  <!-- ── Team-Aufgaben ── -->
+  <div class="team-section fade-up">
+    <div class="card-title" style="margin-bottom: 14px;">Team-Aufgaben</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">N1</div>
+        <div class="team-name">Name 1</div>
+        <div class="team-role">Marketing</div>
+        <div class="team-tasks"><strong>4</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N2</div>
+        <div class="team-name">Name 2</div>
+        <div class="team-role">Redaktion</div>
+        <div class="team-tasks"><strong>6</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N3</div>
+        <div class="team-name">Name 3</div>
+        <div class="team-role">Content</div>
+        <div class="team-tasks"><strong>3</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N4</div>
+        <div class="team-name">Name 4</div>
+        <div class="team-role">Analyse</div>
+        <div class="team-tasks"><strong>5</strong> offene Aufgaben</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Insight Engine ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="insightHeader">
+      <div class="card-title">🧠 Weekly Insights</div>
+      <span class="insight-timestamp" id="insightTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body" id="insightBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
+      </div>
+      <div id="insightOutput"></div>
+      <div class="insight-actions" id="insightActions" style="display:none;">
+        <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Positionierungs-Check ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="posHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
+      <span class="insight-timestamp" id="posTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="posBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
+      </div>
+      <div id="posOutput"></div>
+      <div class="insight-actions" id="posActions" style="display:none;">
+        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Content-DNA ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
+      <span class="insight-timestamp" id="dnaTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="dnaBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
+      </div>
+      <div id="dnaOutput"></div>
+      <div class="insight-actions" id="dnaActions" style="display:none;">
+        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ── Content Pipeline Kanban ── -->
   <div class="kanban-section card fade-up">
     <div class="card-title">Content Pipeline</div>
@@ -842,36 +898,7 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
-  <!-- ── Team-Aufgaben ── -->
-  <div class="team-section fade-up">
-    <div class="card-title" style="margin-bottom: 14px;">Team-Aufgaben</div>
-    <div class="team-grid">
-      <div class="team-card">
-        <div class="team-avatar">N1</div>
-        <div class="team-name">Name 1</div>
-        <div class="team-role">Marketing</div>
-        <div class="team-tasks"><strong>4</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N2</div>
-        <div class="team-name">Name 2</div>
-        <div class="team-role">Redaktion</div>
-        <div class="team-tasks"><strong>6</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N3</div>
-        <div class="team-name">Name 3</div>
-        <div class="team-role">Content</div>
-        <div class="team-tasks"><strong>3</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N4</div>
-        <div class="team-name">Name 4</div>
-        <div class="team-role">Analyse</div>
-        <div class="team-tasks"><strong>5</strong> offene Aufgaben</div>
-      </div>
-    </div>
-  </div>
+
 
 </main>
 
@@ -894,6 +921,29 @@ function getStrategieContext() {
   } catch {}
   return '';
 }
+
+// ── Feed Sidebar Toggle ──
+(function() {
+  const sidebar = document.getElementById('feedSidebar');
+  const toggle = document.getElementById('feedToggle');
+  const main = document.querySelector('.main');
+  function setFeedState(collapsed) {
+    if (collapsed) {
+      sidebar.classList.add('collapsed');
+      main.style.marginRight = '40px';
+      toggle.textContent = '←';
+    } else {
+      sidebar.classList.remove('collapsed');
+      main.style.marginRight = '272px';
+      toggle.textContent = '→';
+    }
+    localStorage.setItem('fem_feed_collapsed', collapsed);
+  }
+  toggle.addEventListener('click', () => {
+    setFeedState(!sidebar.classList.contains('collapsed'));
+  });
+  if (localStorage.getItem('fem_feed_collapsed') === 'true') setFeedState(true);
+})();
 
 // ── Load cached data from localStorage ──
 (function() {
