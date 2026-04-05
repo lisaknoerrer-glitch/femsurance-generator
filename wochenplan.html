@@ -771,6 +771,7 @@ function renderScreenshotSlots() {
     } else {
       slot.innerHTML = `<div class="ss-label">${cat}</div><div class="ss-hint">PNG / JPG</div>`;
     }
+    slot.innerHTML += `<div style="font-size:9px; color:var(--text-secondary); opacity:0.6; margin-top:3px;">Nur für Extraktion · nicht dauerhaft gespeichert</div>`;
     const fileIn = document.createElement('input');
     fileIn.type = 'file'; fileIn.accept = 'image/png,image/jpeg'; fileIn.style.display = 'none';
     slot.appendChild(fileIn);
@@ -791,8 +792,7 @@ function handleSSFile(category, file) {
     const idx = screenshots.findIndex(s => s.category === category);
     const entry = { category, image: e.target.result, imageType: file.type, imageName: file.name };
     if (idx >= 0) screenshots[idx] = entry; else screenshots.push(entry);
-    save('fem_wp_screenshots', screenshots);
-    saveBlock1();
+    // Keep in memory only — don't save base64 to localStorage
     renderScreenshotSlots();
   };
   reader.readAsDataURL(file);
@@ -936,12 +936,12 @@ const b1 = load('fem_wp_block1', {});
 if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
 if (b1.date) document.getElementById('b1Date').value = b1.date;
 
-// Restore screenshots
-const savedSS = load('fem_wp_screenshots', []);
-if (savedSS.length) screenshots = savedSS;
+// Screenshots are kept in memory only — not restored from localStorage
+// Clean up any old base64 data that might still exist
+localStorage.removeItem('fem_wp_screenshots');
 const oldB1 = load('fem_wp_block1', {});
-if (oldB1.screenshots && !savedSS.length) { screenshots = oldB1.screenshots; save('fem_wp_screenshots', screenshots); }
-if (oldB1.image && !savedSS.length) { screenshots = [{ category: 'Beitrag-Analyse', image: oldB1.image, imageType: oldB1.imageType || 'image/png', imageName: oldB1.imageName || 'screenshot' }]; save('fem_wp_screenshots', screenshots); }
+if (oldB1.screenshots) { delete oldB1.screenshots; save('fem_wp_block1', oldB1); }
+if (oldB1.image) { delete oldB1.image; delete oldB1.imageType; delete oldB1.imageName; save('fem_wp_block1', oldB1); }
 renderScreenshotSlots();
 
 // Restore export files
@@ -1202,6 +1202,9 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       else if (merged.search_summary.suchanzeigen) b2Auto.search_seitensuchen = merged.search_summary.suchanzeigen;
     }
     if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
+
+    // Clear screenshot base64 from localStorage (keep KPI numbers in fem_wp_analytics + fem_wp_block2)
+    localStorage.removeItem('fem_wp_screenshots');
 
     btn.textContent = '📊 Daten extrahieren';
     btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
@@ -1908,8 +1911,8 @@ const BLOCK_DEFAULTS = { '1': true, '2': true, '3': true, '4': false, '5': false
 const collapseState = JSON.parse(localStorage.getItem('fem_wp_collapse_state') || 'null') || { ...BLOCK_DEFAULTS };
 
 function updateBlockBadges() {
-  // Block 1: screenshots + files count
-  const ssCount = (load('fem_wp_screenshots', [])).length;
+  // Block 1: screenshots (in memory) + files count
+  const ssCount = screenshots.length;
   const efCount = (load('fem_wp_export_data', [])).filter(f => f && f.fileName).length;
   const b1Parts = [];
   if (ssCount) b1Parts.push(`${ssCount} Screenshots`);
