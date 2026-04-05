@@ -305,7 +305,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
   </div>
 
   <!-- KI-Empfehlungen -->
-  <div class="fade-up" style="margin-bottom:18px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+  <div style="margin-bottom:18px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
     <button class="ki-btn" id="kiBtn">🧠 KI-Empfehlungen aktualisieren</button>
     <span class="ki-timestamp" id="kiTimestamp"></span>
   </div>
@@ -758,6 +758,10 @@ if (savedKi) renderKiResults(savedKi);
 // KI Button
 document.getElementById('kiBtn').addEventListener('click', async () => {
   const btn = document.getElementById('kiBtn');
+  if (ANTHROPIC_API_KEY === 'DEIN_API_KEY_HIER') {
+    alert('API Key nicht gefunden — bitte in research.html oder pipeline.html eintragen.');
+    return;
+  }
   btn.disabled = true;
   btn.textContent = '🧠 Wird analysiert...';
 
@@ -804,7 +808,11 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
 
     btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
   } catch (err) {
-    alert('Fehler: ' + err.message);
+    const msg = err.message || String(err);
+    if (msg.includes('401')) alert('API-Schlüssel ungültig. Bitte prüfen.');
+    else if (msg.includes('429')) alert('Zu viele Anfragen — bitte kurz warten.');
+    else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) alert('Keine Internetverbindung.');
+    else alert('Fehler: ' + msg);
     btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
   }
   btn.disabled = false;
