@@ -387,27 +387,43 @@ function sparkGrowth(entries, color) {
   return `<svg viewBox="0 0 100 24" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color || '#E91E8C'}" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
-// Ensure FemSurance is always first
-function ensureFemSurance() {
-  const data = loadData();
-  if (!growthData.accounts.find(a => a.name === 'FemSurance')) {
-    growthData.accounts.unshift({ name: 'FemSurance', entries: [] });
-  }
-  // Add current FemSurance follower as latest entry if not today
-  const fem = growthData.accounts.find(a => a.name === 'FemSurance');
+// 4 FemSurance channels as fixed growth accounts
+const FEM_CHANNELS = [
+  { key: 'femFollower', name: 'FemSurance LinkedIn Unternehmensseite', kdField: 'femFollower' },
+  { key: 'gruppeMembers', name: 'FemSurance LinkedIn Gruppe', kdField: 'gruppeMembers' },
+  { key: 'whatsappMembers', name: 'FemSurance WhatsApp Gruppe', kdField: 'whatsappMembers' },
+  { key: 'newsletterSubscribers', name: 'FemSurance Newsletter Abonnenten', kdField: 'newsletterSubscribers' },
+];
+
+function ensureChannels() {
+  const kd = loadData();
   const today = new Date().toISOString().split('T')[0];
-  if (data.femFollower && (!fem.entries.length || fem.entries[fem.entries.length - 1].date !== today)) {
-    fem.entries.push({ date: today, followers: data.femFollower });
-    saveGrowth();
-  }
+  FEM_CHANNELS.forEach(ch => {
+    let acc = growthData.accounts.find(a => a.name === ch.name);
+    if (!acc) { acc = { name: ch.name, entries: [], isFemChannel: true }; growthData.accounts.unshift(acc); }
+    acc.isFemChannel = true;
+    const val = parseInt(kd[ch.kdField]) || 0;
+    if (val > 0 && (!acc.entries.length || acc.entries[acc.entries.length - 1].date !== today)) {
+      acc.entries.push({ date: today, followers: val });
+    }
+  });
+  // Remove old single "FemSurance" entry if exists
+  const oldIdx = growthData.accounts.findIndex(a => a.name === 'FemSurance' && !a.isFemChannel);
+  if (oldIdx >= 0) growthData.accounts.splice(oldIdx, 1);
+  saveGrowth();
 }
-ensureFemSurance();
+ensureChannels();
 
 function renderGrowth() {
   const container = document.getElementById('growthContent');
+  const kd = loadData();
   let html = '';
 
-  growthData.accounts.forEach((acc, ai) => {
+  // Separate FemSurance channels from competitors
+  const femAccounts = growthData.accounts.filter(a => a.isFemChannel);
+  const compAccounts = growthData.accounts.filter(a => !a.isFemChannel);
+
+  function renderRow(acc, ai, isFem) {
     const entries = (acc.entries || []).sort((a, b) => new Date(a.date) - new Date(b.date));
     const latest = entries.length ? entries[entries.length - 1].followers : 0;
     let growthBadge = '';
@@ -418,22 +434,41 @@ function renderGrowth() {
       const cls = perWeek >= 0 ? 'growth-pos' : 'growth-neg';
       growthBadge = `<span class="growth-badge ${cls}">${perWeek >= 0 ? '+' : ''}${perWeek} / Woche</span>`;
     }
-    html += `
-      <div class="growth-account" data-gi="${ai}">
+    const bgStyle = isFem ? 'background:var(--fem-pink-light);' : '';
+    return `
+      <div class="growth-account" data-gi="${ai}" style="${bgStyle}">
         <div class="growth-header">
-          <span class="growth-name">${acc.name}${acc.name === 'FemSurance' ? '' : ` <button class="btn-remove" data-gdel="${ai}" style="margin-left:4px;">×</button>`}</span>
-          <span>${latest ? latest.toLocaleString('de-DE') + ' Follower' : '–'} ${growthBadge}</span>
+          <span class="growth-name">${acc.name}${!isFem ? ` <button class="btn-remove" data-gdel="${ai}" style="margin-left:4px;">×</button>` : ''}</span>
+          <span>${latest ? latest.toLocaleString('de-DE') : '–'} ${growthBadge}</span>
         </div>
         <div class="growth-spark">${sparkGrowth(entries)}</div>
         <div style="font-size:10px; color:var(--text-secondary); margin:4px 0;">${entries.length} Einträge</div>
         <div class="growth-add">
           <input type="date" class="ga-date" value="${new Date().toISOString().split('T')[0]}">
-          <input type="number" class="ga-fol" placeholder="Follower" style="width:80px;">
-          <button class="ga-btn" data-gadd="${ai}">+ Eintrag</button>
+          <input type="number" class="ga-fol" placeholder="Aktuelle Zahl" style="width:90px;">
+          <button class="ga-btn" data-gadd="${ai}"${isFem ? ` data-kd="${FEM_CHANNELS.find(c=>c.name===acc.name)?.kdField||''}"` : ''}>+ Eintrag</button>
         </div>
-      </div>
-    `;
+      </div>`;
+  }
+
+  // FemSurance channels
+  femAccounts.forEach(acc => {
+    const ai = growthData.accounts.indexOf(acc);
+    html += renderRow(acc, ai, true);
   });
+
+  // Separator
+  html += '<div style="border-top:2px solid var(--border); margin:16px 0; padding-top:4px;"><span style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase;">Wettbewerber</span></div>';
+
+  // Competitor accounts
+  if (compAccounts.length) {
+    compAccounts.forEach(acc => {
+      const ai = growthData.accounts.indexOf(acc);
+      html += renderRow(acc, ai, false);
+    });
+  } else {
+    html += '<div style="padding:10px; color:var(--text-secondary); font-size:12px;">Noch keine Wettbewerber-Accounts.</div>';
+  }
 
   // Add account button
   html += `<div id="growthAddForm" style="margin-top:10px;">
@@ -455,14 +490,21 @@ function renderGrowth() {
       const row = btn.closest('.growth-account');
       const date = row.querySelector('.ga-date').value;
       const fol = parseInt(row.querySelector('.ga-fol').value) || 0;
-      if (!date || !fol) { alert('Bitte Datum und Follower-Zahl eintragen.'); return; }
+      if (!date || !fol) { alert('Bitte Datum und Zahl eintragen.'); return; }
       growthData.accounts[ai].entries.push({ date, followers: fol });
       saveGrowth();
+      // Sync FemSurance channels to fem_konkurrenz_data
+      const kdField = btn.dataset.kd;
+      if (kdField) {
+        const kd = loadData();
+        kd[kdField] = fol;
+        saveData(kd);
+      }
       btn.textContent = '✓'; setTimeout(() => renderGrowth(), 500);
     });
   });
 
-  // Bind delete account buttons
+  // Bind delete
   container.querySelectorAll('[data-gdel]').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -485,8 +527,7 @@ function renderGrowth() {
           <button class="ca-btn-pink" id="gaNewSave">Hinzufügen</button>
           <button class="ca-btn" id="gaNewCancel">Abbrechen</button>
         </div>
-      </div>
-    `;
+      </div>`;
     document.getElementById('gaNewName').focus();
     document.getElementById('gaNewCancel').addEventListener('click', () => renderGrowth());
     document.getElementById('gaNewSave').addEventListener('click', () => {
@@ -494,8 +535,7 @@ function renderGrowth() {
       const fol = parseInt(document.getElementById('gaNewFol').value) || 0;
       if (!name) { alert('Bitte Account-Name eintragen.'); return; }
       if (growthData.accounts.find(a => a.name === name)) { alert('Account existiert bereits.'); return; }
-      const entries = fol ? [{ date: new Date().toISOString().split('T')[0], followers: fol }] : [];
-      growthData.accounts.push({ name, entries });
+      growthData.accounts.push({ name, entries: fol ? [{ date: new Date().toISOString().split('T')[0], followers: fol }] : [] });
       saveGrowth(); renderGrowth();
     });
   });
@@ -503,30 +543,21 @@ function renderGrowth() {
   // Compare chart
   document.getElementById('growthCompare')?.addEventListener('click', () => {
     const chart = document.getElementById('growthCompareChart');
-    const colors = ['#E91E8C', '#7C3AED', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626'];
-    let html = '<div style="height:120px; position:relative; background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px;">';
-    // Find global min/max
+    const colors = ['#E91E8C', '#f4afd4', '#7C3AED', '#EEEDFE', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626'];
     let allVals = [];
     growthData.accounts.forEach(a => a.entries.forEach(e => allVals.push(e.followers)));
     if (!allVals.length) { chart.innerHTML = '<div style="color:var(--text-secondary); font-size:12px;">Noch keine Daten.</div>'; return; }
-    const gMin = Math.min(...allVals), gMax = Math.max(...allVals);
-    const gRange = gMax - gMin || 1;
-    // SVG overlay
-    html += '<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:100%;">';
+    const gMin = Math.min(...allVals), gMax = Math.max(...allVals), gRange = gMax - gMin || 1;
+    let svg = '<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:100%;">';
     growthData.accounts.forEach((acc, i) => {
       const entries = (acc.entries || []).sort((a,b) => new Date(a.date) - new Date(b.date));
       if (entries.length < 2) return;
       const pts = entries.map((e, j) => `${j * (300 / (entries.length - 1))},${95 - ((e.followers - gMin) / gRange) * 90}`).join(' ');
-      html += `<polyline points="${pts}" fill="none" stroke="${colors[i % colors.length]}" stroke-width="2.5" stroke-linecap="round"/>`;
+      svg += `<polyline points="${pts}" fill="none" stroke="${colors[i % colors.length]}" stroke-width="2.5" stroke-linecap="round"/>`;
     });
-    html += '</svg></div>';
-    // Legend
-    html += '<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">';
-    growthData.accounts.forEach((acc, i) => {
-      html += `<span style="font-size:11px; display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:${colors[i % colors.length]}; border-radius:2px; display:inline-block;"></span>${acc.name}</span>`;
-    });
-    html += '</div>';
-    chart.innerHTML = html;
+    svg += '</svg>';
+    let legend = growthData.accounts.map((a, i) => `<span style="font-size:11px; display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:${colors[i % colors.length]}; border-radius:2px; display:inline-block;"></span>${a.name}</span>`).join('');
+    chart.innerHTML = `<div style="height:120px; background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px;">${svg}</div><div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">${legend}</div>`;
   });
 }
 renderGrowth();
