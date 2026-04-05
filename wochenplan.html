@@ -1842,7 +1842,10 @@ btnSave.addEventListener('click', () => {
     follower: {
       gesamt: b2.follower_gesamt || '',
       neue_30d: b2.follower_neu || '',
-      neue_premium: b2.follower_premium || ''
+      neue_premium: b2.follower_premium || '',
+      // Snapshot for charts
+      gruppe_members: (() => { try { const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); return kd.gruppeMembers || ''; } catch { return ''; } })(),
+      whatsapp_members: (() => { try { const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); return kd.whatsappMembers || ''; } catch { return ''; } })()
     },
     suche_7d: {
       seitensuchen: b2.search_seitensuchen || ''

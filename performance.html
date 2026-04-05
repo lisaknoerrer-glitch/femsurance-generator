@@ -579,54 +579,88 @@ body {
 </main>
 
 <script>
-// ── Load channel base values from localStorage ──
-let chartBaseFollower = 1847, chartBaseGruppe = 120, chartBaseWhatsapp = 45;
-try {
-  const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-  if (!Array.isArray(raw)) {
-    chartBaseFollower = parseInt(raw.femFollower) || chartBaseFollower;
-    chartBaseGruppe = parseInt(raw.gruppeMembers) || chartBaseGruppe;
-    chartBaseWhatsapp = parseInt(raw.whatsappMembers) || chartBaseWhatsapp;
-  }
-} catch {}
+// ── Chart system with real data from fem_performance_history ──
 
-// ── Generic Chart Drawing ──
-function drawGrowthChart(svgId, gradId, base, growthPct, days) {
+function getHistoryDataPoints(valuePaths) {
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+  const points = [];
+
+  history.forEach(h => {
+    let val = 0;
+    for (const path of valuePaths) {
+      const parts = path.split('.');
+      let v = h;
+      for (const p of parts) { if (v) v = v[p]; }
+      if (v && parseFloat(v) > 0) { val = parseFloat(v); break; }
+    }
+    if (val > 0 && h.savedAt) {
+      points.push({ date: new Date(h.savedAt), value: val, kw: h.kw || '' });
+    }
+  });
+
+  // Add current value from konkurrenz data as latest point
+  const currentMap = {
+    'follower.gesamt': parseInt(Array.isArray(kd) ? 0 : kd.femFollower) || 0,
+    'follower.gruppe_members': parseInt(Array.isArray(kd) ? 0 : kd.gruppeMembers) || 0,
+    'follower.whatsapp_members': parseInt(Array.isArray(kd) ? 0 : kd.whatsappMembers) || 0,
+  };
+  const currentKey = valuePaths[0];
+  const currentVal = currentMap[currentKey] || 0;
+  if (currentVal > 0 && !points.find(p => p.date.toDateString() === new Date().toDateString())) {
+    points.push({ date: new Date(), value: currentVal, kw: 'Aktuell' });
+  }
+
+  points.sort((a, b) => a.date - b.date);
+  return points;
+}
+
+function drawRealChart(svgId, gradId, dataPoints, days) {
   const svg = document.getElementById(svgId);
   const vb = svg.getAttribute('viewBox').split(' ').map(Number);
   const W = vb[2], H = vb[3];
   const padT = 14, padB = 22, padL = 36, padR = 6;
-  const startVal = Math.round(base * (1 - growthPct));
-  const data = [];
-  for (let i = days; i >= 0; i--) {
-    const progress = 1 - (i / days);
-    const trend = startVal + (base - startVal) * progress;
-    const noise = Math.sin(i * 0.5) * (base * 0.005) + (Math.random() - 0.5) * (base * 0.008);
-    data.push(Math.round(trend + noise));
+
+  // Filter by date range
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
+  const filtered = dataPoints.filter(p => p.date >= cutoff);
+
+  if (filtered.length < 2) {
+    svg.innerHTML = `<text x="${W/2}" y="${H/2}" text-anchor="middle" style="font-size:9px; fill:var(--text-secondary); font-family:Inter,sans-serif;">Noch zu wenig Daten</text>`;
+    return;
   }
-  const minV = Math.min(...data) - Math.max(Math.round(base * 0.01), 2);
-  const maxV = Math.max(...data) + Math.max(Math.round(base * 0.01), 2);
-  const xStep = (W - padL - padR) / (data.length - 1);
-  const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / (maxV - minV));
+
+  const values = filtered.map(p => p.value);
+  const minV = Math.min(...values) - Math.max(Math.round(Math.min(...values) * 0.02), 1);
+  const maxV = Math.max(...values) + Math.max(Math.round(Math.max(...values) * 0.02), 1);
+  const range = maxV - minV || 1;
+  const xStep = (W - padL - padR) / (filtered.length - 1);
+  const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / range);
 
   let gridLines = '';
-  const gridSteps = W > 400 ? 5 : 3;
+  const gridSteps = 3;
   for (let i = 0; i <= gridSteps; i++) {
-    const v = minV + (maxV - minV) * (i / gridSteps);
+    const v = minV + range * (i / gridSteps);
     const y = yScale(v);
     gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" class="chart-grid"/>`;
-    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${Math.round(v)}</text>`;
+    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:8px">${Math.round(v)}</text>`;
   }
-  const labelCount = Math.min(days <= 7 ? 7 : W > 400 ? 6 : 4, data.length);
-  const labelStep = Math.floor((data.length - 1) / labelCount);
-  for (let i = 0; i < data.length; i += labelStep) {
+  // X labels
+  const labelCount = Math.min(filtered.length, 4);
+  const labelStep = Math.max(1, Math.floor((filtered.length - 1) / labelCount));
+  for (let i = 0; i < filtered.length; i += labelStep) {
     const x = padL + i * xStep;
-    const d = new Date(); d.setDate(d.getDate() - (data.length - 1 - i));
-    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
+    const d = filtered[i].date;
+    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:8px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
   }
-  const points = data.map((v, i) => `${padL + i * xStep},${yScale(v)}`);
-  const line = points.join(' ');
-  const area = `${padL},${H - padB} ${line} ${padL + (data.length - 1) * xStep},${H - padB}`;
+
+  const pts = filtered.map((p, i) => `${padL + i * xStep},${yScale(p.value)}`);
+  const line = pts.join(' ');
+  const area = `${padL},${H - padB} ${line} ${padL + (filtered.length - 1) * xStep},${H - padB}`;
+
+  // Draw dots on data points
+  const dots = filtered.map((p, i) => `<circle cx="${padL + i * xStep}" cy="${yScale(p.value)}" r="2.5" fill="#E91E8C"/>`).join('');
+
   svg.innerHTML = `
     <defs>
       <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
@@ -636,29 +670,42 @@ function drawGrowthChart(svgId, gradId, base, growthPct, days) {
     </defs>
     ${gridLines}
     <polygon points="${area}" fill="url(#${gradId})"/>
-    <polyline points="${line}" fill="none" stroke="#E91E8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${line}" fill="none" stroke="#E91E8C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}
   `;
 }
 
+// Data point paths for each chart
+const CHART_PATHS = {
+  follower: ['follower.gesamt', 'follower.follower_gesamt', 'follower_summary.follower_gesamt'],
+  gruppe: ['follower.gruppe_members'],
+  whatsapp: ['follower.whatsapp_members']
+};
+
+// Load data
+const dpFollower = getHistoryDataPoints(CHART_PATHS.follower);
+const dpGruppe = getHistoryDataPoints(CHART_PATHS.gruppe);
+const dpWhatsapp = getHistoryDataPoints(CHART_PATHS.whatsapp);
+
 function drawAllCharts(days) {
-  drawGrowthChart('followerChart', 'areaGradF', chartBaseFollower, 0.08, days);
-  drawGrowthChart('gruppeChart', 'areaGradG', chartBaseGruppe, 0.15, days);
-  drawGrowthChart('whatsappChart', 'areaGradW', chartBaseWhatsapp, 0.12, days);
+  drawRealChart('followerChart', 'areaGradF', dpFollower, days);
+  drawRealChart('gruppeChart', 'areaGradG', dpGruppe, days);
+  drawRealChart('whatsappChart', 'areaGradW', dpWhatsapp, days);
 }
 
-// ── Filter Buttons (each chart has its own bar) ──
-function setupFilter(filterId, svgId, gradId, base, growthPct) {
+// Filter buttons
+function setupFilter(filterId, svgId, gradId, dp) {
   document.getElementById(filterId).addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
     document.getElementById(filterId).querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    drawGrowthChart(svgId, gradId, base, growthPct, parseInt(btn.dataset.days));
+    drawRealChart(svgId, gradId, dp, parseInt(btn.dataset.days));
   });
 }
-setupFilter('chartFilter', 'followerChart', 'areaGradF', chartBaseFollower, 0.08);
-setupFilter('chartFilterGruppe', 'gruppeChart', 'areaGradG', chartBaseGruppe, 0.15);
-setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', chartBaseWhatsapp, 0.12);
+setupFilter('chartFilter', 'followerChart', 'areaGradF', dpFollower);
+setupFilter('chartFilterGruppe', 'gruppeChart', 'areaGradG', dpGruppe);
+setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', dpWhatsapp);
 
 drawAllCharts(90);
 
