@@ -798,9 +798,16 @@ function renderPostTable() {
     const engClass = eng >= 5 ? 'green' : eng >= 3 ? 'yellow' : 'red';
     const badgeClass = format === 'Company Page' ? 'pp-badge-cp' : format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
 
+    // Link + performance badge
+    const postUrl = item.card?.postUrl || '';
+    const linkIcon = postUrl ? ` <a href="${postUrl}" target="_blank" style="color:var(--fem-pink); text-decoration:none;" title="Post öffnen">🔗</a>` : '';
+    const perfBadge = hasKPIs
+      ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>'
+      : `<span class="extract-badge" style="margin-left:4px; background:#fef9c3; color:#a16207; cursor:pointer;" data-perf-open="${cardId}">📊 Performance</span>`;
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="pp-title" data-id="${cardId}">${title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
+      <td><span class="pp-title" data-id="${cardId}">${title}</span>${linkIcon}${perfBadge}</td>
       <td><span class="pp-badge ${badgeClass}">${format}</span></td>
       <td>${due}</td>
       <td><input value="${p.impressions || ''}" data-id="${cardId}" data-k="impressions"></td>
@@ -829,12 +836,13 @@ document.getElementById('ppBody').addEventListener('input', e => {
   }
 });
 
-// Title click → open modal
+// Title or perf-badge click → open modal
 let ppActiveId = null;
 document.getElementById('ppBody').addEventListener('click', e => {
+  const perfOpen = e.target.closest('[data-perf-open]');
   const title = e.target.closest('.pp-title');
-  if (!title) return;
-  ppActiveId = title.dataset.id;
+  if (!title && !perfOpen) return;
+  ppActiveId = perfOpen ? perfOpen.dataset.perfOpen : title.dataset.id;
   const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
   const card = cards.find(c => String(c.id) === String(ppActiveId));
   if (!card) return;
