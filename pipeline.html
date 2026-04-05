@@ -742,8 +742,24 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     <div class="cm-row">
       <div class="cm-field">
         <div class="cm-label">Zuweisung</div>
-        <input type="text" id="cmAssignee">
+        <select id="cmAssignee">
+          <option value="">– Nicht zugewiesen –</option>
+          <option value="Name 1">Name 1 (Marketing)</option>
+          <option value="Name 2">Name 2 (Redaktion)</option>
+          <option value="Name 3">Name 3 (Content)</option>
+          <option value="Name 4">Name 4 (Analyse)</option>
+        </select>
       </div>
+      <div class="cm-field">
+        <div class="cm-label">Kanal</div>
+        <select id="cmFormat">
+          <option value="Company Page">🏢 LinkedIn Unternehmensseite</option>
+          <option value="Gruppe">👥 LinkedIn Gruppe</option>
+          <option value="WhatsApp">💬 WhatsApp Gruppe</option>
+        </select>
+      </div>
+    </div>
+    <div class="cm-row">
       <div class="cm-field">
         <div class="cm-label">Fälligkeitsdatum</div>
         <input type="date" id="cmDue">
@@ -1595,6 +1611,7 @@ function openCardModal(cardId) {
 
   document.getElementById('cmTitle').value = card.title;
   document.getElementById('cmAssignee').value = card.assignee || '';
+  document.getElementById('cmFormat').value = card.format || 'Company Page';
   // Convert DD.MM. or DD.MM.YYYY to YYYY-MM-DD for date input
   let dueVal = card.dueISO || card.due || '';
   if (dueVal && !dueVal.includes('-')) {
@@ -1612,9 +1629,7 @@ function openCardModal(cardId) {
   document.getElementById('cmThemenwelt').value = card.themenwelt || 'Alle 4';
   document.getElementById('cmHookType').value = card.hookType || '';
 
-  // Badge
-  const badgeClass = formatTagClass(card.format);
-  document.getElementById('cmBadge').innerHTML = `<span class="cm-badge ${badgeClass}">${card.format}</span>`;
+  // Badge removed — kanal is now a dropdown above
 
   // Outline
   const outlineField = document.getElementById('cmOutlineField');
@@ -1749,7 +1764,9 @@ document.getElementById('cmSave').addEventListener('click', () => {
   const card = cards.find(c => c.id === activeCardId);
   if (!card) return;
   card.title = document.getElementById('cmTitle').value.trim() || card.title;
-  card.assignee = document.getElementById('cmAssignee').value.trim();
+  card.assignee = document.getElementById('cmAssignee').value;
+  card.format = document.getElementById('cmFormat').value;
+  card.tag = card.format === 'Gruppe' ? 'tag-purple' : card.format === 'WhatsApp' ? 'tag-gray' : 'tag-pink';
   // Convert YYYY-MM-DD back to DD.MM. for card display
   const rawDue = document.getElementById('cmDue').value.trim();
   if (rawDue && rawDue.includes('-')) {
