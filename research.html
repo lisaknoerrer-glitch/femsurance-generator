@@ -1001,7 +1001,10 @@ const PB_DEFAULTS = {
   regeln: ['Immer mit persönlichem Bezug starten', 'Direkte Du-Ansprache'],
   testen: ['Story-Format auf Company Page', 'Provokations-Hooks dienstags']
 };
-let playbook = JSON.parse(localStorage.getItem('fem_playbook') || 'null') || JSON.parse(JSON.stringify(PB_DEFAULTS));
+let playbook = JSON.parse(localStorage.getItem('fem_playbook') || 'null');
+if (!playbook || (!playbook.was_funktioniert && !playbook.was_nicht && !playbook.regeln && !playbook.testen)) {
+  playbook = JSON.parse(JSON.stringify(PB_DEFAULTS));
+}
 function savePlaybook() { localStorage.setItem('fem_playbook', JSON.stringify(playbook)); }
 
 const PB_SECTIONS = [
