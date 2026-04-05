@@ -1795,6 +1795,26 @@ function collectPrompt() {
   // Playbook
   try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); const pbParts = []; if (pb.was_funktioniert) pbParts.push('Was funktioniert: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.was_nicht) pbParts.push('Was nicht: ' + pb.was_nicht.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.regeln) pbParts.push('Regeln: ' + pb.regeln.map(x => typeof x==='object'?x.text:x).join(', ')); if (pbParts.length) parts.push('## FemSurance Playbook\n' + pbParts.join('\n')); } catch {}
 
+  // Themenwelten-Performance
+  try {
+    const twCards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]').filter(c => c.col === 'publish' && !c.archivedOutline);
+    const twPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
+    const twData = {};
+    WELTEN.forEach(w => { twData[w] = { posts: 0, engSum: 0, engCount: 0 }; });
+    twCards.forEach(c => {
+      const tw = c.themenwelt;
+      if (!tw || tw === 'Alle 4' || !WELTEN.includes(tw)) return;
+      const p = twPerf[c.id] || {};
+      const imp = parseFloat(p.impressions) || 0;
+      const eng = imp > 0 ? ((parseFloat(p.reaktionen)||0)+(parseFloat(p.kommentare)||0)+(parseFloat(p.shares)||0))/imp*100 : 0;
+      twData[tw].posts++; if (eng > 0) { twData[tw].engSum += eng; twData[tw].engCount++; }
+    });
+    const twLines = WELTEN.map(w => { const d = twData[w]; return `${w}: ${d.posts} Posts · Ø ${d.engCount ? (d.engSum/d.engCount).toFixed(1) : '–'}%`; });
+    const bestTW = WELTEN.reduce((best, w) => { const d = twData[w]; const avg = d.engCount ? d.engSum/d.engCount : 0; return avg > (best.avg||0) ? {w, avg} : best; }, {});
+    if (twLines.some(l => !l.includes('0 Posts'))) parts.push(`## Themenwelten-Performance\n${twLines.join('\n')}\nEmpfehlung: Fokus auf ${bestTW.w || 'alle gleichmäßig'}`);
+  } catch {}
+
   return parts.join('\n\n');
 }
 

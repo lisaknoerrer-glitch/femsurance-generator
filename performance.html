@@ -316,6 +316,18 @@ body {
 .at-green { background:#dcfce7; color:#16a34a; }
 .at-yellow { background:#fef9c3; color:#a16207; }
 .at-red { background:#fef2f2; color:#dc2626; }
+/* Themenwelten */
+.tw-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; box-shadow:var(--shadow); }
+.tw-card .tw-title { font-size:12px; font-weight:600; margin-bottom:8px; }
+.tw-card .tw-val { font-size:22px; font-weight:700; color:var(--fem-pink); }
+.tw-card .tw-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+.tw-card .tw-best { font-size:11px; color:var(--text-secondary); margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
+.tw-card .tw-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; margin-top:6px; }
+.tw-badge-star { background:#dcfce7; color:#16a34a; }
+.tw-badge-ok { background:#dcfce7; color:#16a34a; }
+.tw-badge-warn { background:#fef9c3; color:#a16207; }
+.tw-badge-data { background:var(--bg-secondary); color:var(--text-secondary); }
+
 .analyse-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:13px; }
 .analyse-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .analyse-card { background:var(--bg-secondary); border-radius:var(--radius-sm); padding:14px; text-align:center; }
@@ -598,6 +610,12 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
         <tbody id="kpiTrackBody"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Themenwelten-Analyse -->
+  <div class="card fade-up">
+    <div class="card-title">🌍 Themenwelten-Analyse</div>
+    <div id="themenweltenGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;"></div>
   </div>
 
   <!-- Themen & Format Analyse -->
@@ -1232,6 +1250,48 @@ function renderAnalyse() {
   });
 }
 renderAnalyse();
+
+// ══════════ THEMENWELTEN-ANALYSE ══════════
+function renderThemenwelten() {
+  const grid = document.getElementById('themenweltenGrid');
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
+  const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+  const clusters = JSON.parse(localStorage.getItem('fem_post_clusters') || '{}');
+  const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
+  const ICONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+  const data = {};
+  WELTEN.forEach(w => { data[w] = { posts: 0, engSum: 0, engCount: 0, best: null, bestEng: 0 }; });
+  published.forEach(c => {
+    const p = perf[c.id] || {};
+    const imp = parseFloat(p.impressions) || 0;
+    const r = parseFloat(p.reaktionen)||0, k = parseFloat(p.kommentare)||0, s = parseFloat(p.shares)||0;
+    const eng = imp > 0 ? (r+k+s)/imp*100 : 0;
+    let tw = c.themenwelt || clusters[c.id] || '';
+    if (tw === 'Alle 4' || !WELTEN.includes(tw)) return;
+    const d = data[tw]; d.posts++;
+    if (eng > 0) { d.engSum += eng; d.engCount++; }
+    if (eng > d.bestEng) { d.bestEng = eng; d.best = c.title; }
+  });
+  grid.innerHTML = WELTEN.map((w, i) => {
+    const d = data[w];
+    const avgEng = d.engCount ? d.engSum/d.engCount : 0;
+    const engCls = avgEng >= 5 ? '#16a34a' : avgEng >= 3 ? '#a16207' : d.posts ? '#dc2626' : 'var(--text-secondary)';
+    let badge, badgeCls;
+    if (d.posts >= 3 && avgEng >= 5) { badge='⭐ Mehr davon!'; badgeCls='tw-badge-star'; }
+    else if (d.posts >= 2 && avgEng >= 3) { badge='✅ Gut'; badgeCls='tw-badge-ok'; }
+    else if (d.posts >= 3 && avgEng < 3) { badge='⚠️ Reduzieren'; badgeCls='tw-badge-warn'; }
+    else { badge='📊 Mehr Daten nötig'; badgeCls='tw-badge-data'; }
+    return `<div class="tw-card">
+      <div class="tw-title">${ICONS[i]} ${w}</div>
+      <div class="tw-val">${d.posts}</div>
+      <div class="tw-sub">Posts · Ø ${d.engCount ? avgEng.toFixed(1):'–'}% <span style="color:${engCls};font-weight:600;">Engagement</span></div>
+      ${d.best ? `<div class="tw-best">🏆 ${d.best.slice(0,35)}... · ${d.bestEng.toFixed(1)}%</div>` : ''}
+      <div class="tw-badge ${badgeCls}">${badge}</div>
+    </div>`;
+  }).join('');
+}
+renderThemenwelten();
 
 // ── Reichweiten-Ziel + Kanal-Blöcke from localStorage ──
 try {

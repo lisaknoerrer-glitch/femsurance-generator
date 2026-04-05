@@ -312,6 +312,13 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
   <div class="card fade-up">
     <div class="card-title">Trending-Themen FemSurance</div>
     <div id="perfSuggestions"></div>
+    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;" id="twFilter">
+      <button class="filter-btn active" data-tw="all" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; cursor:pointer; font-family:inherit; font-weight:500;">Alle</button>
+      <button class="filter-btn" data-tw="Business & Vertrieb" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Business & Vertrieb</button>
+      <button class="filter-btn" data-tw="Marketing & Sichtbarkeit" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Marketing & Sichtbarkeit</button>
+      <button class="filter-btn" data-tw="Fachliche Weiterbildung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Fachliche Weiterbildung</button>
+      <button class="filter-btn" data-tw="Persönlichkeitsentwicklung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Persönlichkeitsentwicklung</button>
+    </div>
     <table class="trend-table">
       <thead>
         <tr>
@@ -453,7 +460,13 @@ function getThemePerf(thema) {
 function renderThemes() {
   const tbody = document.getElementById('trendBody');
   tbody.innerHTML = '';
+  const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
   themes.forEach((t, i) => {
+    // Filter by Themenwelt
+    if (activeFilter && activeFilter !== 'all') {
+      const matchesTW = t.themenwelt === activeFilter || t.format === activeFilter || (t.thema && t.thema.toLowerCase().includes(activeFilter.toLowerCase().split(' ')[0]));
+      if (!matchesTW) return;
+    }
     const stars = '★'.repeat(t.potenzial || 1) + '☆'.repeat(3 - (t.potenzial || 1));
     const tp = getThemePerf(t.thema);
     const engCls = tp.avgEng >= 5 ? 'trend-up' : tp.avgEng >= 3 ? 'trend-stable' : tp.posts ? 'trend-new' : '';
@@ -521,6 +534,19 @@ function renderPerfSuggestions() {
 }
 renderPerfSuggestions();
 renderThemes();
+
+// Themenwelt filter
+let activeFilter = 'all';
+document.getElementById('twFilter').addEventListener('click', e => {
+  const btn = e.target.closest('[data-tw]');
+  if (!btn) return;
+  activeFilter = btn.dataset.tw;
+  document.querySelectorAll('#twFilter button').forEach(b => {
+    b.style.background = b.dataset.tw === activeFilter ? 'var(--fem-pink)' : 'var(--bg-card)';
+    b.style.color = b.dataset.tw === activeFilter ? '#fff' : 'var(--text-secondary)';
+  });
+  renderThemes();
+});
 
 // ══════════ HOOK-BIBLIOTHEK (dynamic) ══════════
 const DEFAULT_HOOKS = [
