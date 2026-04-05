@@ -427,6 +427,25 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </main>
 
 <script>
+function getStrategieContext() {
+  try {
+    const s = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
+    const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]');
+    const parts = [];
+    if (s.fokusThemen?.length) parts.push('Fokus-Themen: ' + s.fokusThemen.map(f => f.thema || f).filter(Boolean).join(' / '));
+    if (s.positionierung?.wirken) parts.push('Positionierung: ' + s.positionierung.wirken);
+    if (s.positionierung?.nichtWirken) parts.push('Nicht wirken: ' + s.positionierung.nichtWirken);
+    if (s.positionierung?.einzigartig) parts.push('Was macht uns einzigartig: ' + s.positionierung.einzigartig);
+    if (s.contentPrinzip?.prinzip) parts.push('Content-Prinzip: ' + s.contentPrinzip.prinzip);
+    if (s.contentPrinzip?.erfolgsformel) parts.push('Erfolgsformel: ' + s.contentPrinzip.erfolgsformel);
+    if (s.zielgruppe?.length) parts.push('Zielgruppe: ' + s.zielgruppe.filter(Boolean).join(' / '));
+    if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
+    if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
+    if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
+  } catch {}
+  return '';
+}
+
 // ══════════ TRENDING-THEMEN (dynamic) ══════════
 const DEFAULT_THEMES = [
   { thema: 'Frauen in Führung', hook: 'Warum nur 25% der Führungskräfte weiblich sind', format: 'Karussell', potenzial: 3 },
@@ -767,7 +786,7 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: KI_SYSTEM_PROMPT, messages: [{ role: 'user', content: parts.join('\n\n') || 'Keine Daten vorhanden. Gib allgemeine FemSurance-Empfehlungen.' }] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: getStrategieContext() + KI_SYSTEM_PROMPT, messages: [{ role: 'user', content: parts.join('\n\n') || 'Keine Daten vorhanden. Gib allgemeine FemSurance-Empfehlungen.' }] })
     });
 
     if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
@@ -851,7 +870,7 @@ document.getElementById('insightsList').addEventListener('click', async e => {
     try {
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'Erstelle aus diesem wissenschaftlichen Insight einen LinkedIn-Hook und eine kurze Content-Outline-Idee für FemSurance. Schreibe auf Deutsch.',messages:[{role:'user',content:`Insight: ${ins.insight}\nQuelle: ${ins.quelle}\nThema: ${ins.thema}`}]})
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:getStrategieContext()+'Erstelle aus diesem wissenschaftlichen Insight einen LinkedIn-Hook und eine kurze Content-Outline-Idee für FemSurance. Schreibe auf Deutsch.',messages:[{role:'user',content:`Insight: ${ins.insight}\nQuelle: ${ins.quelle}\nThema: ${ins.thema}`}]})
       });
       if (!resp.ok) throw new Error('API ' + resp.status);
       const data = await resp.json();
@@ -926,7 +945,7 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:512,
-        system:'Bewerte diese Content-Outlines auf einer Skala von 1-10 nach Trend-Relevanz, Performance-Potenzial und Zielgruppen-Fit. Antworte NUR als JSON-Array: [{"index":0,"score":8,"plattform":"Company Page"},...]',
+        system: getStrategieContext() +'Bewerte diese Content-Outlines auf einer Skala von 1-10 nach Trend-Relevanz, Performance-Potenzial und Zielgruppen-Fit. Antworte NUR als JSON-Array: [{"index":0,"score":8,"plattform":"Company Page"},...]',
         messages:[{role:'user',content:`Outlines:\n${items.map((it,i)=>`${i}: ${it.hook}`).join('\n')}\n\nKontext: ${context.join('; ')}`}]
       })
     });

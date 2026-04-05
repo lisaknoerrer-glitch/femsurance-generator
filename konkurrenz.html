@@ -328,6 +328,25 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </main>
 
 <script>
+function getStrategieContext() {
+  try {
+    const s = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
+    const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]');
+    const parts = [];
+    if (s.fokusThemen?.length) parts.push('Fokus-Themen: ' + s.fokusThemen.map(f => f.thema || f).filter(Boolean).join(' / '));
+    if (s.positionierung?.wirken) parts.push('Positionierung: ' + s.positionierung.wirken);
+    if (s.positionierung?.nichtWirken) parts.push('Nicht wirken: ' + s.positionierung.nichtWirken);
+    if (s.positionierung?.einzigartig) parts.push('Was macht uns einzigartig: ' + s.positionierung.einzigartig);
+    if (s.contentPrinzip?.prinzip) parts.push('Content-Prinzip: ' + s.contentPrinzip.prinzip);
+    if (s.contentPrinzip?.erfolgsformel) parts.push('Erfolgsformel: ' + s.contentPrinzip.erfolgsformel);
+    if (s.zielgruppe?.length) parts.push('Zielgruppe: ' + s.zielgruppe.filter(Boolean).join(' / '));
+    if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
+    if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
+    if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
+  } catch {}
+  return '';
+}
+
 // ══════════ Shared data: { femFollower, goal, accounts } ══════════
 const STORAGE_KEY = 'fem_konkurrenz_data';
 const DEFAULTS = { femFollower: 1847, goal: 2500, gruppeMembers: 0, gruppePostsPerWeek: 0, whatsappMembers: 0, whatsappPostsPerWeek: 0, newsletterSubscribers: 0, newsletterGoal: 0 };
@@ -745,7 +764,7 @@ function renderCompAnalyse(container, accName) {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
           body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-            system:'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
+            system: getStrategieContext() +'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
             messages:[{role:'user',content:`Account: ${accName}\nPosts:\n${posts.map(p=>`${p.text||'–'} (Hook:${p.hook||'–'}, Format:${p.format||'–'}, Reak:${p.reaktionen||0})`).join('\n')}`}]
           })
         });
@@ -808,7 +827,7 @@ document.getElementById('gapBtn').addEventListener('click', async () => {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
-        system:`Du bist der FemSurance Wettbewerbs-Analyst. Analysiere alle Wettbewerber-Daten und finde was NIEMAND macht.
+        system: getStrategieContext() +`Du bist der FemSurance Wettbewerbs-Analyst. Analysiere alle Wettbewerber-Daten und finde was NIEMAND macht.
 
 Antworte in diesem Format:
 
