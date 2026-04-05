@@ -1792,6 +1792,8 @@ function collectPrompt() {
 
   // Nicht posten
   try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
+  // Playbook
+  try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); const pbParts = []; if (pb.was_funktioniert) pbParts.push('Was funktioniert: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.was_nicht) pbParts.push('Was nicht: ' + pb.was_nicht.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.regeln) pbParts.push('Regeln: ' + pb.regeln.map(x => typeof x==='object'?x.text:x).join(', ')); if (pbParts.length) parts.push('## FemSurance Playbook\n' + pbParts.join('\n')); } catch {}
 
   return parts.join('\n\n');
 }
@@ -1975,6 +1977,25 @@ btnSave.addEventListener('click', () => {
   btnSave.classList.add('success');
   renderArchiv();
   setTimeout(() => { btnSave.textContent = '💾 Speichern'; btnSave.classList.remove('success'); }, 2000);
+
+  // Auto-update Playbook in background
+  try {
+    const wpText = outputArea.value;
+    if (wpText && ANTHROPIC_API_KEY !== 'DEIN_API_KEY_HIER') {
+      fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:'Analysiere diese Wochendaten und extrahiere 1-2 neue Best Practices. Antworte NUR im JSON: {"was_funktioniert":["..."],"was_nicht":["..."]}',messages:[{role:'user',content:wpText.slice(0,2000)}]})
+      }).then(r=>r.json()).then(data=>{
+        let js=data.content[0].text.trim();
+        if(js.startsWith('```'))js=js.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'');
+        const updates=JSON.parse(js);
+        const pb=JSON.parse(localStorage.getItem('fem_playbook')||'{}');
+        if(updates.was_funktioniert)(updates.was_funktioniert).forEach(t=>{if(!pb.was_funktioniert)pb.was_funktioniert=[];pb.was_funktioniert.push({text:t,neu:true});});
+        if(updates.was_nicht)(updates.was_nicht).forEach(t=>{if(!pb.was_nicht)pb.was_nicht=[];pb.was_nicht.push({text:t,neu:true});});
+        localStorage.setItem('fem_playbook',JSON.stringify(pb));
+      }).catch(()=>{});
+    }
+  } catch {}
 });
 
 // ══════════ COPY BUTTON ══════════

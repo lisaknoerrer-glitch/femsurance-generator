@@ -1115,6 +1115,7 @@ async function generateOutline(cardId, btnEl) {
     if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
     // Nicht posten
     try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
+    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text : x).join(', '); userPrompt += s; } } catch {}
 
     // Fetch article if URL provided
     if (card.url) {
