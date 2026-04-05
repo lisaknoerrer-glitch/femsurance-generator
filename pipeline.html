@@ -1094,6 +1094,8 @@ async function generateOutline(cardId, btnEl) {
       userPrompt += `\nThemenwelt: ${card.themenwelt}`;
     }
     if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
+    // Nicht posten
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
 
     // Fetch article if URL provided
     if (card.url) {
@@ -1220,7 +1222,8 @@ async function generatePostsFromOutline(cardId, btnEl) {
   btnEl.disabled = true;
 
   try {
-    const userPrompt = `Outline-Titel: ${card.title}\n\nOutline:\n${outlineText}`;
+    let userPrompt = `Outline-Titel: ${card.title}\n\nOutline:\n${outlineText}`;
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
     const resultText = await callAnthropic(POST_JSON_PROMPT, userPrompt, 4096);
 
     // Parse JSON — strip markdown fences if present

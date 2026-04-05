@@ -631,6 +631,7 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     if (topPosts.length) {
       parts.push('## Top-Post Performance\n' + topPosts.map(([,v]) => `Impressions: ${v.impressions}, Eng: ${v.reaktionen || 0}+${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
     }
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

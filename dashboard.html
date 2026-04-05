@@ -450,6 +450,20 @@ body {
 .insight-output { margin-top:14px; padding:18px 22px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; color:var(--text-primary); }
 .insight-output strong { color:var(--fem-pink); }
 .insight-actions { display:flex; gap:8px; margin-top:12px; }
+/* Nicht posten */
+.np-header { display:flex; align-items:center; cursor:pointer; user-select:none; }
+.np-header .card-title { margin-bottom:0; flex:1; }
+.np-chevron { font-size:12px; color:var(--text-secondary); transition:transform 0.25s; }
+.np-header.collapsed .np-chevron { transform:rotate(-90deg); }
+.np-body { overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s; max-height:1000px; opacity:1; margin-top:10px; }
+.np-body.collapsed { max-height:0; opacity:0; margin:0; }
+.np-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.np-item input { flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12.5px; }
+.np-item input:focus { outline:none; border-color:var(--fem-pink); }
+.np-item button { width:24px; height:24px; border:none; background:none; cursor:pointer; font-size:14px; color:var(--text-secondary); border-radius:50%; }
+.np-item button:hover { background:#fef2f2; color:#dc2626; }
+.np-add { padding:5px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); transition:all 0.2s; }
+.np-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 </style>
 </head>
 <body>
@@ -516,6 +530,18 @@ body {
       <div class="label">Top-Post der letzten 7 Tage</div>
       <div class="value" style="font-size:15px; line-height:1.35; margin-top:2px;">„5 Tipps für Maklerinnen im Vertrieb"</div>
       <div class="sub">1.240 Impressionen · 6,2 % Engagement</div>
+    </div>
+  </div>
+
+  <!-- ── Nicht posten ── -->
+  <div class="card fade-up" style="margin-bottom:14px;">
+    <div class="np-header collapsed" id="npHeader">
+      <div class="card-title" id="npTitle">🚫 Nicht posten</div>
+      <span class="np-chevron">▼</span>
+    </div>
+    <div class="np-body collapsed" id="npBody">
+      <div id="npList"></div>
+      <button class="np-add" id="npAdd">+ Hinzufügen</button>
     </div>
   </div>
 
@@ -923,6 +949,51 @@ body {
     const ng = parseInt(kd.newsletterGoal) || 0;
     updateGoalBlock(ns, ng, 'dashNewsletterCount', 'dashNewsletterCurrent', 'dashNewsletterGoalVal', 'dashNewsletterBar', 'dashNewsletterDiff', 'Abonnenten');
   } catch (e) {}
+  // ══════════ NICHT POSTEN ══════════
+  const NP_DEFAULTS = ['Allgemeine Motivationssprüche', 'Zu breite Versicherungsthemen', 'Werbliche Inhalte'];
+  let npItems = JSON.parse(localStorage.getItem('fem_nicht_posten') || 'null') || [...NP_DEFAULTS];
+
+  function saveNP() { localStorage.setItem('fem_nicht_posten', JSON.stringify(npItems)); updateNPTitle(); }
+
+  function updateNPTitle() {
+    document.getElementById('npTitle').textContent = `🚫 Nicht posten${npItems.length ? ` (${npItems.length})` : ''}`;
+  }
+
+  function renderNP() {
+    const list = document.getElementById('npList');
+    list.innerHTML = '';
+    npItems.forEach((item, i) => {
+      const row = document.createElement('div');
+      row.className = 'np-item';
+      row.innerHTML = `<input value="${item}" data-npi="${i}" placeholder="z.B. Allgemeine Motivationssprüche"><button data-npd="${i}">×</button>`;
+      list.appendChild(row);
+    });
+    updateNPTitle();
+  }
+
+  document.getElementById('npList').addEventListener('input', e => {
+    if (e.target.dataset.npi !== undefined) {
+      npItems[parseInt(e.target.dataset.npi)] = e.target.value;
+      saveNP();
+    }
+  });
+  document.getElementById('npList').addEventListener('click', e => {
+    if (e.target.dataset.npd !== undefined) {
+      npItems.splice(parseInt(e.target.dataset.npd), 1);
+      saveNP(); renderNP();
+    }
+  });
+  document.getElementById('npAdd').addEventListener('click', () => {
+    npItems.push(''); saveNP(); renderNP();
+    const inputs = document.querySelectorAll('#npList input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+  document.getElementById('npHeader').addEventListener('click', () => {
+    document.getElementById('npHeader').classList.toggle('collapsed');
+    document.getElementById('npBody').classList.toggle('collapsed');
+  });
+  renderNP();
+
   // ══════════ AKTIVITÄTS-FEED ══════════
   function relTime(dateStr) {
     if (!dateStr) return '';

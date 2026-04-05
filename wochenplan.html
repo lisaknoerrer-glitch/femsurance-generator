@@ -1783,6 +1783,9 @@ function collectPrompt() {
   const lernstand = document.getElementById('b7Lernstand').value.trim();
   if (lernstand) parts.push(`## Kumulierter Lernstand\n${lernstand}`);
 
+  // Nicht posten
+  try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
+
   return parts.join('\n\n');
 }
 
