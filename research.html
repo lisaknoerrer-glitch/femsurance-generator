@@ -207,6 +207,18 @@ body {
 .add-hook-form input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
 .add-hook-form input:focus { outline:none; border-color:var(--fem-pink); }
 .add-hook-form select { padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
+/* Insights */
+.insight-item { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; position:relative; }
+.insight-item .ii-text { font-size:13px; font-weight:500; margin-bottom:4px; line-height:1.45; }
+.insight-item .ii-meta { font-size:11px; color:var(--text-secondary); display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.insight-item .ii-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; }
+.ii-badge-thema { background:var(--fem-pink-light); color:var(--fem-pink); }
+.ii-badge-typ { background:var(--fem-purple-light); color:var(--fem-purple); }
+.insight-item .ii-actions { display:flex; gap:4px; margin-top:6px; }
+.insight-item .ii-btn { padding:3px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:10px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.insight-item .ii-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.insight-item .ii-btn.copied { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+
 .add-hook-form button { padding:8px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
 /* KI Empfehlungen */
 .ki-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 20px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
@@ -313,6 +325,15 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
       </select>
       <input type="text" id="newHookText" placeholder="Neuen Hook eingeben...">
       <button id="btnAddHook">+ Hook</button>
+    </div>
+  </div>
+
+  <!-- Wissenschaftliche Insights -->
+  <div class="card fade-up">
+    <div class="card-title" style="cursor:pointer;" id="insightsToggle">📊 Wissenschaftliche Insights <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div id="insightsBody">
+      <div id="insightsList" style="margin-bottom:10px;"></div>
+      <button class="btn-add-row" id="btnAddInsight">+ Eigenen Insight hinzufügen</button>
     </div>
   </div>
 
@@ -666,6 +687,92 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
   }
   btn.disabled = false;
 });
+
+// ══════════ WISSENSCHAFTLICHE INSIGHTS ══════════
+const DEFAULT_INSIGHTS = [
+  { thema:'Frauen in Führung', insight:'Unternehmen mit Frauen im Vorstand sind um 25% profitabler', quelle:'McKinsey 2023', typ:'Statistik' },
+  { thema:'Diversität', insight:'Diverse Teams treffen in 87% der Fälle bessere Entscheidungen', quelle:'Harvard Business Review 2022', typ:'Statistik' },
+  { thema:'Selfbranding', insight:'70% aller Kaufentscheidungen werden von Frauen beeinflusst', quelle:'Nielsen 2023', typ:'Statistik' },
+  { thema:'Recruiting', insight:'Unternehmen mit Diversitätsstrategie haben 35% weniger Fluktuation', quelle:'Deloitte 2023', typ:'Statistik' },
+  { thema:'Frauen in Führung', insight:'Nur 29% der Führungspositionen in der Versicherungsbranche sind mit Frauen besetzt', quelle:'GDV 2023', typ:'Branche' },
+  { thema:'Sichtbarkeit', insight:'Personal Branding erhöht Karrierechancen um bis zu 40%', quelle:'LinkedIn 2023', typ:'Statistik' },
+  { thema:'Netzwerken', insight:'85% aller Jobs werden über persönliche Netzwerke vergeben', quelle:'LinkedIn 2022', typ:'Statistik' },
+  { thema:'Vereinbarkeit', insight:'Flexible Arbeitsmodelle steigern Produktivität um 13%', quelle:'Stanford 2022', typ:'Studie' },
+  { thema:'Frauen & Finanzen', insight:'Frauen investieren erfolgreicher als Männer — im Schnitt 1,8% mehr Rendite', quelle:'Fidelity 2023', typ:'Statistik' },
+  { thema:'Diversität', insight:'Gemischte Teams sind um 60% innovativer als homogene Teams', quelle:'BCG 2023', typ:'Statistik' },
+  { thema:'Recruiting', insight:'40% der Auszubildenden in der Versicherungsbranche sind weiblich', quelle:'GDV 2023', typ:'Branche' },
+  { thema:'Selfbranding', insight:'LinkedIn-Profile mit Foto erhalten 21x mehr Profilaufrufe', quelle:'LinkedIn 2023', typ:'Plattform' },
+];
+
+let sciInsights = JSON.parse(localStorage.getItem('fem_research_insights') || 'null') || [...DEFAULT_INSIGHTS];
+function saveSciInsights() { localStorage.setItem('fem_research_insights', JSON.stringify(sciInsights)); }
+
+function renderSciInsights() {
+  const list = document.getElementById('insightsList');
+  list.innerHTML = '';
+  sciInsights.forEach((ins, i) => {
+    const el = document.createElement('div');
+    el.className = 'insight-item';
+    el.innerHTML = `
+      <div class="ii-text">${ins.insight}</div>
+      <div class="ii-meta">
+        <span class="ii-badge ii-badge-thema">${ins.thema}</span>
+        <span class="ii-badge ii-badge-typ">${ins.typ}</span>
+        <span>Quelle: ${ins.quelle}</span>
+      </div>
+      <div class="ii-actions">
+        <button class="ii-btn" data-copy-ins="${i}">📋 Kopieren</button>
+        <button class="ii-btn" data-convert-ins="${i}">✨ In Content umwandeln</button>
+        <button class="ii-btn" data-del-ins="${i}">🗑️</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+document.getElementById('insightsList').addEventListener('click', async e => {
+  const copyBtn = e.target.closest('[data-copy-ins]');
+  if (copyBtn) {
+    const ins = sciInsights[parseInt(copyBtn.dataset.copyIns)];
+    navigator.clipboard.writeText(`${ins.insight} (${ins.quelle})`);
+    copyBtn.textContent = 'Kopiert!'; copyBtn.classList.add('copied');
+    setTimeout(() => { copyBtn.textContent = '📋 Kopieren'; copyBtn.classList.remove('copied'); }, 1500);
+    return;
+  }
+  const delBtn = e.target.closest('[data-del-ins]');
+  if (delBtn) { sciInsights.splice(parseInt(delBtn.dataset.delIns), 1); saveSciInsights(); renderSciInsights(); return; }
+  const convBtn = e.target.closest('[data-convert-ins]');
+  if (convBtn) {
+    const ins = sciInsights[parseInt(convBtn.dataset.convertIns)];
+    convBtn.textContent = '⏳...'; convBtn.disabled = true;
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'Erstelle aus diesem wissenschaftlichen Insight einen LinkedIn-Hook und eine kurze Content-Outline-Idee für FemSurance. Schreibe auf Deutsch.',messages:[{role:'user',content:`Insight: ${ins.insight}\nQuelle: ${ins.quelle}\nThema: ${ins.thema}`}]})
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      alert(data.content[0].text);
+    } catch (err) { alert('Fehler: ' + err.message); }
+    convBtn.textContent = '✨ In Content umwandeln'; convBtn.disabled = false;
+  }
+});
+
+document.getElementById('btnAddInsight').addEventListener('click', () => {
+  const insight = prompt('Insight-Text:'); if (!insight) return;
+  const quelle = prompt('Quelle:') || '';
+  const thema = prompt('Thema:') || '';
+  sciInsights.push({ insight, quelle, thema, typ: 'Eigener' });
+  saveSciInsights(); renderSciInsights();
+});
+
+// Toggle
+document.getElementById('insightsToggle').addEventListener('click', () => {
+  const body = document.getElementById('insightsBody');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+});
+
+renderSciInsights();
 </script>
 </body>
 </html>

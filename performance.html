@@ -1119,7 +1119,28 @@ function renderAnalyse() {
   // ── KI-Analyse Button ──
   const analyseBtn = `<div style="margin-top:16px;"><button class="report-btn pink" id="formatAnalyseBtn">🧠 Format-Analyse generieren</button></div><div id="formatAnalyseResult"></div>`;
 
-  container.innerHTML = kanalHtml + formatHtml + themenHtml + analyseBtn;
+  // ── Hook-Analyse ──
+  const hookTypes = {};
+  dataset.forEach(d => {
+    const ht = d.hookType || 'Ohne Angabe';
+    if (!hookTypes[ht]) hookTypes[ht] = { posts: 0, engSum: 0, best: null };
+    const h = hookTypes[ht];
+    h.posts++; h.engSum += d.eng;
+    if (!h.best || d.imp > h.best.imp) h.best = d;
+  });
+  let hookHtml = '';
+  if (Object.keys(hookTypes).length > 1 || !hookTypes['Ohne Angabe']) {
+    hookHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Hook-Analyse</div>';
+    hookHtml += '<table class="analyse-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th><th>Bester Post</th></tr></thead><tbody>';
+    Object.entries(hookTypes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([typ, h]) => {
+      const avgEng = h.engSum / h.posts;
+      const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
+      hookHtml += `<tr><td class="at-name">${typ}</td><td>${h.posts}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td style="font-size:11px;">${h.best ? h.best.title.slice(0,30) : '–'}</td></tr>`;
+    });
+    hookHtml += '</tbody></table>';
+  }
+
+  container.innerHTML = kanalHtml + formatHtml + themenHtml + hookHtml + analyseBtn;
 
   // KI Analyse handler
   document.getElementById('formatAnalyseBtn').addEventListener('click', async () => {

@@ -763,6 +763,18 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
         <option value="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</option>
       </select>
     </div>
+    <div class="cm-field">
+      <div class="cm-label">Hook-Typ</div>
+      <select id="cmHookType">
+        <option value="">Keine Angabe</option>
+        <option value="Provokation">Provokation</option>
+        <option value="Story">Story</option>
+        <option value="Frage">Frage</option>
+        <option value="Statistik">Statistik</option>
+        <option value="Zitat">Zitat</option>
+        <option value="Persönlich">Persönlich</option>
+      </select>
+    </div>
     <div class="cm-field" id="cmOutlineField" style="display:none;">
       <div class="cm-label">Outline</div>
       <textarea id="cmOutline" rows="8"></textarea>
@@ -1450,11 +1462,12 @@ function renderBoard() {
       }
 
       const begruendungHtml = card.begruendung ? `<div class="card-begruendung">${card.begruendung}</div>` : '';
+      const hookBadge = card.hookType ? `<span class="kanban-tag tag-gray" style="font-size:9px; margin-left:4px;">${card.hookType}</span>` : '';
 
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
         <div class="kanban-card-meta">
-          <span class="kanban-tag ${formatTagClass(card.format)}">${card.format}</span>
+          <span class="kanban-tag ${formatTagClass(card.format)}">${card.format}</span>${hookBadge}
           ${slotInfo}
           <span class="kanban-assignee">${card.assignee}</span>
           <span class="kanban-due">${card.due}</span>
@@ -1682,6 +1695,7 @@ function openCardModal(cardId) {
   document.getElementById('cmUrl').value = card.url || '';
   document.getElementById('cmRefmaterial').value = card.refmaterial || '';
   document.getElementById('cmThemenwelt').value = card.themenwelt || 'Alle 4';
+  document.getElementById('cmHookType').value = card.hookType || '';
 
   // Badge
   const badgeClass = formatTagClass(card.format);
@@ -1762,6 +1776,7 @@ document.getElementById('cmSave').addEventListener('click', () => {
   card.url = document.getElementById('cmUrl').value.trim();
   card.refmaterial = document.getElementById('cmRefmaterial').value.trim();
   card.themenwelt = document.getElementById('cmThemenwelt').value;
+  card.hookType = document.getElementById('cmHookType').value;
   if (document.getElementById('cmOutlineField').style.display !== 'none') {
     card.outline = document.getElementById('cmOutline').value;
   }
