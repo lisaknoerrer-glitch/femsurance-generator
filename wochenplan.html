@@ -1846,38 +1846,65 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
 btnSave.addEventListener('click', () => {
   const kw = document.getElementById('b1Kw').value || 'XX';
   const year = new Date().getFullYear();
-  const key = `fem_wochenplan_KW${kw}_${year}`;
-  localStorage.setItem(key, outputArea.value);
+  const weekKey = `KW${kw}_${year}`;
 
-  // Save structured KPIs to fem_performance_history
+  // Check if already exists
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const existIdx = history.findIndex(h => h.weekKey === weekKey);
+  if (existIdx >= 0) {
+    if (!confirm(`Woche ${weekKey} bereits gespeichert. Überschreiben?`)) return;
+  }
+
+  // Save wochenplan output text
+  const wpKey = `fem_wochenplan_KW${kw}_${year}`;
+  localStorage.setItem(wpKey, outputArea.value);
+
+  // Build complete week object
   const b2 = load('fem_wp_block2', {});
   const b2Posts = load('fem_wp_b2_posts', []);
+  const b1Date = document.getElementById('b1Date').value;
+  let periodEnd = '';
+  if (b1Date) {
+    const d = new Date(b1Date);
+    d.setDate(d.getDate() + 6);
+    periodEnd = d.toISOString().split('T')[0];
+  }
+
+  let kd = {};
+  try { kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); if (Array.isArray(kd)) kd = {}; } catch {}
+
   const entry = {
-    weekKey: `KW${kw}_${year}`,
-    kw: kw,
+    weekKey,
+    kw,
     savedAt: new Date().toISOString(),
+    periodStart: b1Date || '',
+    periodEnd: periodEnd,
+
     inhalte_30d: {
       impressions: b2.site_impressions || '',
       reaktionen: b2.site_reaktionen || '',
       kommentare: b2.site_kommentare || '',
       geteilte_beitraege: b2.site_shares || ''
     },
+
     besucher: {
       seitenaufrufe: b2.visitor_aufrufe || '',
       individuelle_besucher: b2.visitor_unique || '',
       klicks_eigener_button: b2.visitor_button_klicks || ''
     },
+
     follower: {
       gesamt: b2.follower_gesamt || '',
       neue_30d: b2.follower_neu || '',
       neue_premium: b2.follower_premium || '',
-      // Snapshot for charts
-      gruppe_members: (() => { try { const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); return kd.gruppeMembers || ''; } catch { return ''; } })(),
-      whatsapp_members: (() => { try { const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); return kd.whatsappMembers || ''; } catch { return ''; } })()
+      gruppeMembers: kd.gruppeMembers || '',
+      whatsappMembers: kd.whatsappMembers || ''
     },
+
     suche_7d: {
       seitensuchen: b2.search_seitensuchen || ''
     },
+
     posts: b2Posts.filter(p => p.titel).map(p => ({
       titel: p.titel || '',
       impressions: p.impressions || '',
@@ -1891,13 +1918,17 @@ btnSave.addEventListener('click', () => {
       geteilte_beitraege: p.shares || '',
       generierte_seitenbesucher: p.besucher || '',
       gewonnene_follower: p.follower || ''
-    }))
+    })),
+
+    lernstand: localStorage.getItem('fem_lernstand') || '',
+    wochenplan_text: outputArea.value || '',
+    branchenbeobachtung: document.getElementById('b5Text')?.value || '',
+    notizen: document.getElementById('b6Text')?.value || '',
+    urls: load('fem_wp_block4', []).filter(u => u.url && u.url.trim())
   };
 
-  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
-  const existIdx = history.findIndex(h => h.weekKey === entry.weekKey);
   if (existIdx >= 0) history[existIdx] = entry; else history.unshift(entry);
-  if (history.length > 20) history.length = 20;
+  if (history.length > 52) history.length = 52;
   localStorage.setItem('fem_performance_history', JSON.stringify(history));
 
   btnSave.textContent = 'Gespeichert ✓';
