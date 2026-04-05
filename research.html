@@ -208,6 +208,22 @@ body {
 .add-hook-form input:focus { outline:none; border-color:var(--fem-pink); }
 .add-hook-form select { padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
 .add-hook-form button { padding:8px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+/* KI Empfehlungen */
+.ki-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 20px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
+.ki-btn:hover { opacity:0.9; }
+.ki-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.ki-timestamp { font-size:11px; color:var(--text-secondary); margin-left:12px; }
+.ki-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; background:var(--fem-purple-light); color:var(--fem-purple); margin-left:4px; }
+.ki-learnings { padding:14px 18px; background:var(--fem-purple-light); border-radius:var(--radius-sm); margin-bottom:16px; font-size:13px; line-height:1.55; color:var(--text-primary); }
+.ki-learnings strong { color:var(--fem-purple); }
+.ki-section { margin-bottom:14px; border-radius:var(--radius-sm); padding:12px 16px; }
+.ki-section.testen { background:var(--fem-pink-light); }
+.ki-section.vermeiden { background:#fef2f2; }
+.ki-section-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+.ki-section.testen .ki-section-title { color:var(--fem-pink); }
+.ki-section.vermeiden .ki-section-title { color:#dc2626; }
+.ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
+.ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -250,6 +266,14 @@ body {
     <h1><em>FemSurance</em> Research</h1>
     <div class="header-meta">Themen · Hooks · Outlines</div>
   </div>
+
+  <!-- KI-Empfehlungen -->
+  <div class="fade-up" style="margin-bottom:18px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+    <button class="ki-btn" id="kiBtn">🧠 KI-Empfehlungen aktualisieren</button>
+    <span class="ki-timestamp" id="kiTimestamp"></span>
+  </div>
+  <div id="kiLearnings"></div>
+  <div id="kiSections" style="display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;"></div>
 
   <!-- Trending-Themen (dynamic) -->
   <div class="card fade-up">
@@ -512,6 +536,127 @@ document.getElementById('outlineResults').addEventListener('click', e => {
   }
   btn.textContent = 'Gesendet!';
   btn.classList.add('sent');
+});
+
+// ══════════ KI-EMPFEHLUNGEN ══════════
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+const KI_SYSTEM_PROMPT = `Du bist der FemSurance Research-Assistent. Du analysierst die Performance-Daten und den Lernstand und gibst konkrete Empfehlungen was als nächstes getestet werden sollte.
+
+Antworte NUR im JSON-Format:
+{
+  "trending_themen": [
+    { "thema": "Thema", "hook_winkel": "Konkreter Hook-Winkel", "format": "Company Page / Gruppe / WhatsApp", "potenzial": 3, "begruendung": "Warum dieses Thema jetzt?" }
+  ],
+  "hooks": [
+    { "text": "Hook-Text", "typ": "Provokation / Statistik / Frage / Story", "begruendung": "Warum dieser Hook?" }
+  ],
+  "was_testen": ["Konkrete Empfehlung 1", "Konkrete Empfehlung 2"],
+  "was_vermeiden": ["Was nicht mehr tun 1"],
+  "learnings": "Kurze Zusammenfassung der wichtigsten Erkenntnisse"
+}`;
+
+function loadKiSuggestions() {
+  try { return JSON.parse(localStorage.getItem('fem_research_ki_suggestions') || 'null'); } catch { return null; }
+}
+
+function renderKiResults(data) {
+  if (!data) return;
+  // Learnings
+  const learningsEl = document.getElementById('kiLearnings');
+  if (data.learnings) {
+    learningsEl.innerHTML = `<div class="ki-learnings"><strong>🧠 KI-Erkenntnisse:</strong> ${data.learnings}</div>`;
+  }
+  // Sections
+  const sectionsEl = document.getElementById('kiSections');
+  let html = '';
+  if (data.was_testen && data.was_testen.length) {
+    html += `<div class="ki-section testen" style="flex:1; min-width:200px;"><div class="ki-section-title">✅ Was testen</div><ul>${data.was_testen.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+  }
+  if (data.was_vermeiden && data.was_vermeiden.length) {
+    html += `<div class="ki-section vermeiden" style="flex:1; min-width:200px;"><div class="ki-section-title">⛔ Was vermeiden</div><ul>${data.was_vermeiden.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+  }
+  sectionsEl.innerHTML = html;
+  // Timestamp
+  if (data.savedAt) {
+    const d = new Date(data.savedAt);
+    document.getElementById('kiTimestamp').textContent = `Zuletzt aktualisiert: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}`;
+  }
+  // Add KI themes to trending (with badge)
+  if (data.trending_themen) {
+    data.trending_themen.forEach(t => {
+      if (!themes.find(x => x.thema === t.thema)) {
+        themes.push({ thema: t.thema, hook: t.hook_winkel, format: t.format, potenzial: t.potenzial || 2, badge: '🤖 KI', ki: true });
+      }
+    });
+    saveThemes(); renderThemes();
+  }
+  // Add KI hooks
+  if (data.hooks) {
+    data.hooks.forEach(h => {
+      if (!hooks.find(x => x.text === h.text)) {
+        hooks.push({ cat: h.typ || 'KI', text: h.text, ki: true });
+      }
+    });
+    saveHooks(); renderHooks();
+  }
+}
+
+// Restore saved suggestions
+const savedKi = loadKiSuggestions();
+if (savedKi) renderKiResults(savedKi);
+
+// KI Button
+document.getElementById('kiBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('kiBtn');
+  btn.disabled = true;
+  btn.textContent = '🧠 Wird analysiert...';
+
+  try {
+    // Build user prompt from all data sources
+    const parts = [];
+    const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+    if (history.length) {
+      parts.push('## Performance (letzte Wochen)\n' + history.slice(0, 3).map(h => {
+        const imp = h.inhalte_30d?.impressions || h.site?.impressions || '–';
+        const posts = (h.posts || []).map(p => `${p.titel}: ${p.engagement_rate || '–'}% Eng.`).join(', ');
+        return `KW ${h.kw || '?'}: Impressions ${imp}${posts ? ', Posts: ' + posts : ''}`;
+      }).join('\n'));
+    }
+    const lernstand = localStorage.getItem('fem_lernstand');
+    if (lernstand) parts.push('## Lernstand\n' + lernstand);
+    parts.push('## Aktuelle Themen\n' + themes.map(t => `${t.thema} (${t.format || '–'}, Potenzial: ${'★'.repeat(t.potenzial || 1)})`).join('\n'));
+    const postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const topPosts = Object.entries(postPerf).filter(([,v]) => v.impressions).slice(0, 5);
+    if (topPosts.length) {
+      parts.push('## Top-Post Performance\n' + topPosts.map(([,v]) => `Impressions: ${v.impressions}, Eng: ${v.reaktionen || 0}+${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
+    }
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: KI_SYSTEM_PROMPT, messages: [{ role: 'user', content: parts.join('\n\n') || 'Keine Daten vorhanden. Gib allgemeine FemSurance-Empfehlungen.' }] })
+    });
+
+    if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
+    const data = await resp.json();
+    let jsonStr = data.content[0].text.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const result = JSON.parse(jsonStr);
+    result.savedAt = new Date().toISOString();
+    localStorage.setItem('fem_research_ki_suggestions', JSON.stringify(result));
+
+    // Remove old KI entries before adding new
+    themes = themes.filter(t => !t.ki);
+    hooks = hooks.filter(h => !h.ki);
+    renderKiResults(result);
+
+    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+  }
+  btn.disabled = false;
 });
 </script>
 </body>
