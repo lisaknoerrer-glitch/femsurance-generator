@@ -499,6 +499,11 @@ textarea { resize: vertical; line-height: 1.6; }
 [data-tip]:hover::before { opacity: 1; }
 .info-tip[data-tip]::before { display: none; }
 
+/* ── Validation ── */
+.val-msg { font-size:11px; margin-top:3px; padding:3px 8px; border-radius:4px; display:none; }
+.val-msg.error { display:block; background:#fef2f2; color:#dc2626; }
+.val-msg.warn { display:block; background:#fef9c3; color:#a16207; }
+
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -1229,9 +1234,13 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       if (merged.search_summary.seitensuchen) b2Auto.search_seitensuchen = merged.search_summary.seitensuchen;
       else if (merged.search_summary.suchanzeigen) b2Auto.search_seitensuchen = merged.search_summary.suchanzeigen;
     }
-    if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
+    if (Object.keys(b2Auto).length) {
+      loadBlock2(b2Auto); saveBlock2();
+    } else if (!merged.posts.length && !merged.follower_summary?.follower_gesamt) {
+      alert('Keine Daten erkannt — bitte manuell eintragen oder andere Screenshots verwenden.');
+    }
 
-    // Clear screenshot base64 from localStorage (keep KPI numbers in fem_wp_analytics + fem_wp_block2)
+    // Clear screenshot base64 from localStorage
     localStorage.removeItem('fem_wp_screenshots');
 
     btn.textContent = '📊 Daten extrahieren';
@@ -1330,9 +1339,20 @@ if (savedAnalytics) {
 }
 
 // ══════════ BLOCK 2: Performance-Daten ══════════
+function validateB2Field(inp) {
+  let existingMsg = inp.parentElement.querySelector('.val-msg');
+  if (!existingMsg) { existingMsg = document.createElement('div'); existingMsg.className = 'val-msg'; inp.after(existingMsg); }
+  const val = parseFloat(inp.value);
+  const key = inp.dataset.b2;
+  if (key.includes('eng_rate') || key === 'post_ctr') {
+    if (val > 100) { existingMsg.className = 'val-msg error'; existingMsg.textContent = 'Wert kann nicht über 100% sein'; inp.style.borderColor = '#dc2626'; return; }
+  }
+  if (key.includes('impressions') && val > 1000000) { existingMsg.className = 'val-msg warn'; existingMsg.textContent = 'Ungewöhnlich hoher Wert — bitte prüfen'; inp.style.borderColor = '#a16207'; return; }
+  existingMsg.className = 'val-msg'; inp.style.borderColor = '';
+}
 function saveBlock2() {
   const data = {};
-  document.querySelectorAll('input[data-b2]').forEach(inp => { data[inp.dataset.b2] = inp.value; });
+  document.querySelectorAll('input[data-b2]').forEach(inp => { data[inp.dataset.b2] = inp.value; validateB2Field(inp); });
   save('fem_wp_block2', data);
 }
 document.querySelectorAll('input[data-b2]').forEach(inp => inp.addEventListener('input', saveBlock2));
@@ -1844,11 +1864,17 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
 
 // ══════════ SAVE BUTTON ══════════
 btnSave.addEventListener('click', () => {
-  const kw = document.getElementById('b1Kw').value || 'XX';
+  const kw = document.getElementById('b1Kw').value;
+  if (!kw || kw === '') {
+    alert('Bitte KW eintragen bevor du speicherst.');
+    document.getElementById('b1Kw').style.borderColor = '#dc2626';
+    document.getElementById('b1Kw').focus();
+    return;
+  }
+  document.getElementById('b1Kw').style.borderColor = '';
   const year = new Date().getFullYear();
   const weekKey = `KW${kw}_${year}`;
 
-  // Check if already exists
   const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
   const existIdx = history.findIndex(h => h.weekKey === weekKey);
   if (existIdx >= 0) {

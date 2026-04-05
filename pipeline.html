@@ -843,6 +843,16 @@ body {
 <script>
 // ── Config ──
 const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+function friendlyError(err) {
+  const msg = err.message || String(err);
+  if (msg.includes('401')) return 'API-Schlüssel ungültig. Bitte in pipeline.html prüfen.';
+  if (msg.includes('403')) return 'Zugriff verweigert. Bitte API-Schlüssel und Berechtigungen prüfen.';
+  if (msg.includes('429')) return 'Zu viele Anfragen. Bitte kurz warten und erneut versuchen.';
+  if (msg.includes('500') || msg.includes('502') || msg.includes('503')) return 'Anthropic-Server nicht erreichbar. Bitte später erneut versuchen.';
+  if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return 'Keine Internetverbindung. Bitte Verbindung prüfen.';
+  if (msg.includes('JSON')) return 'Antwort konnte nicht verarbeitet werden. Bitte erneut versuchen.';
+  return msg;
+}
 
 const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
 
@@ -1052,6 +1062,10 @@ async function callAnthropic(systemPrompt, userPrompt, maxTokens) {
 async function generateOutline(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
   if (!card) return;
+  if (!card.title || !card.title.trim()) {
+    alert('Bitte Titel eintragen bevor du einen Entwurf generierst.');
+    return;
+  }
 
   btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
   btnEl.classList.add('loading');
@@ -1123,7 +1137,7 @@ async function generateOutline(cardId, btnEl) {
     wrapper.appendChild(genArea);
 
   } catch (err) {
-    alert('Fehler beim Generieren: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Entwurf generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1172,7 +1186,7 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
     btnEl.disabled = false;
 
   } catch (err) {
-    alert('Fehler: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Canva-Prompt generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1236,7 +1250,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
     renderBoard();
 
   } catch (err) {
-    alert('Fehler beim Generieren: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1719,7 +1733,7 @@ document.getElementById('cmCanvaPromptBtn').addEventListener('click', async () =
     document.getElementById('cmCanvaPromptText').value = result;
     document.getElementById('cmCanvaPromptResult').style.display = 'block';
   } catch (err) {
-    alert('Fehler: ' + err.message);
+    alert(friendlyError(err));
   }
   btn.textContent = '✨ Canva-Prompt generieren';
   btn.disabled = false;
