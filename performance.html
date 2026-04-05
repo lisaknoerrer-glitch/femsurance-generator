@@ -276,10 +276,10 @@ body {
 .pp-modal-actions .pp-close { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
 
 /* ── Tabs ── */
-.perf-tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--border); }
-.perf-tab { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s; }
-.perf-tab:hover { color:var(--text-primary); }
-.perf-tab.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); }
+.perf-tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--border); position:relative; z-index:5; }
+.perf-tab { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s; pointer-events:auto; }
+.perf-tab:hover { color:var(--text-primary); background:var(--bg-secondary); }
+.perf-tab.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); background:none; }
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 /* Report cards */
@@ -402,7 +402,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
   </div>
 
   <!-- Tab Navigation -->
-  <div class="perf-tabs fade-up">
+  <div class="perf-tabs">
     <button class="perf-tab active" data-tab="woche">Woche</button>
     <button class="perf-tab" data-tab="monat">Monat</button>
     <button class="perf-tab" data-tab="quartal">Quartal</button>
@@ -1699,13 +1699,19 @@ renderKpiTrackingTable();
 // ══════════ TAB NAVIGATION ══════════
 const savedTab = localStorage.getItem('fem_perf_tab') || 'woche';
 function switchTab(tab) {
+  console.log('switchTab:', tab);
   document.querySelectorAll('.perf-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1)));
+  document.querySelectorAll('.tab-content').forEach(c => {
+    const targetId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+    c.classList.toggle('active', c.id === targetId);
+  });
   localStorage.setItem('fem_perf_tab', tab);
   if (tab === 'monat') renderMonth();
   if (tab === 'quartal') renderQuarter();
 }
-document.querySelectorAll('.perf-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+document.querySelectorAll('.perf-tab').forEach(t => {
+  t.addEventListener('click', function() { switchTab(this.dataset.tab); });
+});
 if (savedTab !== 'woche') switchTab(savedTab);
 
 // ── Helpers ──
