@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FemSurance – Strategie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fem-pink: #E91E8C; --fem-pink-light: #fce4f0; --fem-pink-mid: #f4afd4;
+  --fem-purple: #7C3AED; --fem-purple-light: #EEEDFE;
+  --bg-page: #F8F9FA; --bg-card: #ffffff; --bg-secondary: #f1f3f5;
+  --text-primary: #1a1a2e; --text-secondary: #6b7280;
+  --border: rgba(0,0,0,0.08); --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --nav-bg: #1a1a2e; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family:'Inter',sans-serif; background:var(--bg-page); color:var(--text-primary); line-height:1.5; -webkit-font-smoothing:antialiased; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; animation:fadeUp 0.5s ease forwards; }
+.fade-up:nth-child(1){animation-delay:.04s} .fade-up:nth-child(2){animation-delay:.1s} .fade-up:nth-child(3){animation-delay:.16s} .fade-up:nth-child(4){animation-delay:.22s}
+
+.nav-left { position:fixed; top:0; left:0; width:62px; height:100vh; background:var(--nav-bg); display:flex; flex-direction:column; align-items:center; padding:16px 0; z-index:100; }
+.nav-logo { width:34px; height:34px; background:var(--fem-pink); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; margin-bottom:28px; font-weight:700; font-size:15px; color:#fff; }
+.nav-links { display:flex; flex-direction:column; gap:4px; width:100%; list-style:none; }
+.nav-links a { display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; color:rgba(255,255,255,0.5); text-decoration:none; font-size:9px; font-weight:500; letter-spacing:0.02em; transition:color 0.2s, background 0.2s; border-radius:var(--radius-sm); margin:0 6px; }
+.nav-links a:hover,.nav-links a.active { color:#fff; background:rgba(255,255,255,0.08); }
+.nav-links a.active { color:var(--fem-pink); }
+.nav-links svg { width:20px; height:20px; stroke-width:1.8; fill:none; stroke:currentColor; }
+
+.main { margin-left:62px; padding:28px 32px 40px; max-width:900px; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.page-header h1 { font-size:22px; font-weight:700; }
+.page-header h1 em { font-style:normal; color:var(--fem-pink); }
+.header-sub { font-size:13px; color:var(--text-secondary); margin-bottom:18px; }
+.save-ts { font-size:11px; color:var(--text-secondary); margin-bottom:18px; }
+
+.card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:var(--shadow); padding:20px 22px; margin-bottom:16px; }
+.card-header { display:flex; align-items:center; cursor:pointer; user-select:none; }
+.card-header .card-title { flex:1; font-size:13px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; margin:0; }
+.card-header .chevron { font-size:12px; color:var(--text-secondary); transition:transform 0.25s; }
+.card-header.collapsed .chevron { transform:rotate(-90deg); }
+.card-body { overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s; max-height:3000px; opacity:1; margin-top:14px; }
+.card-body.collapsed { max-height:0; opacity:0; margin:0; padding:0; }
+
+label.fl { display:block; font-size:12px; font-weight:600; color:var(--text-secondary); margin-bottom:4px; }
+input[type="text"],input[type="number"],select,textarea { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; color:var(--text-primary); background:var(--bg-card); transition:border-color 0.2s; }
+input:focus,select:focus,textarea:focus { outline:none; border-color:var(--fem-pink); }
+textarea { resize:vertical; line-height:1.6; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field { margin-bottom:12px; }
+
+.btn-add { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; }
+.btn-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.btn-add:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-remove { width:24px; height:24px; border:none; background:none; cursor:pointer; font-size:14px; color:var(--text-secondary); border-radius:50%; }
+.btn-remove:hover { background:#fef2f2; color:#dc2626; }
+
+.goal-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; padding:8px; background:var(--bg-secondary); border-radius:var(--radius-sm); }
+.goal-row input { flex:1; }
+.goal-row input:nth-child(2) { max-width:80px; }
+.goal-row input:nth-child(3) { max-width:80px; }
+.progress-mini { flex:1; height:6px; background:var(--bg-page); border-radius:3px; overflow:hidden; }
+.progress-mini-fill { height:100%; background:linear-gradient(90deg,var(--fem-pink),var(--fem-purple)); border-radius:3px; }
+
+.fokus-item { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.fokus-item input { flex:1; }
+.fokus-item select { width:200px; }
+.fokus-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.fokus-badge { display:inline-block; padding:4px 12px; border-radius:20px; background:var(--fem-pink); color:#fff; font-size:12px; font-weight:600; }
+
+.dyn-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.dyn-item input { flex:1; }
+.voice-badges { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.voice-badge { padding:6px 14px; border:1px solid var(--border); border-radius:20px; cursor:pointer; font-size:12px; font-weight:500; transition:all 0.2s; user-select:none; }
+.voice-badge.selected { background:var(--fem-pink); color:#fff; border-color:var(--fem-pink); }
+.voice-badge:not(.selected) { background:var(--bg-card); color:var(--text-secondary); }
+.voice-badge:hover { border-color:var(--fem-pink); }
+.check-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; }
+.check-actions { display:flex; gap:8px; margin-top:10px; }
+.check-btn { padding:8px 18px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
+.check-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.check-btn.ok { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.btn-check { padding:10px 24px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.btn-check:hover { opacity:0.9; }
+.btn-check:disabled { opacity:0.5; cursor:not-allowed; }
+
+.btn-export { display:block; margin-top:20px; padding:10px 24px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
+.btn-export:hover { opacity:0.9; }
+
+/* Dark Mode */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
+</style>
+</head>
+<body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
+
+<nav class="nav-left">
+  <div class="nav-logo">F</div>
+  <ul class="nav-links">
+    <a href="dashboard.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Übersicht</a>
+    <a href="performance.html"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Performance</a>
+    <a href="pipeline.html"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Pipeline</a>
+    <a href="research.html"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Research</a>
+    <a href="konkurrenz.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Konkurrenz</a>
+    <a href="strategie.html" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>Strategie</a>
+    <a href="wochenplan.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Wochenplan</a>
+  </ul>
+</nav>
+
+<main class="main">
+  <div class="page-header fade-up"><h1><em>FemSurance</em> Strategie-Board</h1></div>
+  <div class="header-sub fade-up">Deine strategische Grundlage für allen Content</div>
+  <div class="save-ts fade-up" id="saveTs"></div>
+
+  <!-- CARD 1: Ziele -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="1"><div class="card-title">🎯 Ziele</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="1">
+      <div class="row2">
+        <div class="field"><label class="fl">Follower-Ziel Company Page</label><input type="number" id="zGoal" placeholder="z.B. 2500"></div>
+        <div class="field"><label class="fl">Follower-Ziel LinkedIn Gruppe</label><input type="number" id="zGruppe" placeholder="z.B. 500"></div>
+        <div class="field"><label class="fl">Follower-Ziel WhatsApp</label><input type="number" id="zWhatsapp" placeholder="z.B. 200"></div>
+        <div class="field"><label class="fl">Newsletter-Ziel</label><input type="number" id="zNewsletter" placeholder="z.B. 500"></div>
+      </div>
+      <div class="field"><label class="fl">Zeitraum</label><select id="zZeitraum"><option>Q1 2026</option><option>Q2 2026</option><option selected>Q3 2026</option><option>Q4 2026</option><option>Q1 2027</option></select></div>
+      <label class="fl" style="margin-top:12px;">Weitere Business-Ziele</label>
+      <div id="weitereZiele"></div>
+      <button class="btn-add" id="addZiel">+ Weiteres Ziel hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- CARD 2: Fokus-Themen -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="2"><div class="card-title">🔍 Fokus-Themen (max. 3)</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="2">
+      <div id="fokusContainer"></div>
+      <button class="btn-add" id="addFokus">+ Thema hinzufügen</button>
+      <div class="fokus-badges" id="fokusBadges"></div>
+    </div>
+  </div>
+
+  <!-- CARD 3: Positionierung -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="3"><div class="card-title">🎨 Positionierung</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="3">
+      <div class="field"><label class="fl">Wie wollen wir wirken?</label><textarea id="posWirken" rows="3" placeholder="z.B. Datenbasiert + empowernd + praxisnah"></textarea></div>
+      <div class="field"><label class="fl">Wie wollen wir NICHT wirken?</label><textarea id="posNicht" rows="3" placeholder="z.B. Nicht allgemein, nicht werblich"></textarea></div>
+      <div class="field"><label class="fl">Was macht FemSurance einzigartig?</label><textarea id="posEinzigartig" rows="3" placeholder="z.B. Einzige Initiative die Frauen in der Versicherungsbranche systematisch stärkt"></textarea></div>
+    </div>
+  </div>
+
+  <!-- CARD 4: Content-Prinzip -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="4"><div class="card-title">✍️ Content-Prinzip</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="4">
+      <div class="field"><label class="fl">Unser Content-Prinzip</label><textarea id="cpPrinzip" rows="3" placeholder="z.B. Story + Insight + konkreter Tipp"></textarea></div>
+      <div class="field"><label class="fl">Unsere Erfolgsformel</label><textarea id="cpFormel" rows="3" placeholder="Wird automatisch aus Content-DNA befüllt"></textarea></div>
+      <div class="field"><label class="fl">Posting-Frequenz</label><select id="cpFrequenz"><option>2x/Woche</option><option>3x/Woche</option><option selected>4x/Woche</option><option>5x/Woche</option></select></div>
+    </div>
+  </div>
+
+  <!-- CARD 5: Zielgruppe -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="5"><div class="card-title">👥 Zielgruppe</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="5">
+      <div id="zielgruppeList"></div>
+      <button class="btn-add" id="addZielgruppe">+ Zielgruppe hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- CARD 6: Was wir nicht posten -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="6"><div class="card-title">🚫 Was wir nicht posten</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="6">
+      <div id="nichtPostenList"></div>
+      <button class="btn-add" id="addNichtPosten">+ Hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- CARD 7: Brand Voice -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="7"><div class="card-title">🎙️ Brand Voice</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="7">
+      <div class="voice-badges" id="voiceBadges"></div>
+      <div class="field"><label class="fl">Tonalität in eigenen Worten</label><textarea id="voiceTon" rows="3" placeholder="z.B. Wie eine erfahrene Mentorin die auf Augenhöhe spricht"></textarea></div>
+    </div>
+  </div>
+
+  <!-- CARD 8: Strategie-Check -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="8"><div class="card-title">🧠 Strategie-Check</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="8">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <button class="btn-check" id="stratCheckBtn">Strategie prüfen</button>
+        <span style="font-size:11px; color:var(--text-secondary);" id="checkTs"></span>
+      </div>
+      <div id="checkOutput"></div>
+      <div class="check-actions" id="checkActions" style="display:none;">
+        <button class="check-btn" id="checkCopy">📋 Kopieren</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-export" id="btnExport">📋 Strategie exportieren</button>
+</main>
+
+<script>
+// ══════════ DATA ══════════
+function load(key, fb) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fb; } catch { return fb; } }
+let strat = load('fem_strategie', {
+  ziele: { goal:'', gruppeGoal:'', whatsappGoal:'', newsletterGoal:'', zeitraum:'Q3 2026', weitere:[] },
+  fokusThemen: [],
+  positionierung: { wirken:'', nichtWirken:'', einzigartig:'' },
+  contentPrinzip: { prinzip:'', erfolgsformel:'', frequenz:'4x/Woche' },
+  zielgruppe: [],
+  brandVoice: { badges:[], tonalitaet:'' }
+});
+function save() {
+  localStorage.setItem('fem_strategie', JSON.stringify(strat));
+  // Sync goals to fem_konkurrenz_data
+  try {
+    const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+    if (strat.ziele.goal) kd.goal = parseInt(strat.ziele.goal) || kd.goal;
+    if (strat.ziele.gruppeGoal) kd.gruppeGoal = parseInt(strat.ziele.gruppeGoal) || kd.gruppeGoal;
+    if (strat.ziele.whatsappGoal) kd.whatsappGoal = parseInt(strat.ziele.whatsappGoal) || kd.whatsappGoal;
+    if (strat.ziele.newsletterGoal) kd.newsletterGoal = parseInt(strat.ziele.newsletterGoal) || kd.newsletterGoal;
+    localStorage.setItem('fem_konkurrenz_data', JSON.stringify(kd));
+  } catch {}
+  document.getElementById('saveTs').textContent = 'Zuletzt gespeichert: ' + new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ══════════ COLLAPSIBLE ══════════
+const DEFAULTS_OPEN = {1:true, 2:true, 3:true, 4:true, 5:true, 6:false, 7:false, 8:false};
+const colState = load('fem_strategie_collapse', DEFAULTS_OPEN);
+document.querySelectorAll('.card-header').forEach(h => {
+  const n = h.dataset.card;
+  const b = document.querySelector(`[data-body="${n}"]`);
+  if (colState[n] === false) { h.classList.add('collapsed'); b.classList.add('collapsed'); }
+  h.addEventListener('click', () => {
+    h.classList.toggle('collapsed'); b.classList.toggle('collapsed');
+    colState[n] = !h.classList.contains('collapsed');
+    localStorage.setItem('fem_strategie_collapse', JSON.stringify(colState));
+  });
+});
+
+// ══════════ CARD 1: ZIELE ══════════
+document.getElementById('zGoal').value = strat.ziele.goal || '';
+document.getElementById('zGruppe').value = strat.ziele.gruppeGoal || '';
+document.getElementById('zWhatsapp').value = strat.ziele.whatsappGoal || '';
+document.getElementById('zNewsletter').value = strat.ziele.newsletterGoal || '';
+document.getElementById('zZeitraum').value = strat.ziele.zeitraum || 'Q3 2026';
+['zGoal','zGruppe','zWhatsapp','zNewsletter'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    const map = {zGoal:'goal',zGruppe:'gruppeGoal',zWhatsapp:'whatsappGoal',zNewsletter:'newsletterGoal'};
+    strat.ziele[map[id]] = e.target.value; save();
+  });
+});
+document.getElementById('zZeitraum').addEventListener('change', e => { strat.ziele.zeitraum = e.target.value; save(); });
+
+function renderWeitere() {
+  const c = document.getElementById('weitereZiele'); c.innerHTML = '';
+  (strat.ziele.weitere || []).forEach((z, i) => {
+    const pct = z.ziel > 0 ? Math.min((parseInt(z.aktuell)||0)/(parseInt(z.ziel))*100, 100) : 0;
+    const row = document.createElement('div'); row.className = 'goal-row';
+    row.innerHTML = `<input type="text" value="${z.name||''}" placeholder="Name" data-wi="${i}" data-wf="name"><input type="number" value="${z.aktuell||''}" placeholder="Aktuell" data-wi="${i}" data-wf="aktuell"><input type="number" value="${z.ziel||''}" placeholder="Ziel" data-wi="${i}" data-wf="ziel"><div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div><button class="btn-remove" data-wd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+}
+document.getElementById('weitereZiele').addEventListener('input', e => {
+  if (e.target.dataset.wi !== undefined) { strat.ziele.weitere[parseInt(e.target.dataset.wi)][e.target.dataset.wf] = e.target.value; save(); clearTimeout(window._wt); window._wt = setTimeout(renderWeitere, 500); }
+});
+document.getElementById('weitereZiele').addEventListener('click', e => {
+  if (e.target.dataset.wd !== undefined) { strat.ziele.weitere.splice(parseInt(e.target.dataset.wd), 1); save(); renderWeitere(); }
+});
+document.getElementById('addZiel').addEventListener('click', () => { if (!strat.ziele.weitere) strat.ziele.weitere = []; strat.ziele.weitere.push({name:'',aktuell:'',ziel:''}); save(); renderWeitere(); });
+renderWeitere();
+
+// ══════════ CARD 2: FOKUS-THEMEN ══════════
+function renderFokus() {
+  const c = document.getElementById('fokusContainer'); c.innerHTML = '';
+  (strat.fokusThemen || []).forEach((f, i) => {
+    const row = document.createElement('div'); row.className = 'fokus-item';
+    row.innerHTML = `<input type="text" value="${f.thema||''}" placeholder="z.B. Frauen in Führung" data-fi="${i}" data-ff="thema"><select data-fi="${i}" data-ff="themenwelt"><option value="">Themenwelt...</option><option${f.themenwelt==='Business & Vertrieb'?' selected':''}>Business & Vertrieb</option><option${f.themenwelt==='Marketing & Sichtbarkeit'?' selected':''}>Marketing & Sichtbarkeit</option><option${f.themenwelt==='Fachliche Weiterbildung'?' selected':''}>Fachliche Weiterbildung</option><option${f.themenwelt==='Persönlichkeitsentwicklung'?' selected':''}>Persönlichkeitsentwicklung</option></select><button class="btn-remove" data-fd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+  document.getElementById('addFokus').disabled = (strat.fokusThemen || []).length >= 3;
+  const badges = document.getElementById('fokusBadges');
+  badges.innerHTML = (strat.fokusThemen || []).filter(f => f.thema).map(f => `<span class="fokus-badge">${f.thema}</span>`).join('');
+}
+document.getElementById('fokusContainer').addEventListener('input', e => {
+  if (e.target.dataset.fi !== undefined) { strat.fokusThemen[parseInt(e.target.dataset.fi)][e.target.dataset.ff] = e.target.value; save(); renderFokus(); }
+});
+document.getElementById('fokusContainer').addEventListener('change', e => {
+  if (e.target.dataset.fi !== undefined) { strat.fokusThemen[parseInt(e.target.dataset.fi)][e.target.dataset.ff] = e.target.value; save(); }
+});
+document.getElementById('fokusContainer').addEventListener('click', e => {
+  if (e.target.dataset.fd !== undefined) { strat.fokusThemen.splice(parseInt(e.target.dataset.fd), 1); save(); renderFokus(); }
+});
+document.getElementById('addFokus').addEventListener('click', () => { if (!strat.fokusThemen) strat.fokusThemen = []; if (strat.fokusThemen.length >= 3) return; strat.fokusThemen.push({thema:'',themenwelt:''}); save(); renderFokus(); });
+renderFokus();
+
+// ══════════ CARD 3: POSITIONIERUNG ══════════
+document.getElementById('posWirken').value = strat.positionierung?.wirken || '';
+document.getElementById('posNicht').value = strat.positionierung?.nichtWirken || '';
+document.getElementById('posEinzigartig').value = strat.positionierung?.einzigartig || '';
+['posWirken','posNicht','posEinzigartig'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    if (!strat.positionierung) strat.positionierung = {};
+    const map = {posWirken:'wirken',posNicht:'nichtWirken',posEinzigartig:'einzigartig'};
+    strat.positionierung[map[id]] = e.target.value; save();
+  });
+});
+
+// ══════════ CARD 4: CONTENT-PRINZIP ══════════
+document.getElementById('cpPrinzip').value = strat.contentPrinzip?.prinzip || '';
+document.getElementById('cpFormel').value = strat.contentPrinzip?.erfolgsformel || '';
+document.getElementById('cpFrequenz').value = strat.contentPrinzip?.frequenz || '4x/Woche';
+// Auto-fill from Content-DNA
+try {
+  const dna = JSON.parse(localStorage.getItem('fem_content_dna') || '{}');
+  if (dna.text && !strat.contentPrinzip?.erfolgsformel) {
+    const match = dna.text.match(/CONTENT-SIGNATUR[:\n]*(.*?)(\n\n|$)/s);
+    if (match) { document.getElementById('cpFormel').value = match[1].trim(); strat.contentPrinzip.erfolgsformel = match[1].trim(); save(); }
+  }
+} catch {}
+['cpPrinzip','cpFormel'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    if (!strat.contentPrinzip) strat.contentPrinzip = {};
+    const map = {cpPrinzip:'prinzip',cpFormel:'erfolgsformel'};
+    strat.contentPrinzip[map[id]] = e.target.value; save();
+  });
+});
+document.getElementById('cpFrequenz').addEventListener('change', e => {
+  if (!strat.contentPrinzip) strat.contentPrinzip = {};
+  strat.contentPrinzip.frequenz = e.target.value; save();
+});
+
+// ══════════ CARD 5: ZIELGRUPPE ══════════
+const ZG_DEFAULTS = ['Maklerinnen und Finanzberaterinnen', 'Frauen die in die Versicherungsbranche einsteigen', 'Führungskräfte in Versicherungsunternehmen'];
+if (!strat.zielgruppe || !strat.zielgruppe.length) strat.zielgruppe = [...ZG_DEFAULTS];
+
+function renderZielgruppe() {
+  const c = document.getElementById('zielgruppeList'); c.innerHTML = '';
+  strat.zielgruppe.forEach((z, i) => {
+    const row = document.createElement('div'); row.className = 'dyn-item';
+    row.innerHTML = `<input type="text" value="${z}" placeholder="z.B. Maklerinnen 30-50 Jahre" data-zgi="${i}"><button class="btn-remove" data-zgd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+}
+document.getElementById('zielgruppeList').addEventListener('input', e => {
+  if (e.target.dataset.zgi !== undefined) { strat.zielgruppe[parseInt(e.target.dataset.zgi)] = e.target.value; save(); }
+});
+document.getElementById('zielgruppeList').addEventListener('click', e => {
+  if (e.target.dataset.zgd !== undefined) { strat.zielgruppe.splice(parseInt(e.target.dataset.zgd), 1); save(); renderZielgruppe(); }
+});
+document.getElementById('addZielgruppe').addEventListener('click', () => { strat.zielgruppe.push(''); save(); renderZielgruppe(); });
+renderZielgruppe();
+
+// ══════════ CARD 6: NICHT POSTEN ══════════
+const NP_DEFAULTS = ['Allgemeine Motivationssprüche', 'Zu breite Versicherungsthemen', 'Werbliche Inhalte'];
+let nichtPosten = JSON.parse(localStorage.getItem('fem_nicht_posten') || 'null') || [...NP_DEFAULTS];
+
+function saveNP() { localStorage.setItem('fem_nicht_posten', JSON.stringify(nichtPosten)); save(); }
+function renderNichtPosten() {
+  const c = document.getElementById('nichtPostenList'); c.innerHTML = '';
+  nichtPosten.forEach((item, i) => {
+    const row = document.createElement('div'); row.className = 'dyn-item';
+    row.innerHTML = `<input type="text" value="${item}" placeholder="z.B. Allgemeine Motivationssprüche" data-npi="${i}"><button class="btn-remove" data-npd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+}
+document.getElementById('nichtPostenList').addEventListener('input', e => {
+  if (e.target.dataset.npi !== undefined) { nichtPosten[parseInt(e.target.dataset.npi)] = e.target.value; saveNP(); }
+});
+document.getElementById('nichtPostenList').addEventListener('click', e => {
+  if (e.target.dataset.npd !== undefined) { nichtPosten.splice(parseInt(e.target.dataset.npd), 1); saveNP(); renderNichtPosten(); }
+});
+document.getElementById('addNichtPosten').addEventListener('click', () => { nichtPosten.push(''); saveNP(); renderNichtPosten(); });
+renderNichtPosten();
+
+// ══════════ CARD 7: BRAND VOICE ══════════
+const VOICE_OPTIONS = ['warm', 'klar', 'empowernd', 'direkt', 'fachkundig', 'mutig', 'authentisch', 'praxisnah', 'inspirierend'];
+if (!strat.brandVoice) strat.brandVoice = { badges: [], tonalitaet: '' };
+
+function renderVoiceBadges() {
+  const c = document.getElementById('voiceBadges'); c.innerHTML = '';
+  VOICE_OPTIONS.forEach(v => {
+    const sel = (strat.brandVoice.badges || []).includes(v);
+    const btn = document.createElement('span');
+    btn.className = 'voice-badge' + (sel ? ' selected' : '');
+    btn.textContent = v;
+    btn.addEventListener('click', () => {
+      const idx = strat.brandVoice.badges.indexOf(v);
+      if (idx >= 0) strat.brandVoice.badges.splice(idx, 1); else strat.brandVoice.badges.push(v);
+      save(); renderVoiceBadges();
+    });
+    c.appendChild(btn);
+  });
+}
+document.getElementById('voiceTon').value = strat.brandVoice.tonalitaet || '';
+document.getElementById('voiceTon').addEventListener('input', e => { strat.brandVoice.tonalitaet = e.target.value; save(); });
+renderVoiceBadges();
+
+// ══════════ CARD 8: STRATEGIE-CHECK ══════════
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+// Restore saved check
+const savedCheck = localStorage.getItem('fem_strategie_check');
+if (savedCheck) {
+  try {
+    const d = JSON.parse(savedCheck);
+    document.getElementById('checkOutput').innerHTML = `<div class="check-output">${d.text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('checkActions').style.display = 'flex';
+    if (d.savedAt) document.getElementById('checkTs').textContent = 'Zuletzt: ' + new Date(d.savedAt).toLocaleDateString('de-DE');
+  } catch {}
+}
+
+document.getElementById('stratCheckBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('stratCheckBtn');
+  btn.disabled = true; btn.textContent = '⏳ Wird geprüft...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+        system:`Du bist der FemSurance Strategie-Berater. Analysiere die definierte Strategie und gib konkretes Feedback.
+
+Antworte in diesem Format:
+
+🧠 STRATEGIE-CHECK
+
+STÄRKEN DER STRATEGIE:
+→ [Stärke 1]
+→ [Stärke 2]
+
+LÜCKEN / RISIKEN:
+→ [Lücke 1]
+→ [Lücke 2]
+
+KONSISTENZ-CHECK:
+→ Ziele und Content-Prinzip: [konsistent/inkonsistent] — [Begründung]
+→ Zielgruppe und Tonalität: [konsistent/inkonsistent] — [Begründung]
+
+EMPFEHLUNGEN:
+→ [Empfehlung 1]
+→ [Empfehlung 2]
+
+FAZIT:
+[2-3 Sätze Gesamtbewertung]`,
+        messages:[{role:'user',content:JSON.stringify(strat,null,2)}]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    localStorage.setItem('fem_strategie_check', JSON.stringify({ text, savedAt: new Date().toISOString() }));
+    document.getElementById('checkOutput').innerHTML = `<div class="check-output">${text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('checkActions').style.display = 'flex';
+    document.getElementById('checkTs').textContent = 'Zuletzt: ' + new Date().toLocaleDateString('de-DE');
+  } catch (err) { alert('Fehler: ' + err.message); }
+  btn.disabled = false; btn.textContent = 'Strategie prüfen';
+});
+
+document.getElementById('checkCopy').addEventListener('click', () => {
+  const text = document.querySelector('.check-output')?.textContent || '';
+  navigator.clipboard.writeText(text);
+  const btn = document.getElementById('checkCopy');
+  btn.textContent = 'Kopiert ✓'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('ok'); }, 2000);
+});
+
+// ══════════ EXPORT ══════════
+document.getElementById('btnExport').addEventListener('click', () => {
+  const lines = ['FemSurance Strategie-Board', '═'.repeat(40), ''];
+  lines.push('🎯 ZIELE');
+  lines.push(`Company Page: ${strat.ziele.goal || '–'} Follower`);
+  lines.push(`LinkedIn Gruppe: ${strat.ziele.gruppeGoal || '–'} Mitglieder`);
+  lines.push(`WhatsApp: ${strat.ziele.whatsappGoal || '–'} Mitglieder`);
+  lines.push(`Newsletter: ${strat.ziele.newsletterGoal || '–'} Abonnenten`);
+  lines.push(`Zeitraum: ${strat.ziele.zeitraum || '–'}`);
+  if (strat.ziele.weitere?.length) { strat.ziele.weitere.forEach(z => lines.push(`${z.name}: ${z.aktuell||'–'} / ${z.ziel||'–'}`)); }
+  lines.push('');
+  lines.push('🔍 FOKUS-THEMEN');
+  (strat.fokusThemen || []).forEach(f => lines.push(`→ ${f.thema} (${f.themenwelt || '–'})`));
+  lines.push('');
+  lines.push('🎨 POSITIONIERUNG');
+  lines.push(`Wirken: ${strat.positionierung?.wirken || '–'}`);
+  lines.push(`Nicht wirken: ${strat.positionierung?.nichtWirken || '–'}`);
+  lines.push(`Einzigartig: ${strat.positionierung?.einzigartig || '–'}`);
+  lines.push('');
+  lines.push('✍️ CONTENT-PRINZIP');
+  lines.push(`Prinzip: ${strat.contentPrinzip?.prinzip || '–'}`);
+  lines.push(`Erfolgsformel: ${strat.contentPrinzip?.erfolgsformel || '–'}`);
+  lines.push(`Frequenz: ${strat.contentPrinzip?.frequenz || '–'}`);
+  lines.push('');
+  lines.push('👥 ZIELGRUPPE');
+  (strat.zielgruppe || []).forEach(z => lines.push(`→ ${z}`));
+  lines.push('');
+  lines.push('🚫 NICHT POSTEN');
+  nichtPosten.forEach(n => lines.push(`→ ${n}`));
+  lines.push('');
+  lines.push('🎙️ BRAND VOICE');
+  lines.push(`Badges: ${(strat.brandVoice?.badges || []).join(', ') || '–'}`);
+  lines.push(`Tonalität: ${strat.brandVoice?.tonalitaet || '–'}`);
+  navigator.clipboard.writeText(lines.join('\n'));
+  const btn = document.getElementById('btnExport');
+  btn.textContent = 'Kopiert ✓'; setTimeout(() => { btn.textContent = '📋 Strategie exportieren'; }, 2000);
+});
+
+// Show last saved timestamp
+const savedStrat = localStorage.getItem('fem_strategie');
+if (savedStrat) document.getElementById('saveTs').textContent = 'Strategie geladen';
+</script>
+</body>
+</html>
