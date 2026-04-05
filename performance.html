@@ -277,11 +277,10 @@ body {
 
 /* ── Tabs ── */
 .perf-tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--border); position:relative; z-index:5; }
-.perf-tab { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s; pointer-events:auto; }
-.perf-tab:hover { color:var(--text-primary); background:var(--bg-secondary); }
-.perf-tab.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); background:none; }
+.tab-btn { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s; }
+.tab-btn:hover { color:var(--text-primary); background:var(--bg-secondary); }
+.tab-btn.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); background:none; }
 .tab-content { display:none; }
-.tab-content.active { display:block; }
 /* Report cards */
 .report-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px; }
 .report-stat { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; text-align:center; box-shadow:var(--shadow); }
@@ -403,13 +402,13 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 
   <!-- Tab Navigation -->
   <div class="perf-tabs">
-    <button class="perf-tab active" data-tab="woche">Woche</button>
-    <button class="perf-tab" data-tab="monat">Monat</button>
-    <button class="perf-tab" data-tab="quartal">Quartal</button>
+    <button class="tab-btn active" data-tab="woche">Woche</button>
+    <button class="tab-btn" data-tab="monat">Monat</button>
+    <button class="tab-btn" data-tab="quartal">Quartal</button>
   </div>
 
   <!-- ═══ WOCHE TAB ═══ -->
-  <div class="tab-content active" id="tabWoche">
+  <div class="tab-content" id="tab-woche">
 
   <!-- KPI-Center -->
   <div class="card fade-up">
@@ -688,10 +687,10 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     </div>
   </div>
 
-  </div><!-- /tabWoche -->
+  </div><!-- /tab-woche -->
 
   <!-- ═══ MONAT TAB ═══ -->
-  <div class="tab-content" id="tabMonat">
+  <div class="tab-content" id="tab-monat">
     <div class="card" style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:0;">Monatsübersicht</div>
@@ -716,7 +715,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
   </div>
 
   <!-- ═══ QUARTAL TAB ═══ -->
-  <div class="tab-content" id="tabQuartal">
+  <div class="tab-content" id="tab-quartal">
     <div class="card" style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:0;">Quartalsübersicht</div>
@@ -1697,22 +1696,22 @@ function renderKpiTrackingTable() {
 renderKpiTrackingTable();
 
 // ══════════ TAB NAVIGATION ══════════
-const savedTab = localStorage.getItem('fem_perf_tab') || 'woche';
-function switchTab(tab) {
-  console.log('switchTab:', tab);
-  document.querySelectorAll('.perf-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.querySelectorAll('.tab-content').forEach(c => {
-    const targetId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
-    c.classList.toggle('active', c.id === targetId);
-  });
-  localStorage.setItem('fem_perf_tab', tab);
-  if (tab === 'monat') renderMonth();
-  if (tab === 'quartal') renderQuarter();
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const target = document.getElementById('tab-' + tabName);
+  if (target) target.style.display = 'block';
+  const btn = document.querySelector('[data-tab="' + tabName + '"]');
+  if (btn) btn.classList.add('active');
+  localStorage.setItem('fem_perf_tab', tabName);
+  if (tabName === 'monat') renderMonth();
+  if (tabName === 'quartal') renderQuarter();
 }
-document.querySelectorAll('.perf-tab').forEach(t => {
-  t.addEventListener('click', function() { switchTab(this.dataset.tab); });
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() { switchTab(this.dataset.tab); });
 });
-if (savedTab !== 'woche') switchTab(savedTab);
+const savedTab = localStorage.getItem('fem_perf_tab') || 'woche';
+switchTab(savedTab);
 
 // ── Helpers ──
 const perfHistory = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
