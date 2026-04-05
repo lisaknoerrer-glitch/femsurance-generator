@@ -908,18 +908,63 @@ renderSciInsights();
 function renderHookPerf() {
   const container = document.getElementById('hookPerfContent');
   const hookPerf = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+  let html = '';
+
   if (!Object.keys(hookPerf).length) {
-    container.innerHTML = '<div style="padding:14px; color:var(--text-secondary); font-size:13px;">Noch keine Daten — füge Hook-Typen zu deinen Pipeline-Karten hinzu und trage Performance ein.</div>';
-    return;
+    html += `<div style="padding:16px; color:var(--text-secondary); font-size:13px; line-height:1.6; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:10px;">
+      <strong>Noch keine Daten vorhanden.</strong><br>
+      So funktioniert es: Öffne eine Pipeline-Karte → wähle einen Hook-Typ → veröffentliche den Post → trage die Performance ein → Hook-Daten erscheinen hier automatisch.
+    </div>`;
+  } else {
+    const sorted = Object.entries(hookPerf).map(([typ, d]) => ({ typ, avg: d.count ? d.total / d.count : 0, count: d.count })).sort((a, b) => b.avg - a.avg);
+    html += '<table class="trend-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th></tr></thead><tbody>';
+    sorted.forEach((h, i) => {
+      const cls = h.avg >= 5 ? 'trend-up' : h.avg >= 3 ? 'trend-stable' : 'trend-new';
+      html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up" style="font-size:9px;">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
+    });
+    html += '</tbody></table>';
   }
-  const sorted = Object.entries(hookPerf).map(([typ, d]) => ({ typ, avg: d.count ? d.total / d.count : 0, count: d.count })).sort((a, b) => b.avg - a.avg);
-  let html = '<table class="trend-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th></tr></thead><tbody>';
-  sorted.forEach((h, i) => {
-    const cls = h.avg >= 5 ? 'trend-up' : h.avg >= 3 ? 'trend-stable' : 'trend-new';
-    html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up" style="font-size:9px;">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
-  });
-  html += '</tbody></table>';
+
+  // Manual entry form
+  html += `<div style="margin-top:10px;">
+    <button class="btn-add-row" id="hookManualToggle">+ Hook-Performance manuell eintragen</button>
+    <div id="hookManualForm" style="display:none; margin-top:8px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end;">
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Hook-Typ</div>
+          <select id="hookManualTyp" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
+            <option>Provokation</option><option>Story</option><option>Frage</option><option>Statistik</option><option>Zitat</option><option>Persönlich</option>
+          </select>
+        </div>
+        <div style="min-width:80px;">
+          <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Eng.-Rate %</div>
+          <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
+        </div>
+        <button id="hookManualSave" style="padding:7px 16px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;">Speichern</button>
+      </div>
+    </div>
+  </div>`;
+
   container.innerHTML = html;
+
+  // Toggle manual form
+  document.getElementById('hookManualToggle').addEventListener('click', () => {
+    const form = document.getElementById('hookManualForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Save manual entry
+  document.getElementById('hookManualSave').addEventListener('click', () => {
+    const typ = document.getElementById('hookManualTyp').value;
+    const eng = parseFloat(document.getElementById('hookManualEng').value) || 0;
+    if (!eng) { alert('Bitte Engagement-Rate eintragen.'); return; }
+    const hp = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+    if (!hp[typ]) hp[typ] = { total: 0, count: 0 };
+    hp[typ].total += eng;
+    hp[typ].count++;
+    localStorage.setItem('fem_hook_performance', JSON.stringify(hp));
+    renderHookPerf();
+  });
 }
 document.getElementById('hookPerfToggle').addEventListener('click', () => {
   const body = document.getElementById('hookPerfBody');
@@ -1018,17 +1063,25 @@ function renderPlaybook() {
   const container = document.getElementById('playbookContent');
   container.innerHTML = PB_SECTIONS.map(sec => {
     const items = playbook[sec.key] || [];
-    return `<div class="pb-section ${sec.cls}">
+    return `<div class="pb-section ${sec.cls}" data-pb-sec="${sec.key}">
       <div class="pb-title">${sec.title}</div>
       ${items.map((item, i) => {
         const isNew = typeof item === 'object';
         const text = isNew ? item.text : item;
         return `<div class="pb-item"><span>${text}</span>${isNew ? '<span class="pb-new">🆕 Diese Woche</span>' : ''}<button data-pb-del="${sec.key}_${i}">×</button></div>`;
       }).join('')}
+      <div class="pb-inline-add" data-pb-sec-add="${sec.key}" style="display:none;">
+        <div style="display:flex; gap:6px; margin-top:6px;">
+          <input type="text" class="pb-inline-input" placeholder="Neuer Eintrag..." style="flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
+          <button class="pb-inline-save" style="padding:4px 10px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; cursor:pointer; font-size:12px; font-weight:600;">✓</button>
+          <button class="pb-inline-cancel" style="padding:4px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); cursor:pointer; font-size:12px; color:var(--text-secondary);">×</button>
+        </div>
+      </div>
       <button class="pb-add" data-pb-add="${sec.key}">+ Hinzufügen</button>
     </div>`;
   }).join('');
 
+  // Delete handlers
   container.querySelectorAll('[data-pb-del]').forEach(btn => {
     btn.addEventListener('click', () => {
       const [key, idx] = btn.dataset.pbDel.split('_');
@@ -1036,13 +1089,30 @@ function renderPlaybook() {
       savePlaybook(); renderPlaybook();
     });
   });
+
+  // Add button → show inline input
   container.querySelectorAll('[data-pb-add]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const text = prompt('Neuer Eintrag:');
-      if (!text) return;
-      if (!playbook[btn.dataset.pbAdd]) playbook[btn.dataset.pbAdd] = [];
-      playbook[btn.dataset.pbAdd].push(text);
-      savePlaybook(); renderPlaybook();
+      const key = btn.dataset.pbAdd;
+      btn.style.display = 'none';
+      const form = container.querySelector(`[data-pb-sec-add="${key}"]`);
+      form.style.display = 'block';
+      const input = form.querySelector('.pb-inline-input');
+      input.focus();
+
+      function doSave() {
+        const text = input.value.trim();
+        if (text) {
+          if (!playbook[key]) playbook[key] = [];
+          playbook[key].push(text);
+          savePlaybook();
+        }
+        renderPlaybook();
+      }
+
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') doSave(); });
+      form.querySelector('.pb-inline-save').addEventListener('click', doSave);
+      form.querySelector('.pb-inline-cancel').addEventListener('click', () => renderPlaybook());
     });
   });
 }
