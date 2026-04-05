@@ -261,47 +261,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 
   <div class="page-header fade-up">
     <h1><em>FemSurance</em> Konkurrenzanalyse</h1>
-    <div class="header-meta">Vergleich · Follower-Tracking</div>
-  </div>
-
-  <!-- Hero: FemSurance Progress -->
-  <div class="hero fade-up" id="heroSection">
-    <div class="hero-label">FemSurance Follower-Fortschritt</div>
-    <div class="hero-row">
-      <div class="hero-value" id="heroCurrentVal">1.847</div>
-      <div class="hero-target">Ziel: <span id="heroGoalVal" style="font-weight:600;">2.500</span></div>
-    </div>
-    <div class="hero-track">
-      <div class="hero-fill" id="heroFill" style="width:73.9%"></div>
-    </div>
-    <div class="hero-diff" id="heroDiff">Noch <strong>653</strong> Follower bis zum Ziel · 73,9 % erreicht</div>
-  </div>
-
-  <!-- Competitor Comparison -->
-  <div class="card fade-up">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-      <div class="card-title" style="margin-bottom:0;">Vergleichs-Accounts</div>
-      <span class="save-indicator" id="saveIndicator">Gespeichert</span>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="comp-table" id="compTable">
-        <thead>
-          <tr>
-            <th>Account-Name</th>
-            <th>Follower</th>
-            <th>Ziel</th>
-            <th>Eng.-Rate (%)</th>
-            <th>Posts/Woche</th>
-            <th>Vergleich zu FemSurance</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="compBody"></tbody>
-      </table>
-    </div>
-    <div class="btn-row">
-      <button class="btn-add" id="btnAdd">+ Account hinzufügen</button>
-    </div>
+    <div class="header-meta">Wachstum · Content · Gap-Analyse</div>
   </div>
 
   <!-- Wachstums-Vergleich -->
@@ -388,206 +348,9 @@ function loadData() {
 
 function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  const indicator = document.getElementById('saveIndicator');
-  indicator.classList.add('show');
-  setTimeout(() => indicator.classList.remove('show'), 1500);
 }
 
-function getBarColor(index) {
-  const colors = ['#E91E8C', '#7C3AED', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626', '#8b5cf6'];
-  return colors[index % colors.length];
-}
-
-function updateHero(current, goal) {
-  const pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
-  const remaining = Math.max(goal - current, 0);
-  document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
-  document.getElementById('heroGoalVal').textContent = goal > 0 ? goal.toLocaleString('de-DE') : '–';
-  document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
-  document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
-}
-
-function renderTable() {
-  const data = loadData();
-  const tbody = document.getElementById('compBody');
-  tbody.innerHTML = '';
-
-  const femCurrent = data.femFollower;
-  const currentGoal = data.goal;
-  const allFollowers = [femCurrent, ...data.accounts.map(a => parseInt(a.followers) || 0)];
-  const maxFollowers = Math.max(...allFollowers, currentGoal);
-
-  // FemSurance row
-  {
-    const barW = maxFollowers > 0 ? (femCurrent / maxFollowers * 100) : 0;
-    const tr = document.createElement('tr');
-    tr.className = 'comp-highlight';
-    tr.innerHTML = `
-      <td class="comp-name-cell">FemSurance</td>
-      <td><input type="number" id="femFollowerInput" value="${femCurrent}" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td style="font-size:inherit; font-weight:500;">${currentGoal ? currentGoal.toLocaleString('de-DE') : '–'}</td>
-      <td>—</td>
-      <td>—</td>
-      <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
-      <td></td>
-    `;
-    tbody.appendChild(tr);
-  }
-
-  // LinkedIn Gruppe row
-  {
-    const trG = document.createElement('tr');
-    trG.className = 'comp-highlight';
-    trG.innerHTML = `
-      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ LinkedIn Gruppe</td>
-      <td><input type="number" id="gruppeMembers" value="${data.gruppeMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td style="font-size:inherit;">${data.gruppeGoal ? parseInt(data.gruppeGoal).toLocaleString('de-DE') : '–'}</td>
-      <td>—</td>
-      <td><input type="number" id="gruppePostsPerWeek" value="${data.gruppePostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
-      <td></td>
-      <td></td>
-    `;
-    tbody.appendChild(trG);
-  }
-
-  // WhatsApp Community row
-  {
-    const trW = document.createElement('tr');
-    trW.className = 'comp-highlight';
-    trW.innerHTML = `
-      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ WhatsApp Community</td>
-      <td><input type="number" id="whatsappMembers" value="${data.whatsappMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td style="font-size:inherit;">${data.whatsappGoal ? parseInt(data.whatsappGoal).toLocaleString('de-DE') : '–'}</td>
-      <td>—</td>
-      <td><input type="number" id="whatsappPostsPerWeek" value="${data.whatsappPostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
-      <td></td>
-      <td></td>
-    `;
-    tbody.appendChild(trW);
-  }
-
-  // Newsletter row
-  {
-    const trN = document.createElement('tr');
-    trN.className = 'comp-highlight';
-    trN.innerHTML = `
-      <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ Newsletter</td>
-      <td><input type="number" id="newsletterSubscribers" value="${data.newsletterSubscribers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td style="font-size:inherit;">${data.newsletterGoal ? parseInt(data.newsletterGoal).toLocaleString('de-DE') : '–'}</td>
-      <td>—</td>
-      <td>—</td>
-      <td></td>
-      <td></td>
-    `;
-    tbody.appendChild(trN);
-  }
-
-  // Competitor rows
-  data.accounts.forEach((acc, i) => {
-    const followers = parseInt(acc.followers) || 0;
-    const barW = maxFollowers > 0 ? (followers / maxFollowers * 100) : 0;
-    const diff = followers - femCurrent;
-    const diffText = followers ? (diff > 0 ? `+${diff.toLocaleString('de-DE')} voraus` : diff < 0 ? `${Math.abs(diff).toLocaleString('de-DE')} weniger` : 'Gleichauf') : '—';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="text" value="${acc.name}" placeholder="Account-Name" data-i="${i}" data-field="name"></td>
-      <td><input type="number" value="${acc.followers}" placeholder="0" data-i="${i}" data-field="followers"></td>
-      <td><input type="number" value="${acc.goal || ''}" placeholder="0" data-i="${i}" data-field="goal" style="width:80px;"></td>
-      <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
-      <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
-      <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
-      <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button> ${acc.name ? `<button class="ca-btn" data-analyse="${i}" style="margin-left:4px;">📊</button>` : ''}</td>
-    `;
-    tbody.appendChild(tr);
-    // Content analyse row
-    if (acc.name) {
-      const trA = document.createElement('tr');
-      trA.innerHTML = `<td colspan="8"><div class="comp-analyse" id="compAnalyse_${i}" data-acc-name="${acc.name}"></div></td>`;
-      tbody.appendChild(trA);
-    }
-  });
-
-  updateHero(femCurrent, currentGoal);
-
-  // Bind FemSurance follower input
-  document.getElementById('femFollowerInput').addEventListener('input', e => {
-    const data = loadData();
-    data.femFollower = parseInt(e.target.value) || 0;
-    saveData(data);
-    updateHero(data.femFollower, data.goal);
-    clearTimeout(window._renderTimer);
-    window._renderTimer = setTimeout(renderTable, 600);
-  });
-
-  // Bind Gruppe inputs (members + posts only, goals from strategie.html)
-  ['gruppeMembers', 'gruppePostsPerWeek'].forEach(field => {
-    document.getElementById(field).addEventListener('input', e => {
-      const data = loadData();
-      data[field] = parseInt(e.target.value) || 0;
-      saveData(data);
-    });
-  });
-
-  // Bind WhatsApp inputs (members + posts only)
-  ['whatsappMembers', 'whatsappPostsPerWeek'].forEach(field => {
-    document.getElementById(field).addEventListener('input', e => {
-      const data = loadData();
-      data[field] = parseInt(e.target.value) || 0;
-      saveData(data);
-    });
-  });
-
-  // Bind Newsletter input (subscribers only)
-  document.getElementById('newsletterSubscribers').addEventListener('input', e => {
-    const data = loadData();
-    data.newsletterSubscribers = parseInt(e.target.value) || 0;
-    saveData(data);
-  });
-}
-
-// Event delegation for competitor inputs
-document.getElementById('compBody').addEventListener('input', e => {
-  if (e.target.tagName === 'INPUT' && e.target.dataset.i !== undefined) {
-    const data = loadData();
-    const i = parseInt(e.target.dataset.i);
-    data.accounts[i][e.target.dataset.field] = e.target.value;
-    saveData(data);
-    clearTimeout(window._renderTimer);
-    window._renderTimer = setTimeout(renderTable, 600);
-  }
-});
-
-// Remove button
-document.getElementById('compBody').addEventListener('click', e => {
-  const btn = e.target.closest('.btn-remove');
-  if (btn) {
-    const data = loadData();
-    data.accounts.splice(parseInt(btn.dataset.i), 1);
-    saveData(data);
-    renderTable();
-  }
-});
-
-// Add button
-document.getElementById('btnAdd').addEventListener('click', () => {
-  const data = loadData();
-  data.accounts.push({ name: '', followers: '', engagement: '', postsWeek: '' });
-  saveData(data);
-  renderTable();
-});
-
-// Validate negative inputs
-document.getElementById('compBody').addEventListener('input', e => {
-  if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
-    const val = parseFloat(e.target.value);
-    if (val < 0) {
-      e.target.style.borderColor = '#dc2626';
-      e.target.title = 'Bitte positive Zahlen eintragen';
-    } else {
-      e.target.style.borderColor = ''; e.target.title = '';
-    }
-  }
-});
+// (Hero + table removed — goals managed in strategie.html)
 
 // Sync goals from strategie.html on page load
 try {
@@ -602,8 +365,6 @@ try {
     if (changed) saveData(data);
   }
 } catch {}
-
-renderTable();
 
 // ══════════ WACHSTUMS-VERGLEICH ══════════
 let growthData = JSON.parse(localStorage.getItem('fem_growth_history') || '{"accounts":[]}');
@@ -773,19 +534,7 @@ renderGrowth();
 // ═══════���══ CONTENT-ANALYSE PRO WETTBEWERBER ══════════
 const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
 
-// Toggle analyse sections
-document.getElementById('compBody').addEventListener('click', e => {
-  const aBtn = e.target.closest('[data-analyse]');
-  if (!aBtn) return;
-  const idx = aBtn.dataset.analyse;
-  const section = document.getElementById('compAnalyse_' + idx);
-  if (!section) return;
-  section.classList.toggle('open');
-  if (section.classList.contains('open') && !section.dataset.loaded) {
-    section.dataset.loaded = 'true';
-    renderCompAnalyse(section, section.dataset.accName);
-  }
-});
+// Content-Analyse is now accessible via growth accounts
 
 function renderCompAnalyse(container, accName) {
   const content = JSON.parse(localStorage.getItem('fem_konkurrenz_content') || '{}');
