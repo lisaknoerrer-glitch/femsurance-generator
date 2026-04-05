@@ -269,7 +269,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     <div class="hero-label">FemSurance Follower-Fortschritt</div>
     <div class="hero-row">
       <div class="hero-value" id="heroCurrentVal">1.847</div>
-      <div class="hero-target">Ziel: <input type="number" id="heroGoalInput" value="2500" style="font-weight:600;font-size:inherit;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:2px 8px;width:90px;background:rgba(255,255,255,0.15);color:#fff;"></div>
+      <div class="hero-target">Ziel: <span id="heroGoalVal" style="font-weight:600;">2.500</span></div>
     </div>
     <div class="hero-track">
       <div class="hero-fill" id="heroFill" style="width:73.9%"></div>
@@ -383,7 +383,7 @@ function updateHero(current, goal) {
   const pct = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
   const remaining = Math.max(goal - current, 0);
   document.getElementById('heroCurrentVal').textContent = current.toLocaleString('de-DE');
-  document.getElementById('heroGoalInput').value = goal;
+  document.getElementById('heroGoalVal').textContent = goal > 0 ? goal.toLocaleString('de-DE') : '–';
   document.getElementById('heroFill').style.width = pct.toFixed(1) + '%';
   document.getElementById('heroDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> Follower bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
 }
@@ -406,7 +406,7 @@ function renderTable() {
     tr.innerHTML = `
       <td class="comp-name-cell">FemSurance</td>
       <td><input type="number" id="femFollowerInput" value="${femCurrent}" style="font-weight:700;font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td><input type="number" id="femGoalInput" value="${currentGoal}" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td style="font-size:inherit; font-weight:500;">${currentGoal ? currentGoal.toLocaleString('de-DE') : '–'}</td>
       <td>—</td>
       <td>—</td>
       <td><div class="comp-bar-track"><div class="comp-bar-fill" style="width:${barW}%; background:${getBarColor(0)}"></div></div></td>
@@ -422,7 +422,7 @@ function renderTable() {
     trG.innerHTML = `
       <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ LinkedIn Gruppe</td>
       <td><input type="number" id="gruppeMembers" value="${data.gruppeMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td><input type="number" id="gruppeGoalInput" value="${data.gruppeGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td style="font-size:inherit;">${data.gruppeGoal ? parseInt(data.gruppeGoal).toLocaleString('de-DE') : '–'}</td>
       <td>—</td>
       <td><input type="number" id="gruppePostsPerWeek" value="${data.gruppePostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
       <td></td>
@@ -438,7 +438,7 @@ function renderTable() {
     trW.innerHTML = `
       <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ WhatsApp Community</td>
       <td><input type="number" id="whatsappMembers" value="${data.whatsappMembers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td><input type="number" id="whatsappGoalInput" value="${data.whatsappGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td style="font-size:inherit;">${data.whatsappGoal ? parseInt(data.whatsappGoal).toLocaleString('de-DE') : '–'}</td>
       <td>—</td>
       <td><input type="number" id="whatsappPostsPerWeek" value="${data.whatsappPostsPerWeek || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:70px;"></td>
       <td></td>
@@ -454,7 +454,7 @@ function renderTable() {
     trN.innerHTML = `
       <td style="padding-left:24px;font-size:12px;font-weight:500;color:var(--text-secondary)">└ Newsletter</td>
       <td><input type="number" id="newsletterSubscribers" value="${data.newsletterSubscribers || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:100px;"></td>
-      <td><input type="number" id="newsletterGoalInput" value="${data.newsletterGoal || ''}" placeholder="0" style="font-size:inherit;border:1px solid #E91E8C;border-radius:4px;padding:4px 8px;width:80px;"></td>
+      <td style="font-size:inherit;">${data.newsletterGoal ? parseInt(data.newsletterGoal).toLocaleString('de-DE') : '–'}</td>
       <td>—</td>
       <td>—</td>
       <td></td>
@@ -500,15 +500,7 @@ function renderTable() {
     window._renderTimer = setTimeout(renderTable, 600);
   });
 
-  // Bind FemSurance goal input
-  document.getElementById('femGoalInput').addEventListener('input', e => {
-    const data = loadData();
-    data.goal = parseInt(e.target.value) || 0;
-    saveData(data);
-    updateHero(data.femFollower, data.goal);
-  });
-
-  // Bind Gruppe inputs
+  // Bind Gruppe inputs (members + posts only, goals from strategie.html)
   ['gruppeMembers', 'gruppePostsPerWeek'].forEach(field => {
     document.getElementById(field).addEventListener('input', e => {
       const data = loadData();
@@ -516,13 +508,8 @@ function renderTable() {
       saveData(data);
     });
   });
-  document.getElementById('gruppeGoalInput').addEventListener('input', e => {
-    const data = loadData();
-    data.gruppeGoal = parseInt(e.target.value) || 0;
-    saveData(data);
-  });
 
-  // Bind WhatsApp inputs
+  // Bind WhatsApp inputs (members + posts only)
   ['whatsappMembers', 'whatsappPostsPerWeek'].forEach(field => {
     document.getElementById(field).addEventListener('input', e => {
       const data = loadData();
@@ -530,21 +517,11 @@ function renderTable() {
       saveData(data);
     });
   });
-  document.getElementById('whatsappGoalInput').addEventListener('input', e => {
-    const data = loadData();
-    data.whatsappGoal = parseInt(e.target.value) || 0;
-    saveData(data);
-  });
 
-  // Bind Newsletter inputs
+  // Bind Newsletter input (subscribers only)
   document.getElementById('newsletterSubscribers').addEventListener('input', e => {
     const data = loadData();
     data.newsletterSubscribers = parseInt(e.target.value) || 0;
-    saveData(data);
-  });
-  document.getElementById('newsletterGoalInput').addEventListener('input', e => {
-    const data = loadData();
-    data.newsletterGoal = parseInt(e.target.value) || 0;
     saveData(data);
   });
 }
@@ -580,24 +557,6 @@ document.getElementById('btnAdd').addEventListener('click', () => {
   renderTable();
 });
 
-// Hero goal input — sync with table
-document.getElementById('heroGoalInput').addEventListener('input', e => {
-  const data = loadData();
-  const newGoal = parseInt(e.target.value) || 0;
-  if (newGoal < 0) { e.target.style.borderColor = '#dc2626'; return; }
-  if (newGoal > 0 && newGoal < data.femFollower) {
-    e.target.style.outline = '2px solid #a16207';
-    e.target.title = 'Ziel ist niedriger als aktueller Stand';
-  } else {
-    e.target.style.outline = ''; e.target.title = '';
-  }
-  data.goal = newGoal;
-  saveData(data);
-  updateHero(data.femFollower, data.goal);
-  const tableGoal = document.getElementById('femGoalInput');
-  if (tableGoal) tableGoal.value = data.goal;
-});
-
 // Validate negative inputs
 document.getElementById('compBody').addEventListener('input', e => {
   if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
@@ -610,6 +569,20 @@ document.getElementById('compBody').addEventListener('input', e => {
     }
   }
 });
+
+// Sync goals from strategie.html on page load
+try {
+  const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
+  if (strat.ziele) {
+    const data = loadData();
+    let changed = false;
+    if (strat.ziele.goal && parseInt(strat.ziele.goal) > 0) { data.goal = parseInt(strat.ziele.goal); changed = true; }
+    if (strat.ziele.gruppeGoal && parseInt(strat.ziele.gruppeGoal) > 0) { data.gruppeGoal = parseInt(strat.ziele.gruppeGoal); changed = true; }
+    if (strat.ziele.whatsappGoal && parseInt(strat.ziele.whatsappGoal) > 0) { data.whatsappGoal = parseInt(strat.ziele.whatsappGoal); changed = true; }
+    if (strat.ziele.newsletterGoal && parseInt(strat.ziele.newsletterGoal) > 0) { data.newsletterGoal = parseInt(strat.ziele.newsletterGoal); changed = true; }
+    if (changed) saveData(data);
+  }
+} catch {}
 
 renderTable();
 
