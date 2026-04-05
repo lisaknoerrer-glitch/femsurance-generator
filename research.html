@@ -319,6 +319,8 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
           <th>Hook-Winkel</th>
           <th>Format</th>
           <th>Potenzial</th>
+          <th>Posts</th>
+          <th>Ø Eng.</th>
           <th></th>
         </tr>
       </thead>
@@ -403,6 +405,14 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     </div>
   </div>
 
+  <!-- Hook-Performance -->
+  <div class="card fade-up">
+    <div class="card-title" style="cursor:pointer;" id="hookPerfToggle">🎣 Hook-Performance <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div id="hookPerfBody">
+      <div id="hookPerfContent"></div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -418,17 +428,43 @@ const DEFAULT_THEMES = [
 let themes = JSON.parse(localStorage.getItem('fem_research_themes') || 'null') || [...DEFAULT_THEMES];
 function saveThemes() { localStorage.setItem('fem_research_themes', JSON.stringify(themes)); }
 
+function getThemePerf(thema) {
+  try {
+    const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+    const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const kw = thema.toLowerCase().split(/\s+/);
+    const matches = cards.filter(c => c.col === 'publish' && !c.archivedOutline && kw.some(w => w.length > 3 && c.title.toLowerCase().includes(w)));
+    if (!matches.length) return { posts: 0, avgEng: 0, bestFormat: '' };
+    let engSum = 0, engCount = 0, formats = {};
+    matches.forEach(c => {
+      const p = perf[c.id] || {};
+      const imp = parseFloat(p.impressions) || 0;
+      const r = parseFloat(p.reaktionen) || 0, k = parseFloat(p.kommentare) || 0, s = parseFloat(p.shares) || 0;
+      const eng = imp > 0 ? (r + k + s) / imp * 100 : 0;
+      if (eng > 0) { engSum += eng; engCount++; }
+      const fmt = c.format || 'Company Page';
+      formats[fmt] = (formats[fmt] || 0) + (eng || 1);
+    });
+    const bestFormat = Object.entries(formats).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+    return { posts: matches.length, avgEng: engCount ? engSum / engCount : 0, bestFormat };
+  } catch { return { posts: 0, avgEng: 0, bestFormat: '' }; }
+}
+
 function renderThemes() {
   const tbody = document.getElementById('trendBody');
   tbody.innerHTML = '';
   themes.forEach((t, i) => {
     const stars = '★'.repeat(t.potenzial || 1) + '☆'.repeat(3 - (t.potenzial || 1));
+    const tp = getThemePerf(t.thema);
+    const engCls = tp.avgEng >= 5 ? 'trend-up' : tp.avgEng >= 3 ? 'trend-stable' : tp.posts ? 'trend-new' : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="trend-name">${t.thema}${t.badge ? ` <span class="trend-badge trend-up" style="font-size:9px;">${t.badge}</span>` : ''}</td>
       <td style="font-size:12px; color:var(--text-secondary);">${t.hook || '–'}</td>
       <td style="font-size:12px;">${t.format || '–'}</td>
       <td><span class="potenzial" data-i="${i}">${stars}</span></td>
+      <td style="font-size:12px; text-align:center;">${tp.posts || '–'}</td>
+      <td>${tp.posts ? `<span class="trend-badge ${engCls}" style="font-size:10px;">${tp.avgEng.toFixed(1)}%</span>` : '–'}</td>
       <td class="trend-actions">
         <button title="Bearbeiten" data-edit="${i}">✏️</button>
         <button title="Löschen" data-del="${i}">🗑️</button>
@@ -809,6 +845,29 @@ document.getElementById('insightsToggle').addEventListener('click', () => {
 });
 
 renderSciInsights();
+
+// ══════════ HOOK-PERFORMANCE ══════════
+function renderHookPerf() {
+  const container = document.getElementById('hookPerfContent');
+  const hookPerf = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+  if (!Object.keys(hookPerf).length) {
+    container.innerHTML = '<div style="padding:14px; color:var(--text-secondary); font-size:13px;">Noch keine Daten — füge Hook-Typen zu deinen Pipeline-Karten hinzu und trage Performance ein.</div>';
+    return;
+  }
+  const sorted = Object.entries(hookPerf).map(([typ, d]) => ({ typ, avg: d.count ? d.total / d.count : 0, count: d.count })).sort((a, b) => b.avg - a.avg);
+  let html = '<table class="trend-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th></tr></thead><tbody>';
+  sorted.forEach((h, i) => {
+    const cls = h.avg >= 5 ? 'trend-up' : h.avg >= 3 ? 'trend-stable' : 'trend-new';
+    html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up" style="font-size:9px;">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+document.getElementById('hookPerfToggle').addEventListener('click', () => {
+  const body = document.getElementById('hookPerfBody');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+});
+renderHookPerf();
 
 // ══════════ AUTO-PUSH TO PIPELINE ══════════
 document.getElementById('autoPushBtn').addEventListener('click', async () => {

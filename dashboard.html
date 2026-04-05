@@ -593,6 +593,26 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
+  <!-- ── Content-DNA ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
+      <span class="insight-timestamp" id="dnaTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="dnaBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
+      </div>
+      <div id="dnaOutput"></div>
+      <div class="insight-actions" id="dnaActions" style="display:none;">
+        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Stats Row ── -->
   <div class="stats-row">
 
@@ -1382,6 +1402,101 @@ Sei ehrlich und direkt. Keine generischen Aussagen.`,
     const btn = document.getElementById('posCopy');
     btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
     setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  // ══════════ CONTENT-DNA ══════════
+  document.getElementById('dnaHeader').addEventListener('click', () => {
+    document.getElementById('dnaHeader').classList.toggle('collapsed');
+    document.getElementById('dnaBody').classList.toggle('collapsed');
+  });
+  const savedDNA = localStorage.getItem('fem_content_dna');
+  if (savedDNA) { try { const d = JSON.parse(savedDNA); showDNA(d.text, d.savedAt); } catch {} }
+
+  function showDNA(text, savedAt) {
+    document.getElementById('dnaOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('dnaActions').style.display = 'flex';
+    if (savedAt) { const d = new Date(savedAt); document.getElementById('dnaTimestamp').textContent = `Zuletzt: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`; }
+    document.getElementById('dnaHeader').classList.remove('collapsed');
+    document.getElementById('dnaBody').classList.remove('collapsed');
+  }
+
+  document.getElementById('dnaGenBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('dnaGenBtn');
+    btn.disabled = true; btn.textContent = '🧬 Wird analysiert...';
+    try {
+      const parts = [];
+      const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      const topPosts = Object.entries(perf).filter(([,v]) => v.impressions).sort((a,b) => {
+        const engA = (parseFloat(a[1].reaktionen)||0)/(parseFloat(a[1].impressions)||1);
+        const engB = (parseFloat(b[1].reaktionen)||0)/(parseFloat(b[1].impressions)||1);
+        return engB - engA;
+      }).slice(0, 10);
+      if (topPosts.length) parts.push('## Top 10 Posts\n' + topPosts.map(([,v]) => `Imp: ${v.impressions}, Reak: ${v.reaktionen||0}, Komm: ${v.kommentare||0}`).join('\n'));
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
+      const ls = localStorage.getItem('fem_lernstand'); if (ls) parts.push('Lernstand: ' + ls.slice(0, 300));
+      const hp = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+      if (Object.keys(hp).length) parts.push('Hook-Performance: ' + Object.entries(hp).map(([t,d]) => `${t}: Ø ${(d.total/d.count).toFixed(1)}% (${d.count}x)`).join(', '));
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+          system:`Du bist der FemSurance Content-DNA-Analyst. Analysiere die erfolgreichsten Posts und erkenne das Muster das FemSurance einzigartig macht.
+
+Antworte in diesem Format:
+
+🧬 FEMSURANCE CONTENT-DNA
+
+DEINE ERFOLGSFORMEL:
+→ [Eigenschaft 1] + [Eigenschaft 2] + [Eigenschaft 3]
+
+DEIN UNVERWECHSELBARER STIL:
+→ Ton: [Beschreibung]
+→ Struktur: [Beschreibung]
+→ Themen: [Beschreibung]
+
+DEINE STÄRKSTEN ELEMENTE:
+→ [Element 1]: funktioniert weil [Grund]
+→ [Element 2]: funktioniert weil [Grund]
+
+DEINE CONTENT-SIGNATUR:
+[1-2 Sätze die FemSurance Content unverwechselbar beschreiben]
+
+EMPFEHLUNG:
+→ Nutze [Element] öfter
+→ Reduziere [Element]
+
+Analysiere NUR echte Muster aus den Daten.`,
+          messages:[{role:'user',content:parts.join('\n\n')||'Noch keine Daten.'}]
+        })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      const text = data.content[0].text;
+      localStorage.setItem('fem_content_dna', JSON.stringify({ text, savedAt: new Date().toISOString() }));
+      showDNA(text, new Date().toISOString());
+    } catch (err) { alert('Fehler: ' + err.message); }
+    btn.disabled = false; btn.textContent = '🧬 DNA analysieren';
+  });
+
+  document.getElementById('dnaCopy').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.querySelector('#dnaOutput .insight-output')?.textContent || '');
+    const btn = document.getElementById('dnaCopy');
+    btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  document.getElementById('dnaToPlaybook').addEventListener('click', () => {
+    const text = document.querySelector('#dnaOutput .insight-output')?.textContent || '';
+    const lines = text.split('\n').filter(l => l.startsWith('→')).map(l => l.replace('→ ', '').trim()).filter(Boolean);
+    if (lines.length) {
+      const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+      if (!pb.regeln) pb.regeln = [];
+      lines.slice(0, 3).forEach(l => { if (!pb.regeln.find(r => (typeof r === 'object' ? r.text : r) === l)) pb.regeln.push({ text: l, neu: true }); });
+      localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    }
+    const btn = document.getElementById('dnaToPlaybook');
+    btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '→ Playbook übernehmen'; btn.classList.remove('success'); }, 2000);
   });
 
   document.getElementById('posToWP').addEventListener('click', () => {
