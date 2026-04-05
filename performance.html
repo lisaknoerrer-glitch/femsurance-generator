@@ -275,6 +275,55 @@ body {
 .pp-modal-actions .pp-save { border:none; background:var(--fem-pink); color:#fff; }
 .pp-modal-actions .pp-close { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
 
+/* ── Tabs ── */
+.perf-tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--border); }
+.perf-tab { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s; }
+.perf-tab:hover { color:var(--text-primary); }
+.perf-tab.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+/* Report cards */
+.report-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px; }
+.report-stat { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; text-align:center; box-shadow:var(--shadow); }
+.report-stat .rs-val { font-size:24px; font-weight:700; color:var(--fem-pink); }
+.report-stat .rs-label { font-size:11px; color:var(--text-secondary); margin-top:4px; }
+.report-kanal { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+.report-kanal > div { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; box-shadow:var(--shadow); }
+.report-kanal .rk-title { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:8px; }
+.report-kanal .rk-val { font-size:18px; font-weight:700; color:var(--fem-pink); }
+.report-kanal .rk-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+.report-top-post { padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; font-size:12.5px; }
+.report-top-post:last-child { border-bottom:none; }
+.report-top-post .rtp-rank { font-size:16px; font-weight:700; color:var(--fem-pink); width:24px; }
+.report-top-post .rtp-title { flex:1; font-weight:600; }
+.report-top-post .rtp-stat { color:var(--text-secondary); font-size:11px; }
+.report-btn { padding:10px 20px; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; margin-right:8px; }
+.report-btn.pink { background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; }
+.report-btn.outline { background:var(--bg-card); border:1px solid var(--border); color:var(--text-secondary); }
+.report-btn:hover { opacity:0.9; }
+.report-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.report-textarea { width:100%; min-height:120px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:'Courier New',monospace; font-size:12px; line-height:1.5; resize:vertical; margin-top:10px; }
+.report-textarea:focus { outline:none; border-color:var(--fem-pink); }
+
+/* ── Themen Analyse ── */
+.analyse-table { width:100%; border-collapse:collapse; font-size:12px; }
+.analyse-table thead th { text-align:left; padding:8px 10px; font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; border-bottom:2px solid var(--border); }
+.analyse-table tbody td { padding:7px 10px; border-bottom:1px solid var(--border); }
+.analyse-table tbody tr:hover { background:var(--bg-secondary); }
+.analyse-table .at-name { font-weight:600; }
+.analyse-table .at-val { font-weight:700; }
+.analyse-table .at-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; }
+.at-green { background:#dcfce7; color:#16a34a; }
+.at-yellow { background:#fef9c3; color:#a16207; }
+.at-red { background:#fef2f2; color:#dc2626; }
+.analyse-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:13px; }
+.analyse-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.analyse-card { background:var(--bg-secondary); border-radius:var(--radius-sm); padding:14px; text-align:center; }
+.analyse-card .ac-title { font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:6px; }
+.analyse-card .ac-val { font-size:22px; font-weight:700; color:var(--fem-pink); }
+.analyse-card .ac-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+.analyse-result { margin-top:12px; padding:14px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:13px; line-height:1.6; white-space:pre-wrap; }
+
 .kpi-section-row td {
   padding:10px 10px 4px !important; font-size:10px !important; font-weight:600 !important;
   color:var(--fem-pink) !important; text-transform:uppercase; letter-spacing:0.03em;
@@ -320,8 +369,18 @@ body {
 
   <div class="page-header fade-up">
     <h1><em>FemSurance</em> Performance</h1>
-    <div class="header-meta">LinkedIn Analytics · KW 14</div>
+    <div class="header-meta">LinkedIn Analytics</div>
   </div>
+
+  <!-- Tab Navigation -->
+  <div class="perf-tabs fade-up">
+    <button class="perf-tab active" data-tab="woche">Woche</button>
+    <button class="perf-tab" data-tab="monat">Monat</button>
+    <button class="perf-tab" data-tab="quartal">Quartal</button>
+  </div>
+
+  <!-- ═══ WOCHE TAB ═══ -->
+  <div class="tab-content active" id="tabWoche">
 
   <!-- KPI-Center -->
   <div class="card fade-up">
@@ -516,6 +575,12 @@ body {
     </div>
   </div>
 
+  <!-- Themen & Format Analyse -->
+  <div class="card fade-up">
+    <div class="card-title">Themen &amp; Format Analyse</div>
+    <div id="analyseContent"></div>
+  </div>
+
   <!-- Letzte 20 Posts (aus Pipeline) -->
   <div class="card fade-up">
     <div class="card-title">Letzte 20 Posts</div>
@@ -576,57 +641,147 @@ body {
     </div>
   </div>
 
+  </div><!-- /tabWoche -->
+
+  <!-- ═══ MONAT TAB ═══ -->
+  <div class="tab-content" id="tabMonat">
+    <div class="card" style="margin-bottom:18px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:0;">Monatsübersicht</div>
+        <select id="monthSelect" style="padding:6px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;"></select>
+      </div>
+      <div class="report-summary" id="monthSummary"></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Kanal-Vergleich</div>
+      <div class="report-kanal" id="monthKanale"></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Top 3 Posts des Monats</div>
+      <div id="monthTopPosts"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Monats-Learnings</div>
+      <button class="report-btn pink" id="monthLearnBtn">🧠 Monats-Learnings generieren</button>
+      <button class="report-btn outline" id="monthCopyBtn">📋 Report kopieren</button>
+      <textarea class="report-textarea" id="monthLearnings" placeholder="Learnings erscheinen hier..."></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ QUARTAL TAB ═══ -->
+  <div class="tab-content" id="tabQuartal">
+    <div class="card" style="margin-bottom:18px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:0;">Quartalsübersicht</div>
+        <select id="quarterSelect" style="padding:6px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;"></select>
+      </div>
+      <div class="report-summary" id="quarterSummary"></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Kanal-Vergleich</div>
+      <div class="report-kanal" id="quarterKanale"></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Wachstum gegen Ziel</div>
+      <div id="quarterGoals"></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Top 3 Posts des Quartals</div>
+      <div id="quarterTopPosts"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Quartals-Learnings</div>
+      <button class="report-btn pink" id="quarterLearnBtn">🧠 Quartals-Learnings generieren</button>
+      <button class="report-btn outline" id="quarterCopyBtn">📋 Report kopieren</button>
+      <textarea class="report-textarea" id="quarterLearnings" placeholder="Learnings erscheinen hier..."></textarea>
+    </div>
+  </div>
+
 </main>
 
 <script>
-// ── Load channel base values from localStorage ──
-let chartBaseFollower = 1847, chartBaseGruppe = 120, chartBaseWhatsapp = 45;
-try {
-  const raw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
-  if (!Array.isArray(raw)) {
-    chartBaseFollower = parseInt(raw.femFollower) || chartBaseFollower;
-    chartBaseGruppe = parseInt(raw.gruppeMembers) || chartBaseGruppe;
-    chartBaseWhatsapp = parseInt(raw.whatsappMembers) || chartBaseWhatsapp;
-  }
-} catch {}
+// ── Chart system with real data from fem_performance_history ──
 
-// ── Generic Chart Drawing ──
-function drawGrowthChart(svgId, gradId, base, growthPct, days) {
+function getHistoryDataPoints(valuePaths) {
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+  const points = [];
+
+  history.forEach(h => {
+    let val = 0;
+    for (const path of valuePaths) {
+      const parts = path.split('.');
+      let v = h;
+      for (const p of parts) { if (v) v = v[p]; }
+      if (v && parseFloat(v) > 0) { val = parseFloat(v); break; }
+    }
+    if (val > 0 && h.savedAt) {
+      points.push({ date: new Date(h.savedAt), value: val, kw: h.kw || '' });
+    }
+  });
+
+  // Add current value from konkurrenz data as latest point
+  const currentMap = {
+    'follower.gesamt': parseInt(Array.isArray(kd) ? 0 : kd.femFollower) || 0,
+    'follower.gruppe_members': parseInt(Array.isArray(kd) ? 0 : kd.gruppeMembers) || 0,
+    'follower.whatsapp_members': parseInt(Array.isArray(kd) ? 0 : kd.whatsappMembers) || 0,
+  };
+  const currentKey = valuePaths[0];
+  const currentVal = currentMap[currentKey] || 0;
+  if (currentVal > 0 && !points.find(p => p.date.toDateString() === new Date().toDateString())) {
+    points.push({ date: new Date(), value: currentVal, kw: 'Aktuell' });
+  }
+
+  points.sort((a, b) => a.date - b.date);
+  return points;
+}
+
+function drawRealChart(svgId, gradId, dataPoints, days) {
   const svg = document.getElementById(svgId);
   const vb = svg.getAttribute('viewBox').split(' ').map(Number);
   const W = vb[2], H = vb[3];
   const padT = 14, padB = 22, padL = 36, padR = 6;
-  const startVal = Math.round(base * (1 - growthPct));
-  const data = [];
-  for (let i = days; i >= 0; i--) {
-    const progress = 1 - (i / days);
-    const trend = startVal + (base - startVal) * progress;
-    const noise = Math.sin(i * 0.5) * (base * 0.005) + (Math.random() - 0.5) * (base * 0.008);
-    data.push(Math.round(trend + noise));
+
+  // Filter by date range
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
+  const filtered = dataPoints.filter(p => p.date >= cutoff);
+
+  if (filtered.length < 2) {
+    svg.innerHTML = `<text x="${W/2}" y="${H/2}" text-anchor="middle" style="font-size:9px; fill:var(--text-secondary); font-family:Inter,sans-serif;">Noch zu wenig Daten</text>`;
+    return;
   }
-  const minV = Math.min(...data) - Math.max(Math.round(base * 0.01), 2);
-  const maxV = Math.max(...data) + Math.max(Math.round(base * 0.01), 2);
-  const xStep = (W - padL - padR) / (data.length - 1);
-  const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / (maxV - minV));
+
+  const values = filtered.map(p => p.value);
+  const minV = Math.min(...values) - Math.max(Math.round(Math.min(...values) * 0.02), 1);
+  const maxV = Math.max(...values) + Math.max(Math.round(Math.max(...values) * 0.02), 1);
+  const range = maxV - minV || 1;
+  const xStep = (W - padL - padR) / (filtered.length - 1);
+  const yScale = v => padT + (H - padT - padB) * (1 - (v - minV) / range);
 
   let gridLines = '';
-  const gridSteps = W > 400 ? 5 : 3;
+  const gridSteps = 3;
   for (let i = 0; i <= gridSteps; i++) {
-    const v = minV + (maxV - minV) * (i / gridSteps);
+    const v = minV + range * (i / gridSteps);
     const y = yScale(v);
     gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" class="chart-grid"/>`;
-    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${Math.round(v)}</text>`;
+    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:8px">${Math.round(v)}</text>`;
   }
-  const labelCount = Math.min(days <= 7 ? 7 : W > 400 ? 6 : 4, data.length);
-  const labelStep = Math.floor((data.length - 1) / labelCount);
-  for (let i = 0; i < data.length; i += labelStep) {
+  // X labels
+  const labelCount = Math.min(filtered.length, 4);
+  const labelStep = Math.max(1, Math.floor((filtered.length - 1) / labelCount));
+  for (let i = 0; i < filtered.length; i += labelStep) {
     const x = padL + i * xStep;
-    const d = new Date(); d.setDate(d.getDate() - (data.length - 1 - i));
-    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:${W > 400 ? 10 : 8}px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
+    const d = filtered[i].date;
+    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:8px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
   }
-  const points = data.map((v, i) => `${padL + i * xStep},${yScale(v)}`);
-  const line = points.join(' ');
-  const area = `${padL},${H - padB} ${line} ${padL + (data.length - 1) * xStep},${H - padB}`;
+
+  const pts = filtered.map((p, i) => `${padL + i * xStep},${yScale(p.value)}`);
+  const line = pts.join(' ');
+  const area = `${padL},${H - padB} ${line} ${padL + (filtered.length - 1) * xStep},${H - padB}`;
+
+  // Draw dots on data points
+  const dots = filtered.map((p, i) => `<circle cx="${padL + i * xStep}" cy="${yScale(p.value)}" r="2.5" fill="#E91E8C"/>`).join('');
+
   svg.innerHTML = `
     <defs>
       <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
@@ -636,29 +791,42 @@ function drawGrowthChart(svgId, gradId, base, growthPct, days) {
     </defs>
     ${gridLines}
     <polygon points="${area}" fill="url(#${gradId})"/>
-    <polyline points="${line}" fill="none" stroke="#E91E8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${line}" fill="none" stroke="#E91E8C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}
   `;
 }
 
+// Data point paths for each chart
+const CHART_PATHS = {
+  follower: ['follower.gesamt', 'follower.follower_gesamt', 'follower_summary.follower_gesamt'],
+  gruppe: ['follower.gruppeMembers', 'follower.gruppe_members'],
+  whatsapp: ['follower.whatsappMembers', 'follower.whatsapp_members']
+};
+
+// Load data
+const dpFollower = getHistoryDataPoints(CHART_PATHS.follower);
+const dpGruppe = getHistoryDataPoints(CHART_PATHS.gruppe);
+const dpWhatsapp = getHistoryDataPoints(CHART_PATHS.whatsapp);
+
 function drawAllCharts(days) {
-  drawGrowthChart('followerChart', 'areaGradF', chartBaseFollower, 0.08, days);
-  drawGrowthChart('gruppeChart', 'areaGradG', chartBaseGruppe, 0.15, days);
-  drawGrowthChart('whatsappChart', 'areaGradW', chartBaseWhatsapp, 0.12, days);
+  drawRealChart('followerChart', 'areaGradF', dpFollower, days);
+  drawRealChart('gruppeChart', 'areaGradG', dpGruppe, days);
+  drawRealChart('whatsappChart', 'areaGradW', dpWhatsapp, days);
 }
 
-// ── Filter Buttons (each chart has its own bar) ──
-function setupFilter(filterId, svgId, gradId, base, growthPct) {
+// Filter buttons
+function setupFilter(filterId, svgId, gradId, dp) {
   document.getElementById(filterId).addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
     document.getElementById(filterId).querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    drawGrowthChart(svgId, gradId, base, growthPct, parseInt(btn.dataset.days));
+    drawRealChart(svgId, gradId, dp, parseInt(btn.dataset.days));
   });
 }
-setupFilter('chartFilter', 'followerChart', 'areaGradF', chartBaseFollower, 0.08);
-setupFilter('chartFilterGruppe', 'gruppeChart', 'areaGradG', chartBaseGruppe, 0.15);
-setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', chartBaseWhatsapp, 0.12);
+setupFilter('chartFilter', 'followerChart', 'areaGradF', dpFollower);
+setupFilter('chartFilterGruppe', 'gruppeChart', 'areaGradG', dpGruppe);
+setupFilter('chartFilterWhatsapp', 'whatsappChart', 'areaGradW', dpWhatsapp);
 
 drawAllCharts(90);
 
@@ -677,28 +845,68 @@ function sparkSVG(val) {
 }
 
 function renderPostTable() {
+  // Merge posts from pipeline + performance history
   const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
-  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline).slice(0, 20);
-  const tbody = document.getElementById('ppBody');
+  const pipelinePosts = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
 
-  if (!published.length) {
+  // Collect history posts with KPIs
+  const historyPosts = [];
+  history.forEach(h => {
+    if (h.posts) h.posts.forEach(hp => {
+      if (hp.titel && !historyPosts.find(x => x.titel === hp.titel)) {
+        historyPosts.push({ ...hp, weekKey: h.weekKey });
+      }
+    });
+  });
+
+  // Merge: pipeline cards + history posts (deduplicate by title)
+  const allPosts = [];
+  const seen = new Set();
+  pipelinePosts.forEach(card => {
+    allPosts.push({ type: 'card', card, title: card.title });
+    seen.add(card.title);
+  });
+  historyPosts.forEach(hp => {
+    if (!seen.has(hp.titel)) {
+      allPosts.push({ type: 'history', hp, title: hp.titel });
+      seen.add(hp.titel);
+    }
+  });
+
+  const tbody = document.getElementById('ppBody');
+  if (!allPosts.length) {
     tbody.innerHTML = `<tr><td colspan="11" class="pp-empty">Noch keine veröffentlichten Posts. Verschiebe Posts im Kanban zu „Veröffentlicht".</td></tr>`;
     return;
   }
 
   tbody.innerHTML = '';
-  published.forEach(card => {
-    // Check by card ID first, then by title match
-    let p = postPerf[card.id] || {};
+  allPosts.slice(0, 20).forEach(item => {
+    const cardId = item.card ? item.card.id : 'hist_' + item.title;
+    const format = item.card ? item.card.format : 'Company Page';
+    const due = item.card ? (item.card.due || '–') : (item.hp?.weekKey || '–');
+    const title = item.title;
+
+    // Find KPIs: fem_post_performance by ID/title, then history post data
+    let p = postPerf[cardId] || {};
     if (!p.impressions) {
-      const titleKey = 'title_' + card.title;
+      const titleKey = 'title_' + title;
       if (postPerf[titleKey]) p = postPerf[titleKey];
-      // Also check partial title matches from wochenplan
       for (const [k, v] of Object.entries(postPerf)) {
-        if (k.startsWith('title_') && card.title.includes(k.replace('title_', '')) && v.impressions) {
-          p = v; postPerf[card.id] = v; savePostPerf(); break;
+        if (k.startsWith('title_') && title.includes(k.replace('title_', '')) && v.impressions) {
+          p = v; break;
         }
       }
+    }
+    // Fallback to history post data
+    if (!p.impressions && item.hp) {
+      p = {
+        impressions: item.hp.impressions, reaktionen: item.hp.reaktionen,
+        kommentare: item.hp.kommentare, shares: item.hp.geteilte_beitraege,
+        klicks: item.hp.klicks, ind_impressions: item.hp.individuelle_impressions,
+        engagements: item.hp.engagements, follower: item.hp.gewonnene_follower,
+        besucher: item.hp.generierte_seitenbesucher
+      };
     }
     const hasKPIs = !!(p.impressions || p.reaktionen || p.klicks);
     const imp = parseFloat(p.impressions) || 0;
@@ -709,19 +917,26 @@ function renderPostTable() {
     const eng = imp > 0 ? Math.round((reak + komm + shares) / imp * 10000) / 100 : 0;
     const ctr = imp > 0 ? Math.round(klicks / imp * 10000) / 100 : 0;
     const engClass = eng >= 5 ? 'green' : eng >= 3 ? 'yellow' : 'red';
-    const badgeClass = card.format === 'Company Page' ? 'pp-badge-cp' : card.format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
+    const badgeClass = format === 'Company Page' ? 'pp-badge-cp' : format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
+
+    // Link + performance badge
+    const postUrl = item.card?.postUrl || '';
+    const linkIcon = postUrl ? ` <a href="${postUrl}" target="_blank" style="color:var(--fem-pink); text-decoration:none;" title="Post öffnen">🔗</a>` : '';
+    const perfBadge = hasKPIs
+      ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>'
+      : `<span class="extract-badge" style="margin-left:4px; background:#fef9c3; color:#a16207; cursor:pointer;" data-perf-open="${cardId}">📊 Performance</span>`;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="pp-title" data-id="${card.id}">${card.title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
-      <td><span class="pp-badge ${badgeClass}">${card.format}</span></td>
-      <td>${card.due || '–'}</td>
-      <td><input value="${p.impressions || ''}" data-id="${card.id}" data-k="impressions"></td>
-      <td><input value="${p.reaktionen || ''}" data-id="${card.id}" data-k="reaktionen"></td>
-      <td><input value="${p.kommentare || ''}" data-id="${card.id}" data-k="kommentare"></td>
-      <td><input value="${p.shares || ''}" data-id="${card.id}" data-k="shares"></td>
+      <td><span class="pp-title" data-id="${cardId}">${title}</span>${linkIcon}${perfBadge}</td>
+      <td><span class="pp-badge ${badgeClass}">${format}</span></td>
+      <td>${due}</td>
+      <td><input value="${p.impressions || ''}" data-id="${cardId}" data-k="impressions"></td>
+      <td><input value="${p.reaktionen || ''}" data-id="${cardId}" data-k="reaktionen"></td>
+      <td><input value="${p.kommentare || ''}" data-id="${cardId}" data-k="kommentare"></td>
+      <td><input value="${p.shares || ''}" data-id="${cardId}" data-k="shares"></td>
       <td><span class="pp-eng ${imp > 0 ? engClass : ''}">${imp > 0 ? eng.toFixed(1) + '%' : '–'}</span></td>
-      <td><input value="${p.klicks || ''}" data-id="${card.id}" data-k="klicks"></td>
+      <td><input value="${p.klicks || ''}" data-id="${cardId}" data-k="klicks"></td>
       <td>${imp > 0 ? ctr.toFixed(1) + '%' : '–'}</td>
       <td><div class="pp-spark">${sparkSVG(imp)}</div></td>
     `;
@@ -742,12 +957,13 @@ document.getElementById('ppBody').addEventListener('input', e => {
   }
 });
 
-// Title click → open modal
+// Title or perf-badge click → open modal
 let ppActiveId = null;
 document.getElementById('ppBody').addEventListener('click', e => {
+  const perfOpen = e.target.closest('[data-perf-open]');
   const title = e.target.closest('.pp-title');
-  if (!title) return;
-  ppActiveId = title.dataset.id;
+  if (!title && !perfOpen) return;
+  ppActiveId = perfOpen ? perfOpen.dataset.perfOpen : title.dataset.id;
   const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
   const card = cards.find(c => String(c.id) === String(ppActiveId));
   if (!card) return;
@@ -802,6 +1018,105 @@ document.getElementById('ppModal').addEventListener('click', e => {
 });
 
 renderPostTable();
+
+// ══════════ THEMEN & FORMAT ANALYSE ══════════
+function renderAnalyse() {
+  const container = document.getElementById('analyseContent');
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
+  const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+
+  // Build post dataset with KPIs
+  const dataset = published.map(c => {
+    const p = perf[c.id] || perf['title_' + c.title] || {};
+    return {
+      title: c.title, format: c.format || 'Company Page',
+      imp: parseFloat(p.impressions) || 0,
+      eng: (() => { const i=parseFloat(p.impressions)||0, r=parseFloat(p.reaktionen)||0, k=parseFloat(p.kommentare)||0, s=parseFloat(p.shares)||0; return i > 0 ? (r+k+s)/i*100 : 0; })(),
+      reaktionen: parseFloat(p.reaktionen) || 0,
+      hookType: c.hookType || '',
+    };
+  }).filter(d => d.imp > 0);
+
+  if (dataset.length < 3) {
+    container.innerHTML = '<div class="analyse-empty">Noch zu wenig Daten — mindestens 3 Posts mit Impressions benötigt.</div>';
+    return;
+  }
+
+  // ── Kanal-Vergleich ──
+  const kanale = {};
+  dataset.forEach(d => {
+    if (!kanale[d.format]) kanale[d.format] = { posts: 0, impSum: 0, engSum: 0, best: null };
+    const k = kanale[d.format];
+    k.posts++; k.impSum += d.imp; k.engSum += d.eng;
+    if (!k.best || d.imp > k.best.imp) k.best = d;
+  });
+
+  let kanalHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin-bottom:8px;">Kanal-Vergleich</div><div class="analyse-grid">';
+  ['Company Page', 'Gruppe', 'WhatsApp'].forEach(fmt => {
+    const k = kanale[fmt];
+    if (k) {
+      kanalHtml += `<div class="analyse-card"><div class="ac-title">${fmt}</div><div class="ac-val">${Math.round(k.impSum / k.posts).toLocaleString('de-DE')}</div><div class="ac-sub">Ø Impressions · ${k.posts} Posts</div><div class="ac-sub">Ø ${(k.engSum / k.posts).toFixed(1)}% Engagement</div><div class="ac-sub" style="font-size:10px; margin-top:4px;">Best: ${k.best.title.slice(0,30)}...</div></div>`;
+    } else {
+      kanalHtml += `<div class="analyse-card"><div class="ac-title">${fmt}</div><div class="ac-val">–</div><div class="ac-sub">Keine Posts</div></div>`;
+    }
+  });
+  kanalHtml += '</div>';
+
+  // ── Format-Performance Table ──
+  let formatHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Format-Performance</div>';
+  formatHtml += '<table class="analyse-table"><thead><tr><th>Format</th><th>Posts</th><th>Ø Impressions</th><th>Ø Engagement</th><th>Bester Post</th></tr></thead><tbody>';
+  Object.entries(kanale).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([fmt, k], i) => {
+    const avgEng = k.engSum / k.posts;
+    const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
+    formatHtml += `<tr><td class="at-name">${fmt}${i === 0 ? ' <span class="at-badge at-green">⭐ Bestes Format</span>' : ''}</td><td>${k.posts}</td><td>${Math.round(k.impSum/k.posts).toLocaleString('de-DE')}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td style="font-size:11px;">${k.best.title.slice(0,35)}</td></tr>`;
+  });
+  formatHtml += '</tbody></table>';
+
+  // ── Themen (extract keywords from titles) ──
+  const themes = {};
+  dataset.forEach(d => {
+    // Simple keyword extraction: split title, take meaningful words
+    const words = d.title.replace(/[·:–—\|]/g, ' ').split(/\s+/).filter(w => w.length > 4);
+    const theme = words.slice(0, 2).join(' ') || d.title.slice(0, 20);
+    if (!themes[theme]) themes[theme] = { posts: 0, impSum: 0, engSum: 0 };
+    themes[theme].posts++; themes[theme].impSum += d.imp; themes[theme].engSum += d.eng;
+  });
+
+  let themenHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Themen-Performance</div>';
+  const sortedThemes = Object.entries(themes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts));
+  themenHtml += '<table class="analyse-table"><thead><tr><th>Thema</th><th>Posts</th><th>Ø Impressions</th><th>Ø Engagement</th></tr></thead><tbody>';
+  sortedThemes.slice(0, 8).forEach(([theme, t], i) => {
+    const avgEng = t.engSum / t.posts;
+    const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
+    themenHtml += `<tr><td class="at-name">${theme}${i === 0 ? ' <span class="at-badge at-green">⭐ Bestes Thema</span>' : ''}</td><td>${t.posts}</td><td>${Math.round(t.impSum/t.posts).toLocaleString('de-DE')}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td></tr>`;
+  });
+  themenHtml += '</tbody></table>';
+
+  // ── KI-Analyse Button ──
+  const analyseBtn = `<div style="margin-top:16px;"><button class="report-btn pink" id="formatAnalyseBtn">🧠 Format-Analyse generieren</button></div><div id="formatAnalyseResult"></div>`;
+
+  container.innerHTML = kanalHtml + formatHtml + themenHtml + analyseBtn;
+
+  // KI Analyse handler
+  document.getElementById('formatAnalyseBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('formatAnalyseBtn');
+    btn.disabled = true; btn.textContent = 'Wird analysiert...';
+    try {
+      const prompt = `Analysiere diese FemSurance Post-Performance:\n\nKanäle:\n${Object.entries(kanale).map(([f,k]) => `${f}: ${k.posts} Posts, Ø ${Math.round(k.impSum/k.posts)} Imp., Ø ${(k.engSum/k.posts).toFixed(1)}% Eng.`).join('\n')}\n\nThemen:\n${sortedThemes.slice(0,5).map(([t,v]) => `${t}: ${v.posts} Posts, Ø ${(v.engSum/v.posts).toFixed(1)}% Eng.`).join('\n')}\n\nGib Empfehlungen: Welcher Kanal funktioniert am besten? Welche Themen sollten nächste Woche im Fokus stehen? Was weglassen?`;
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': PERF_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: 'Du bist der FemSurance Performance-Analyst. Analysiere die Daten und gib konkrete Empfehlungen für nächste Woche. Schreibe auf Deutsch, warm und klar. Keine Floskeln.', messages: [{ role: 'user', content: prompt }] })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      document.getElementById('formatAnalyseResult').innerHTML = `<div class="analyse-result">${data.content[0].text}</div>`;
+    } catch (err) { alert('Fehler: ' + err.message); }
+    btn.disabled = false; btn.textContent = '🧠 Format-Analyse generieren';
+  });
+}
+renderAnalyse();
 
 // ── Reichweiten-Ziel + Kanal-Blöcke from localStorage ──
 try {
@@ -1106,29 +1421,21 @@ if (kpiAnalytics) setKpiValues(kpiAnalytics);
 
 // ══════════ KPI TRACKING TABLE ══════════
 const KPI_DEFS = [
-  { section: 'Post-Ebene' },
-  { key: 'post_impressions', label: 'Impressions', defaultTarget: 2000, paths: ['post.impressions', 'post_analytics.impressions', 'post_impressions'] },
-  { key: 'post_eng_rate', label: 'Engagement-Rate %', defaultTarget: 5, paths: ['post.engagement_rate_pct', 'post_analytics.engagement_rate_pct', 'post_eng_rate'], pct: true },
-  { key: 'post_klicks', label: 'Klicks', defaultTarget: 100, paths: ['post.klicks', 'post_analytics.klicks', 'post_klicks'] },
-  { key: 'post_ctr', label: 'CTR %', defaultTarget: 5, paths: ['post.ctr_pct', 'post_analytics.ctr_pct', 'post_ctr'], pct: true },
-  { key: 'post_reaktionen', label: 'Reaktionen', defaultTarget: 50, paths: ['post.reaktionen', 'post_analytics.reaktionen', 'post_reaktionen'] },
-  { key: 'post_kommentare', label: 'Kommentare', defaultTarget: 10, paths: ['post.kommentare', 'post_analytics.kommentare', 'post_kommentare'] },
-  { key: 'post_shares', label: 'Shares', defaultTarget: 5, paths: ['post.shares', 'post_analytics.shares', 'post_shares'] },
   { section: 'Inhalte (letzte 30 Tage)' },
-  { key: 'site_impressions', label: 'Impressions (letzte 30 Tage)', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
-  { key: 'site_reaktionen', label: 'Reaktionen (letzte 30 Tage)', defaultTarget: 200, paths: ['site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
-  { key: 'site_kommentare', label: 'Kommentare (letzte 30 Tage)', defaultTarget: 30, paths: ['site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
-  { key: 'site_shares', label: 'Direkt geteilte Beiträge (letzte 30 Tage)', defaultTarget: 15, paths: ['site.shares', 'content_summary.shares', 'site_shares'] },
+  { key: 'inhalte_impressions', label: 'Impressions', defaultTarget: 8000, paths: ['inhalte_30d.impressions', 'site.impressions', 'content_summary.impressions', 'site_impressions'] },
+  { key: 'inhalte_reaktionen', label: 'Reaktionen', defaultTarget: 200, paths: ['inhalte_30d.reaktionen', 'site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
+  { key: 'inhalte_kommentare', label: 'Kommentare', defaultTarget: 30, paths: ['inhalte_30d.kommentare', 'site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
+  { key: 'inhalte_shares', label: 'Direkt geteilte Beiträge', defaultTarget: 15, paths: ['inhalte_30d.geteilte_beitraege', 'site.shares', 'content_summary.shares', 'site_shares'] },
   { section: 'Besucher:innen' },
-  { key: 'visitor_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
-  { key: 'visitor_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
-  { key: 'visitor_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
+  { key: 'besucher_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['besucher.seitenaufrufe', 'visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
+  { key: 'besucher_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['besucher.individuelle_besucher', 'visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
+  { key: 'besucher_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['besucher.klicks_eigener_button', 'visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
   { section: 'Follower:innen' },
-  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
-  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
-  { key: 'follower_premium', label: 'Via Premium-Einladung', defaultTarget: 5, paths: ['follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
+  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.gesamt', 'follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
+  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_30d', 'follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+  { key: 'follower_premium', label: 'Neue via Premium-Einladung', defaultTarget: 5, paths: ['follower.neue_premium', 'follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
   { section: 'Seiten-Suche (letzte 7 Tage)' },
-  { key: 'search_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['search.seitensuchen', 'search_summary.seitensuchen', 'search.suchanzeigen', 'search_summary.suchanzeigen', 'search_seitensuchen'] },
+  { key: 'suche_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['suche_7d.seitensuchen', 'search.seitensuchen', 'search_summary.seitensuchen', 'search_seitensuchen'] },
 ];
 
 function getNestedVal(obj, path) {
@@ -1207,6 +1514,254 @@ function renderKpiTrackingTable() {
   });
 }
 renderKpiTrackingTable();
+
+// ══════════ TAB NAVIGATION ══════════
+const savedTab = localStorage.getItem('fem_perf_tab') || 'woche';
+function switchTab(tab) {
+  document.querySelectorAll('.perf-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1)));
+  localStorage.setItem('fem_perf_tab', tab);
+  if (tab === 'monat') renderMonth();
+  if (tab === 'quartal') renderQuarter();
+}
+document.querySelectorAll('.perf-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+if (savedTab !== 'woche') switchTab(savedTab);
+
+// ── Helpers ──
+const perfHistory = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+function getVal(entry, paths) {
+  for (const p of paths) {
+    const parts = p.split('.');
+    let v = entry;
+    for (const k of parts) { if (v) v = v[k]; }
+    if (v && parseFloat(v) > 0) return parseFloat(v);
+  }
+  return 0;
+}
+
+function filterByMonth(year, month) {
+  return perfHistory.filter(h => {
+    if (!h.savedAt) return false;
+    const d = new Date(h.savedAt);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+}
+
+function filterByQuarter(year, q) {
+  const startMonth = (q - 1) * 3;
+  return perfHistory.filter(h => {
+    if (!h.savedAt) return false;
+    const d = new Date(h.savedAt);
+    return d.getFullYear() === year && d.getMonth() >= startMonth && d.getMonth() < startMonth + 3;
+  });
+}
+
+function aggregateEntries(entries) {
+  let imp = 0, reak = 0, komm = 0, shares = 0, postCount = 0, followerStart = 0, followerEnd = 0;
+  let gruppeStart = 0, gruppeEnd = 0, waStart = 0, waEnd = 0;
+  const allPosts = [];
+
+  entries.forEach((e, i) => {
+    imp += getVal(e, ['inhalte_30d.impressions']);
+    reak += getVal(e, ['inhalte_30d.reaktionen']);
+    komm += getVal(e, ['inhalte_30d.kommentare']);
+    shares += getVal(e, ['inhalte_30d.geteilte_beitraege']);
+    const fol = getVal(e, ['follower.gesamt', 'follower.follower_gesamt']);
+    const gr = getVal(e, ['follower.gruppeMembers', 'follower.gruppe_members']);
+    const wa = getVal(e, ['follower.whatsappMembers', 'follower.whatsapp_members']);
+    if (i === 0) { followerStart = fol; gruppeStart = gr; waStart = wa; }
+    followerEnd = fol || followerEnd; gruppeEnd = gr || gruppeEnd; waEnd = wa || waEnd;
+    (e.posts || []).forEach(p => { allPosts.push(p); postCount++; });
+  });
+
+  const engRates = allPosts.map(p => parseFloat(p.engagement_rate) || 0).filter(v => v > 0);
+  const avgEng = engRates.length ? (engRates.reduce((a,b) => a + b, 0) / engRates.length) : 0;
+  const topPosts = [...allPosts].sort((a,b) => (parseFloat(b.impressions)||0) - (parseFloat(a.impressions)||0)).slice(0, 3);
+
+  return { imp, reak, komm, shares, postCount, followerStart, followerEnd, gruppeStart, gruppeEnd, waStart, waEnd, avgEng, topPosts, newFollower: followerEnd - followerStart };
+}
+
+function renderSummary(containerId, agg) {
+  document.getElementById(containerId).innerHTML = `
+    <div class="report-stat"><div class="rs-val">${Math.round(agg.imp).toLocaleString('de-DE')}</div><div class="rs-label">Gesamt-Impressions</div></div>
+    <div class="report-stat"><div class="rs-val">${agg.avgEng.toFixed(1)}%</div><div class="rs-label">Ø Engagement-Rate</div></div>
+    <div class="report-stat"><div class="rs-val">+${Math.max(agg.newFollower, 0)}</div><div class="rs-label">Neue Follower</div></div>
+    <div class="report-stat"><div class="rs-val">${agg.postCount}</div><div class="rs-label">Posts</div></div>
+  `;
+}
+
+function renderKanale(containerId, agg) {
+  document.getElementById(containerId).innerHTML = `
+    <div>
+      <div class="rk-title">LinkedIn Company Page</div>
+      <div class="rk-val">${agg.followerEnd ? agg.followerEnd.toLocaleString('de-DE') : '–'}</div>
+      <div class="rk-sub">Follower${agg.newFollower > 0 ? ' (+' + agg.newFollower + ')' : ''}</div>
+      <div class="rk-sub">${Math.round(agg.imp).toLocaleString('de-DE')} Impressions</div>
+    </div>
+    <div>
+      <div class="rk-title">LinkedIn Gruppe</div>
+      <div class="rk-val">${agg.gruppeEnd ? agg.gruppeEnd.toLocaleString('de-DE') : '–'}</div>
+      <div class="rk-sub">Mitglieder${agg.gruppeEnd - agg.gruppeStart > 0 ? ' (+' + (agg.gruppeEnd - agg.gruppeStart) + ')' : ''}</div>
+    </div>
+    <div>
+      <div class="rk-title">WhatsApp Community</div>
+      <div class="rk-val">${agg.waEnd ? agg.waEnd.toLocaleString('de-DE') : '–'}</div>
+      <div class="rk-sub">Mitglieder${agg.waEnd - agg.waStart > 0 ? ' (+' + (agg.waEnd - agg.waStart) + ')' : ''}</div>
+    </div>
+  `;
+}
+
+function renderTopPosts(containerId, posts) {
+  const el = document.getElementById(containerId);
+  if (!posts.length) { el.innerHTML = '<div style="padding:14px; color:var(--text-secondary); font-size:13px;">Keine Posts in diesem Zeitraum.</div>'; return; }
+  el.innerHTML = posts.map((p, i) => `
+    <div class="report-top-post">
+      <div class="rtp-rank">${i + 1}</div>
+      <div class="rtp-title">${p.titel || '–'}</div>
+      <div class="rtp-stat">${parseFloat(p.impressions) ? Math.round(parseFloat(p.impressions)).toLocaleString('de-DE') + ' Imp.' : ''} ${p.engagement_rate ? '· ' + p.engagement_rate + '%' : ''}</div>
+    </div>
+  `).join('');
+}
+
+// ── MONAT ──
+function populateMonthSelect() {
+  const sel = document.getElementById('monthSelect');
+  const now = new Date();
+  sel.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    sel.innerHTML += `<option value="${d.getFullYear()}-${d.getMonth()}">${MONTHS_DE[d.getMonth()]} ${d.getFullYear()}</option>`;
+  }
+  sel.addEventListener('change', renderMonth);
+}
+
+function renderMonth() {
+  const [year, month] = document.getElementById('monthSelect').value.split('-').map(Number);
+  const entries = filterByMonth(year, month);
+  const agg = aggregateEntries(entries);
+  renderSummary('monthSummary', agg);
+  renderKanale('monthKanale', agg);
+  renderTopPosts('monthTopPosts', agg.topPosts);
+  // Restore learnings
+  const saved = JSON.parse(localStorage.getItem('fem_monthly_learnings') || '{}');
+  document.getElementById('monthLearnings').value = saved[`${year}-${month}`] || '';
+}
+populateMonthSelect();
+
+document.getElementById('monthLearnBtn').addEventListener('click', async () => {
+  const [year, month] = document.getElementById('monthSelect').value.split('-').map(Number);
+  const entries = filterByMonth(year, month);
+  const agg = aggregateEntries(entries);
+  const btn = document.getElementById('monthLearnBtn');
+  btn.disabled = true; btn.textContent = 'Wird analysiert...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': PERF_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, system: 'Analysiere diese Monatsdaten und extrahiere die wichtigsten Learnings für FemSurance. Was hat funktioniert? Was nicht? Was sollte nächsten Monat getestet werden? Schreibe auf Deutsch, warm und klar.',
+        messages: [{ role: 'user', content: `${MONTHS_DE[month]} ${year}\nImpressions: ${agg.imp}\nEngagement: ${agg.avgEng.toFixed(1)}%\nPosts: ${agg.postCount}\nNeue Follower: ${agg.newFollower}\nTop-Posts:\n${agg.topPosts.map(p => `- ${p.titel}: ${p.impressions} Imp., ${p.engagement_rate}% Eng.`).join('\n')}` }]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    document.getElementById('monthLearnings').value = text;
+    const saved = JSON.parse(localStorage.getItem('fem_monthly_learnings') || '{}');
+    saved[`${year}-${month}`] = text;
+    localStorage.setItem('fem_monthly_learnings', JSON.stringify(saved));
+  } catch (err) { alert('Fehler: ' + err.message); }
+  btn.disabled = false; btn.textContent = '🧠 Monats-Learnings generieren';
+});
+
+document.getElementById('monthCopyBtn').addEventListener('click', () => {
+  const [year, month] = document.getElementById('monthSelect').value.split('-').map(Number);
+  const agg = aggregateEntries(filterByMonth(year, month));
+  const text = `FemSurance Monatsreport – ${MONTHS_DE[month]} ${year}\n${'─'.repeat(40)}\nImpressions: ${Math.round(agg.imp).toLocaleString('de-DE')}\nØ Engagement-Rate: ${agg.avgEng.toFixed(1)}%\nNeue Follower: +${agg.newFollower}\nPosts: ${agg.postCount}\n\nTop-Posts:\n${agg.topPosts.map((p,i) => `${i+1}. ${p.titel} – ${p.impressions} Imp.`).join('\n')}\n\nLearnings:\n${document.getElementById('monthLearnings').value || '–'}`;
+  navigator.clipboard.writeText(text);
+  const btn = document.getElementById('monthCopyBtn');
+  btn.textContent = 'Kopiert ✓'; setTimeout(() => { btn.textContent = '📋 Report kopieren'; }, 2000);
+});
+
+// ── QUARTAL ──
+function populateQuarterSelect() {
+  const sel = document.getElementById('quarterSelect');
+  const now = new Date();
+  sel.innerHTML = '';
+  const curQ = Math.ceil((now.getMonth() + 1) / 3);
+  for (let i = 0; i < 4; i++) {
+    let q = curQ - i, y = now.getFullYear();
+    while (q < 1) { q += 4; y--; }
+    sel.innerHTML += `<option value="${y}-${q}">Q${q} ${y}</option>`;
+  }
+  sel.addEventListener('change', renderQuarter);
+}
+
+function renderQuarter() {
+  const [year, q] = document.getElementById('quarterSelect').value.split('-').map(Number);
+  const entries = filterByQuarter(year, q);
+  const agg = aggregateEntries(entries);
+  renderSummary('quarterSummary', agg);
+  renderKanale('quarterKanale', agg);
+  renderTopPosts('quarterTopPosts', agg.topPosts);
+
+  // Goals progress
+  const targets = JSON.parse(localStorage.getItem('fem_kpi_targets') || '{}');
+  const goalData = [
+    { label: 'Company Page Follower', current: agg.followerEnd, target: parseInt(targets.follower_gesamt) || 2500 },
+    { label: 'LinkedIn Gruppe', current: agg.gruppeEnd, target: parseInt(targets.besucher_unique) || 500 },
+    { label: 'WhatsApp Community', current: agg.waEnd, target: parseInt(targets.follower_premium) || 200 },
+  ];
+  document.getElementById('quarterGoals').innerHTML = goalData.map(g => {
+    const pct = g.target > 0 ? Math.min((g.current / g.target) * 100, 100) : 0;
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+        <span style="font-weight:600;">${g.label}</span>
+        <span style="color:var(--text-secondary);">${g.current ? g.current.toLocaleString('de-DE') : '–'} / ${g.target.toLocaleString('de-DE')}</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct.toFixed(1)}%;"></div></div>
+    </div>`;
+  }).join('');
+
+  const saved = JSON.parse(localStorage.getItem('fem_quarterly_learnings') || '{}');
+  document.getElementById('quarterLearnings').value = saved[`${year}-Q${q}`] || '';
+}
+populateQuarterSelect();
+
+document.getElementById('quarterLearnBtn').addEventListener('click', async () => {
+  const [year, q] = document.getElementById('quarterSelect').value.split('-').map(Number);
+  const entries = filterByQuarter(year, q);
+  const agg = aggregateEntries(entries);
+  const btn = document.getElementById('quarterLearnBtn');
+  btn.disabled = true; btn.textContent = 'Wird analysiert...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': PERF_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, system: 'Analysiere diese Quartalsdaten und extrahiere die wichtigsten Learnings für FemSurance. Bestes Thema, bestes Format, stärkster Kanal. Was hat funktioniert? Was nicht? Was sollte nächstes Quartal getestet werden? Schreibe auf Deutsch, warm und klar.',
+        messages: [{ role: 'user', content: `Q${q} ${year} (${entries.length} Wochen)\nImpressions: ${agg.imp}\nEngagement: ${agg.avgEng.toFixed(1)}%\nPosts: ${agg.postCount}\nFollower: ${agg.followerStart} → ${agg.followerEnd} (+${agg.newFollower})\nGruppe: ${agg.gruppeStart} → ${agg.gruppeEnd}\nWhatsApp: ${agg.waStart} → ${agg.waEnd}\nTop-Posts:\n${agg.topPosts.map(p => `- ${p.titel}: ${p.impressions} Imp., ${p.engagement_rate}% Eng.`).join('\n')}` }]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    document.getElementById('quarterLearnings').value = text;
+    const saved = JSON.parse(localStorage.getItem('fem_quarterly_learnings') || '{}');
+    saved[`${year}-Q${q}`] = text;
+    localStorage.setItem('fem_quarterly_learnings', JSON.stringify(saved));
+  } catch (err) { alert('Fehler: ' + err.message); }
+  btn.disabled = false; btn.textContent = '🧠 Quartals-Learnings generieren';
+});
+
+document.getElementById('quarterCopyBtn').addEventListener('click', () => {
+  const [year, q] = document.getElementById('quarterSelect').value.split('-').map(Number);
+  const agg = aggregateEntries(filterByQuarter(year, q));
+  const text = `FemSurance Quartalsreport – Q${q} ${year}\n${'─'.repeat(40)}\nImpressions: ${Math.round(agg.imp).toLocaleString('de-DE')}\nØ Engagement-Rate: ${agg.avgEng.toFixed(1)}%\nFollower: ${agg.followerStart} → ${agg.followerEnd} (+${agg.newFollower})\nPosts: ${agg.postCount}\n\nTop-Posts:\n${agg.topPosts.map((p,i) => `${i+1}. ${p.titel} – ${p.impressions} Imp.`).join('\n')}\n\nLearnings:\n${document.getElementById('quarterLearnings').value || '–'}`;
+  navigator.clipboard.writeText(text);
+  const btn = document.getElementById('quarterCopyBtn');
+  btn.textContent = 'Kopiert ✓'; setTimeout(() => { btn.textContent = '📋 Report kopieren'; }, 2000);
+});
 </script>
 </body>
 </html>

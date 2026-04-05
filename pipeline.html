@@ -559,6 +559,25 @@ body {
 .plan-selected .btn-plan-save.saved {
   background: #dcfce7; color: #16a34a;
 }
+/* Publish Modal */
+.pub-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
+.pub-modal-overlay.open { display:flex; }
+.pub-modal { background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 20px 60px rgba(0,0,0,0.2); padding:24px 28px; width:400px; max-width:92vw; }
+.pub-modal h3 { font-size:15px; font-weight:700; margin-bottom:14px; }
+.pub-modal .pub-field { margin-bottom:12px; }
+.pub-modal .pub-field label { display:block; font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:4px; }
+.pub-modal .pub-field input { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); }
+.pub-modal-btns { display:flex; gap:8px; margin-top:16px; }
+.pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:#fff; }
+.pub-modal-btns .pub-cancel { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
+/* Published card extras */
+.pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
+.pub-meta a { color:var(--fem-pink); text-decoration:none; }
+.pub-meta a:hover { text-decoration:underline; }
+.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
+.perf-reminder:hover { background:#fde68a; }
 </style>
 </head>
 <body>
@@ -789,6 +808,26 @@ body {
   </div>
 </div>
 
+<!-- ══════════ Publish Modal ══════════ -->
+<div class="pub-modal-overlay" id="pubModal">
+  <div class="pub-modal">
+    <h3>Post veröffentlichen</h3>
+    <div id="pubBadge" style="margin-bottom:12px;"></div>
+    <div class="pub-field">
+      <label>Veröffentlicht am</label>
+      <input type="datetime-local" id="pubDate">
+    </div>
+    <div class="pub-field">
+      <label>Link zum Post (optional)</label>
+      <input type="url" id="pubUrl" placeholder="https://linkedin.com/feed/update/...">
+    </div>
+    <div class="pub-modal-btns">
+      <button class="pub-confirm" id="pubConfirm">Veröffentlichen ✓</button>
+      <button class="pub-cancel" id="pubCancel">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ Main Content ══════════ -->
 <main class="main">
 
@@ -804,6 +843,16 @@ body {
 <script>
 // ── Config ──
 const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+function friendlyError(err) {
+  const msg = err.message || String(err);
+  if (msg.includes('401')) return 'API-Schlüssel ungültig. Bitte in pipeline.html prüfen.';
+  if (msg.includes('403')) return 'Zugriff verweigert. Bitte API-Schlüssel und Berechtigungen prüfen.';
+  if (msg.includes('429')) return 'Zu viele Anfragen. Bitte kurz warten und erneut versuchen.';
+  if (msg.includes('500') || msg.includes('502') || msg.includes('503')) return 'Anthropic-Server nicht erreichbar. Bitte später erneut versuchen.';
+  if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return 'Keine Internetverbindung. Bitte Verbindung prüfen.';
+  if (msg.includes('JSON')) return 'Antwort konnte nicht verarbeitet werden. Bitte erneut versuchen.';
+  return msg;
+}
 
 const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
 
@@ -1013,6 +1062,10 @@ async function callAnthropic(systemPrompt, userPrompt, maxTokens) {
 async function generateOutline(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
   if (!card) return;
+  if (!card.title || !card.title.trim()) {
+    alert('Bitte Titel eintragen bevor du einen Entwurf generierst.');
+    return;
+  }
 
   btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
   btnEl.classList.add('loading');
@@ -1084,7 +1137,7 @@ async function generateOutline(cardId, btnEl) {
     wrapper.appendChild(genArea);
 
   } catch (err) {
-    alert('Fehler beim Generieren: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Entwurf generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1133,7 +1186,7 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
     btnEl.disabled = false;
 
   } catch (err) {
-    alert('Fehler: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Canva-Prompt generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1197,7 +1250,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
     renderBoard();
 
   } catch (err) {
-    alert('Fehler beim Generieren: ' + err.message);
+    alert(friendlyError(err));
     btnEl.textContent = 'Post generieren';
     btnEl.classList.remove('loading');
     btnEl.disabled = false;
@@ -1266,6 +1319,24 @@ function renderBoard() {
           + `<button class="btn-generate btn-plan-post" data-card-id="${card.id}" style="margin-top:6px;">Post planen</button>`;
       } else if (col.id === 'geplant') {
         generateBtn = `<button class="btn-generate btn-publish" data-card-id="${card.id}">✓ Post veröffentlichen</button>`;
+      } else if (col.id === 'publish' && !card.archivedOutline) {
+        let pubHtml = '';
+        if (card.publishedAt) {
+          const pd = new Date(card.publishedAt);
+          pubHtml += `<div class="pub-meta">📅 ${pd.toLocaleDateString('de-DE')} ${pd.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+          if (card.postUrl) pubHtml += ` · <a href="${card.postUrl}" target="_blank">🔗 Post öffnen</a>`;
+          pubHtml += '</div>';
+        }
+        // 7-day performance reminder
+        if (card.publishedAt) {
+          const daysSince = Math.floor((Date.now() - new Date(card.publishedAt).getTime()) / 86400000);
+          const postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+          const hasPerf = postPerf[card.id] && postPerf[card.id].impressions;
+          if (daysSince >= 7 && !hasPerf) {
+            pubHtml += `<span class="perf-reminder" data-perf-id="${card.id}">📊 Performance eintragen</span>`;
+          }
+        }
+        generateBtn = pubHtml;
       }
 
       const begruendungHtml = card.begruendung ? `<div class="card-begruendung">${card.begruendung}</div>` : '';
@@ -1343,16 +1414,14 @@ function renderBoard() {
         if (btn) {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            card.col = 'publish';
-            saveCards();
-            renderBoard();
+            openPublishModal(card.id);
           });
         }
       }
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result') || e.target.closest('.perf-reminder') || e.target.closest('.pub-meta a')) return;
         openCardModal(card.id);
       });
 
@@ -1664,7 +1733,7 @@ document.getElementById('cmCanvaPromptBtn').addEventListener('click', async () =
     document.getElementById('cmCanvaPromptText').value = result;
     document.getElementById('cmCanvaPromptResult').style.display = 'block';
   } catch (err) {
-    alert('Fehler: ' + err.message);
+    alert(friendlyError(err));
   }
   btn.textContent = '✨ Canva-Prompt generieren';
   btn.disabled = false;
@@ -1861,6 +1930,47 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
     status.textContent = 'Fehler: ' + err.message;
     status.style.color = '#dc2626';
   }
+});
+
+// ── Publish Modal ──
+let pubCardId = null;
+
+function openPublishModal(cardId) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+  pubCardId = cardId;
+  const now = new Date();
+  document.getElementById('pubDate').value = now.toISOString().slice(0, 16);
+  document.getElementById('pubUrl').value = card.postUrl || '';
+  const badgeClass = card.format === 'Company Page' ? 'tag-pink' : card.format === 'Gruppe' ? 'tag-purple' : 'tag-gray';
+  document.getElementById('pubBadge').innerHTML = `<span class="kanban-tag ${badgeClass}">${card.format}</span> ${card.title}`;
+  document.getElementById('pubModal').classList.add('open');
+}
+
+document.getElementById('pubConfirm').addEventListener('click', () => {
+  const card = cards.find(c => c.id === pubCardId);
+  if (!card) return;
+  card.publishedAt = document.getElementById('pubDate').value ? new Date(document.getElementById('pubDate').value).toISOString() : new Date().toISOString();
+  card.postUrl = document.getElementById('pubUrl').value.trim();
+  card.col = 'publish';
+  saveCards();
+  document.getElementById('pubModal').classList.remove('open');
+  renderBoard();
+});
+
+document.getElementById('pubCancel').addEventListener('click', () => {
+  document.getElementById('pubModal').classList.remove('open');
+});
+document.getElementById('pubModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+// ── Performance Reminder Click (on published cards) ──
+document.getElementById('kanbanBoard').addEventListener('click', e => {
+  const perfBtn = e.target.closest('.perf-reminder');
+  if (!perfBtn) return;
+  e.stopPropagation();
+  openCardModal(parseInt(perfBtn.dataset.perfId) || perfBtn.dataset.perfId);
 });
 
 renderBoard();

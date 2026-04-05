@@ -478,11 +478,32 @@ document.getElementById('btnAdd').addEventListener('click', () => {
 // Hero goal input — sync with table
 document.getElementById('heroGoalInput').addEventListener('input', e => {
   const data = loadData();
-  data.goal = parseInt(e.target.value) || 0;
+  const newGoal = parseInt(e.target.value) || 0;
+  if (newGoal < 0) { e.target.style.borderColor = '#dc2626'; return; }
+  if (newGoal > 0 && newGoal < data.femFollower) {
+    e.target.style.outline = '2px solid #a16207';
+    e.target.title = 'Ziel ist niedriger als aktueller Stand';
+  } else {
+    e.target.style.outline = ''; e.target.title = '';
+  }
+  data.goal = newGoal;
   saveData(data);
   updateHero(data.femFollower, data.goal);
   const tableGoal = document.getElementById('femGoalInput');
   if (tableGoal) tableGoal.value = data.goal;
+});
+
+// Validate negative inputs
+document.getElementById('compBody').addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+    const val = parseFloat(e.target.value);
+    if (val < 0) {
+      e.target.style.borderColor = '#dc2626';
+      e.target.title = 'Bitte positive Zahlen eintragen';
+    } else {
+      e.target.style.borderColor = ''; e.target.title = '';
+    }
+  }
 });
 
 renderTable();

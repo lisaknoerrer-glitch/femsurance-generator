@@ -424,6 +424,27 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-post-body.open { display:block; }
 .btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
 .btn-add-post:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+
+/* ── Collapsible Blocks ── */
+.block-title { cursor:pointer; display:flex; align-items:center; user-select:none; }
+.block-title .block-chevron {
+  margin-left:auto; font-size:12px; color:var(--text-secondary);
+  transition:transform 0.25s; flex-shrink:0;
+}
+.block-title.collapsed .block-chevron { transform:rotate(-90deg); }
+.block-title .block-content-badge {
+  display:none; margin-left:8px; padding:1px 8px; border-radius:10px;
+  font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a;
+  text-transform:none; letter-spacing:0;
+}
+.block-title.collapsed .block-content-badge { display:inline-block; }
+.block-body {
+  overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s ease;
+  max-height:3000px; opacity:1;
+}
+.block-body.collapsed {
+  max-height:0; opacity:0; margin:0; padding:0;
+}
 /* Export file list */
 .export-file-item {
   display:flex; align-items:center; gap:8px; padding:5px 8px;
@@ -478,6 +499,11 @@ textarea { resize: vertical; line-height: 1.6; }
 [data-tip]:hover::before { opacity: 1; }
 .info-tip[data-tip]::before { display: none; }
 
+/* ── Validation ── */
+.val-msg { font-size:11px; margin-top:3px; padding:3px 8px; border-radius:4px; display:none; }
+.val-msg.error { display:block; background:#fef2f2; color:#dc2626; }
+.val-msg.warn { display:block; background:#fef9c3; color:#a16207; }
+
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -530,7 +556,8 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 1: Datenquellen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span></div>
+        <div class="block-title" data-block="1"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span><span class="block-content-badge" id="badge1"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="1">
         <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
@@ -559,11 +586,13 @@ textarea { resize: vertical; line-height: 1.6; }
         <!-- Extract Button -->
         <button class="btn-extract" id="btnExtract">📊 Daten extrahieren</button>
         <div class="extract-results" id="extractResults"></div>
+        </div>
       </div>
 
       <!-- BLOCK 2: Performance-Daten -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span></div>
+        <div class="block-title" data-block="2"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span><span class="block-content-badge" id="badge2"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="2">
         <button class="btn-load-last" id="b2LoadLast">📥 Letzte Woche übernehmen</button>
 
         <div class="b2-section">Post-Ebene</div>
@@ -614,11 +643,13 @@ textarea { resize: vertical; line-height: 1.6; }
         <div class="b2-section">Post-Performance (Organisches Engagement)</div>
         <div id="b2PostPerf"></div>
         <button class="btn-add-post" id="b2AddPost">+ Weiteren Post hinzufügen</button>
+        </div>
       </div>
 
       <!-- BLOCK 3: Follower-Ziel -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span></div>
+        <div class="block-title" data-block="3"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span><span class="block-content-badge" id="badge3"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="3">
         <div class="row-2">
           <div class="field">
             <label class="field-label">FemSurance Follower aktuell</label>
@@ -633,37 +664,46 @@ textarea { resize: vertical; line-height: 1.6; }
           <div class="calc-item">Abstand: <strong id="b3Diff">–</strong></div>
           <div class="calc-item">Geschätzt: <strong id="b3Months">–</strong></div>
         </div>
+        </div>
       </div>
 
       <!-- BLOCK 4: URLs -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span></div>
+        <div class="block-title" data-block="4"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span><span class="block-content-badge" id="badge4"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="4">
         <div id="urlList"></div>
         <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
+        </div>
       </div>
 
       <!-- BLOCK 5: Branchenbeobachtung -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span></div>
+        <div class="block-title" data-block="5"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span><span class="block-content-badge" id="badge5"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="5">
         <div class="field">
           <label class="field-label">Branchenbeobachtung &amp; Wettbewerber</label>
           <textarea id="b5Text" rows="15" placeholder="Einfach alles reinkopieren was du diese Woche gefunden hast — Posts, Artikel, Kommentare, Follower-Zahlen. Kein bestimmtes Format nötig."></textarea>
+        </div>
         </div>
       </div>
 
       <!-- BLOCK 6: Notizen & Kontext -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span></div>
+        <div class="block-title" data-block="6"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span><span class="block-content-badge" id="badge6"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="6">
         <div class="field">
           <textarea id="b6Text" rows="8" placeholder="Was ist diese Woche noch relevant? Events, Interviews, Personen kontaktiert, Newsletter-Aktionen, Besonderheiten, Ideen..."></textarea>
+        </div>
         </div>
       </div>
 
       <!-- BLOCK 7: Lernstand -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span></div>
+        <div class="block-title" data-block="7"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span><span class="block-content-badge" id="badge7"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="7">
         <div class="field">
           <textarea id="b7Lernstand" rows="8"></textarea>
+        </div>
         </div>
       </div>
 
@@ -736,6 +776,7 @@ function renderScreenshotSlots() {
     } else {
       slot.innerHTML = `<div class="ss-label">${cat}</div><div class="ss-hint">PNG / JPG</div>`;
     }
+    slot.innerHTML += `<div style="font-size:9px; color:var(--text-secondary); opacity:0.6; margin-top:3px;">Nur für Extraktion · nicht dauerhaft gespeichert</div>`;
     const fileIn = document.createElement('input');
     fileIn.type = 'file'; fileIn.accept = 'image/png,image/jpeg'; fileIn.style.display = 'none';
     slot.appendChild(fileIn);
@@ -756,8 +797,7 @@ function handleSSFile(category, file) {
     const idx = screenshots.findIndex(s => s.category === category);
     const entry = { category, image: e.target.result, imageType: file.type, imageName: file.name };
     if (idx >= 0) screenshots[idx] = entry; else screenshots.push(entry);
-    save('fem_wp_screenshots', screenshots);
-    saveBlock1();
+    // Keep in memory only — don't save base64 to localStorage
     renderScreenshotSlots();
   };
   reader.readAsDataURL(file);
@@ -788,12 +828,40 @@ function addExportFile(file) {
   if (ext === 'csv') {
     const reader = new FileReader();
     reader.onload = e => {
-      const text = e.target.result;
-      const sep = text.includes(';') ? ';' : ',';
-      const lines = text.split('\n').filter(l => l.trim());
-      const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
-      const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
-      console.log(`Parsed ${file.name}: ${headers.length} Spalten, ${rows.length} Zeilen`);
+      let text = e.target.result;
+      // Strip UTF-8 BOM
+      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+      // Detect delimiter: count ; vs , outside quotes in first line
+      const firstLine = text.split('\n')[0] || '';
+      let semis = 0, commas = 0, inQ = false;
+      for (const ch of firstLine) {
+        if (ch === '"') inQ = !inQ;
+        else if (!inQ && ch === ';') semis++;
+        else if (!inQ && ch === ',') commas++;
+      }
+      const sep = semis >= commas ? ';' : ',';
+      // Parse CSV with proper quote handling
+      function parseCsvLine(line) {
+        const cells = []; let cell = '', inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (inQuote) {
+            if (ch === '"' && line[i + 1] === '"') { cell += '"'; i++; }
+            else if (ch === '"') inQuote = false;
+            else cell += ch;
+          } else {
+            if (ch === '"') inQuote = true;
+            else if (ch === sep) { cells.push(cell.trim()); cell = ''; }
+            else cell += ch;
+          }
+        }
+        cells.push(cell.trim());
+        return cells;
+      }
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      const headers = parseCsvLine(lines[0]);
+      const rows = lines.slice(1).map(parseCsvLine).filter(r => r.some(c => c));
+      console.log(`Parsed ${file.name}: Delimiter="${sep}" · ${headers.length} Spalten · ${rows.length} Zeilen`);
       exportFiles.push({ fileName: file.name, headers, rows, columnMap: null });
       saveExportFiles();
       renderExportFileList();
@@ -901,12 +969,12 @@ const b1 = load('fem_wp_block1', {});
 if (b1.kw) document.getElementById('b1Kw').value = b1.kw;
 if (b1.date) document.getElementById('b1Date').value = b1.date;
 
-// Restore screenshots
-const savedSS = load('fem_wp_screenshots', []);
-if (savedSS.length) screenshots = savedSS;
+// Screenshots are kept in memory only — not restored from localStorage
+// Clean up any old base64 data that might still exist
+localStorage.removeItem('fem_wp_screenshots');
 const oldB1 = load('fem_wp_block1', {});
-if (oldB1.screenshots && !savedSS.length) { screenshots = oldB1.screenshots; save('fem_wp_screenshots', screenshots); }
-if (oldB1.image && !savedSS.length) { screenshots = [{ category: 'Beitrag-Analyse', image: oldB1.image, imageType: oldB1.imageType || 'image/png', imageName: oldB1.imageName || 'screenshot' }]; save('fem_wp_screenshots', screenshots); }
+if (oldB1.screenshots) { delete oldB1.screenshots; save('fem_wp_block1', oldB1); }
+if (oldB1.image) { delete oldB1.image; delete oldB1.imageType; delete oldB1.imageName; save('fem_wp_block1', oldB1); }
 renderScreenshotSlots();
 
 // Restore export files
@@ -1166,7 +1234,14 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       if (merged.search_summary.seitensuchen) b2Auto.search_seitensuchen = merged.search_summary.seitensuchen;
       else if (merged.search_summary.suchanzeigen) b2Auto.search_seitensuchen = merged.search_summary.suchanzeigen;
     }
-    if (Object.keys(b2Auto).length) { loadBlock2(b2Auto); saveBlock2(); }
+    if (Object.keys(b2Auto).length) {
+      loadBlock2(b2Auto); saveBlock2();
+    } else if (!merged.posts.length && !merged.follower_summary?.follower_gesamt) {
+      alert('Keine Daten erkannt — bitte manuell eintragen oder andere Screenshots verwenden.');
+    }
+
+    // Clear screenshot base64 from localStorage
+    localStorage.removeItem('fem_wp_screenshots');
 
     btn.textContent = '📊 Daten extrahieren';
     btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
@@ -1264,9 +1339,20 @@ if (savedAnalytics) {
 }
 
 // ══════════ BLOCK 2: Performance-Daten ══════════
+function validateB2Field(inp) {
+  let existingMsg = inp.parentElement.querySelector('.val-msg');
+  if (!existingMsg) { existingMsg = document.createElement('div'); existingMsg.className = 'val-msg'; inp.after(existingMsg); }
+  const val = parseFloat(inp.value);
+  const key = inp.dataset.b2;
+  if (key.includes('eng_rate') || key === 'post_ctr') {
+    if (val > 100) { existingMsg.className = 'val-msg error'; existingMsg.textContent = 'Wert kann nicht über 100% sein'; inp.style.borderColor = '#dc2626'; return; }
+  }
+  if (key.includes('impressions') && val > 1000000) { existingMsg.className = 'val-msg warn'; existingMsg.textContent = 'Ungewöhnlich hoher Wert — bitte prüfen'; inp.style.borderColor = '#a16207'; return; }
+  existingMsg.className = 'val-msg'; inp.style.borderColor = '';
+}
 function saveBlock2() {
   const data = {};
-  document.querySelectorAll('input[data-b2]').forEach(inp => { data[inp.dataset.b2] = inp.value; });
+  document.querySelectorAll('input[data-b2]').forEach(inp => { data[inp.dataset.b2] = inp.value; validateB2Field(inp); });
   save('fem_wp_block2', data);
 }
 document.querySelectorAll('input[data-b2]').forEach(inp => inp.addEventListener('input', saveBlock2));
@@ -1778,10 +1864,99 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
 
 // ══════════ SAVE BUTTON ══════════
 btnSave.addEventListener('click', () => {
-  const kw = document.getElementById('b1Kw').value || 'XX';
+  const kw = document.getElementById('b1Kw').value;
+  if (!kw || kw === '') {
+    alert('Bitte KW eintragen bevor du speicherst.');
+    document.getElementById('b1Kw').style.borderColor = '#dc2626';
+    document.getElementById('b1Kw').focus();
+    return;
+  }
+  document.getElementById('b1Kw').style.borderColor = '';
   const year = new Date().getFullYear();
-  const key = `fem_wochenplan_KW${kw}_${year}`;
-  localStorage.setItem(key, outputArea.value);
+  const weekKey = `KW${kw}_${year}`;
+
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const existIdx = history.findIndex(h => h.weekKey === weekKey);
+  if (existIdx >= 0) {
+    if (!confirm(`Woche ${weekKey} bereits gespeichert. Überschreiben?`)) return;
+  }
+
+  // Save wochenplan output text
+  const wpKey = `fem_wochenplan_KW${kw}_${year}`;
+  localStorage.setItem(wpKey, outputArea.value);
+
+  // Build complete week object
+  const b2 = load('fem_wp_block2', {});
+  const b2Posts = load('fem_wp_b2_posts', []);
+  const b1Date = document.getElementById('b1Date').value;
+  let periodEnd = '';
+  if (b1Date) {
+    const d = new Date(b1Date);
+    d.setDate(d.getDate() + 6);
+    periodEnd = d.toISOString().split('T')[0];
+  }
+
+  let kd = {};
+  try { kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}'); if (Array.isArray(kd)) kd = {}; } catch {}
+
+  const entry = {
+    weekKey,
+    kw,
+    savedAt: new Date().toISOString(),
+    periodStart: b1Date || '',
+    periodEnd: periodEnd,
+
+    inhalte_30d: {
+      impressions: b2.site_impressions || '',
+      reaktionen: b2.site_reaktionen || '',
+      kommentare: b2.site_kommentare || '',
+      geteilte_beitraege: b2.site_shares || ''
+    },
+
+    besucher: {
+      seitenaufrufe: b2.visitor_aufrufe || '',
+      individuelle_besucher: b2.visitor_unique || '',
+      klicks_eigener_button: b2.visitor_button_klicks || ''
+    },
+
+    follower: {
+      gesamt: b2.follower_gesamt || '',
+      neue_30d: b2.follower_neu || '',
+      neue_premium: b2.follower_premium || '',
+      gruppeMembers: kd.gruppeMembers || '',
+      whatsappMembers: kd.whatsappMembers || ''
+    },
+
+    suche_7d: {
+      seitensuchen: b2.search_seitensuchen || ''
+    },
+
+    posts: b2Posts.filter(p => p.titel).map(p => ({
+      titel: p.titel || '',
+      impressions: p.impressions || '',
+      individuelle_impressions: p.ind_impressions || '',
+      engagements: p.engagements || '',
+      engagement_rate: p.eng_rate || '',
+      klicks: p.klicks || '',
+      ctr: p.ctr || '',
+      reaktionen: p.reaktionen || '',
+      kommentare: p.kommentare || '',
+      geteilte_beitraege: p.shares || '',
+      generierte_seitenbesucher: p.besucher || '',
+      gewonnene_follower: p.follower || ''
+    })),
+
+    lernstand: localStorage.getItem('fem_lernstand') || '',
+    wochenplan_text: outputArea.value || '',
+    branchenbeobachtung: document.getElementById('b5Text')?.value || '',
+    notizen: document.getElementById('b6Text')?.value || '',
+    urls: load('fem_wp_block4', []).filter(u => u.url && u.url.trim())
+  };
+
+  if (existIdx >= 0) history[existIdx] = entry; else history.unshift(entry);
+  if (history.length > 52) history.length = 52;
+  localStorage.setItem('fem_performance_history', JSON.stringify(history));
+
   btnSave.textContent = 'Gespeichert ✓';
   btnSave.classList.add('success');
   renderArchiv();
@@ -1817,6 +1992,90 @@ btnLernstand.addEventListener('click', () => {
     btnLernstand.classList.add('success');
     setTimeout(() => { btnLernstand.textContent = '🔄 Lernstand aktualisieren'; btnLernstand.classList.remove('success'); }, 2500);
   }
+});
+
+// ══════════ COLLAPSIBLE BLOCKS ══════════
+const BLOCK_DEFAULTS = { '1': true, '2': true, '3': true, '4': false, '5': false, '6': false, '7': false };
+const collapseState = JSON.parse(localStorage.getItem('fem_wp_collapse_state') || 'null') || { ...BLOCK_DEFAULTS };
+
+function updateBlockBadges() {
+  // Block 1: screenshots (in memory) + files count
+  const ssCount = screenshots.length;
+  const efCount = (load('fem_wp_export_data', [])).filter(f => f && f.fileName).length;
+  const b1Parts = [];
+  if (ssCount) b1Parts.push(`${ssCount} Screenshots`);
+  if (efCount) b1Parts.push(`${efCount} Dateien`);
+  document.getElementById('badge1').textContent = b1Parts.length ? b1Parts.join(' · ') : '';
+
+  // Block 2: check if any field filled
+  const b2data = load('fem_wp_block2', {});
+  const b2Filled = Object.values(b2data).some(v => v && v !== '');
+  document.getElementById('badge2').textContent = b2Filled ? 'Ausgefüllt ✓' : '';
+
+  // Block 3: follower value
+  const b3Val = document.getElementById('b3Current')?.value;
+  document.getElementById('badge3').textContent = b3Val ? `${parseInt(b3Val).toLocaleString('de-DE')} Follower` : '';
+
+  // Block 4: URL count
+  const urlCount = (load('fem_wp_block4', [])).filter(u => u.url && u.url.trim()).length;
+  document.getElementById('badge4').textContent = urlCount ? `${urlCount} URLs` : '';
+
+  // Block 5: text present
+  const b5 = load('fem_wp_block5', {});
+  document.getElementById('badge5').textContent = (b5.text && b5.text.trim()) ? 'Ausgefüllt ✓' : '';
+
+  // Block 6: text present
+  const b6 = load('fem_wp_block6', {});
+  document.getElementById('badge6').textContent = (b6.text && b6.text.trim()) ? 'Ausgefüllt ✓' : '';
+
+  // Block 7: lernstand present
+  const ls = localStorage.getItem('fem_lernstand');
+  document.getElementById('badge7').textContent = ls ? 'Vorhanden ✓' : '';
+}
+
+function applyCollapseState() {
+  for (let i = 1; i <= 7; i++) {
+    const isOpen = collapseState[String(i)] !== false;
+    const title = document.querySelector(`[data-block="${i}"]`);
+    const body = document.querySelector(`[data-body="${i}"]`);
+    if (!title || !body) continue;
+    if (!isOpen) {
+      title.classList.add('collapsed');
+      body.classList.add('collapsed');
+    } else {
+      title.classList.remove('collapsed');
+      body.classList.remove('collapsed');
+    }
+  }
+  updateBlockBadges();
+}
+
+document.querySelectorAll('.block-title[data-block]').forEach(title => {
+  title.addEventListener('click', e => {
+    if (e.target.closest('.info-tip')) return; // Don't toggle when clicking tooltip
+    const blockNum = title.dataset.block;
+    const body = document.querySelector(`[data-body="${blockNum}"]`);
+    if (!body) return;
+    const isCollapsed = title.classList.contains('collapsed');
+    if (isCollapsed) {
+      title.classList.remove('collapsed');
+      body.classList.remove('collapsed');
+      collapseState[blockNum] = true;
+    } else {
+      title.classList.add('collapsed');
+      body.classList.add('collapsed');
+      collapseState[blockNum] = false;
+    }
+    localStorage.setItem('fem_wp_collapse_state', JSON.stringify(collapseState));
+    updateBlockBadges();
+  });
+});
+
+applyCollapseState();
+// Re-check badges when inputs change
+document.querySelector('.col-left').addEventListener('input', () => {
+  clearTimeout(window._badgeTimer);
+  window._badgeTimer = setTimeout(updateBlockBadges, 500);
 });
 </script>
 </body>

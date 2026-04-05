@@ -191,6 +191,39 @@ body {
 }
 .btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
 .btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
+/* ── Dynamic Research ── */
+.perf-suggest { padding:10px 14px; background:var(--fem-pink-light); border-radius:var(--radius-sm); margin-bottom:12px; font-size:12.5px; }
+.perf-suggest strong { color:var(--fem-pink); }
+.trend-actions { display:flex; gap:4px; }
+.trend-actions button { border:none; background:none; cursor:pointer; font-size:13px; padding:2px 4px; border-radius:3px; transition:background 0.15s; }
+.trend-actions button:hover { background:var(--bg-secondary); }
+.btn-add-row { padding:7px 16px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
+.btn-add-row:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.potenzial { cursor:pointer; user-select:none; font-size:14px; }
+.hook-delete { position:absolute; top:8px; right:8px; border:none; background:none; cursor:pointer; font-size:13px; color:var(--text-secondary); opacity:0; transition:opacity 0.15s; }
+.hook-item:hover .hook-delete { opacity:1; }
+.hook-item { position:relative; }
+.add-hook-form { display:flex; gap:8px; margin-top:10px; }
+.add-hook-form input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.add-hook-form input:focus { outline:none; border-color:var(--fem-pink); }
+.add-hook-form select { padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
+.add-hook-form button { padding:8px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+/* KI Empfehlungen */
+.ki-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 20px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
+.ki-btn:hover { opacity:0.9; }
+.ki-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.ki-timestamp { font-size:11px; color:var(--text-secondary); margin-left:12px; }
+.ki-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; background:var(--fem-purple-light); color:var(--fem-purple); margin-left:4px; }
+.ki-learnings { padding:14px 18px; background:var(--fem-purple-light); border-radius:var(--radius-sm); margin-bottom:16px; font-size:13px; line-height:1.55; color:var(--text-primary); }
+.ki-learnings strong { color:var(--fem-purple); }
+.ki-section { margin-bottom:14px; border-radius:var(--radius-sm); padding:12px 16px; }
+.ki-section.testen { background:var(--fem-pink-light); }
+.ki-section.vermeiden { background:#fef2f2; }
+.ki-section-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+.ki-section.testen .ki-section-title { color:var(--fem-pink); }
+.ki-section.vermeiden .ki-section-title { color:#dc2626; }
+.ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
+.ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -234,97 +267,45 @@ body {
     <div class="header-meta">Themen · Hooks · Outlines</div>
   </div>
 
-  <!-- Trending-Tabelle -->
+  <!-- KI-Empfehlungen -->
+  <div class="fade-up" style="margin-bottom:18px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+    <button class="ki-btn" id="kiBtn">🧠 KI-Empfehlungen aktualisieren</button>
+    <span class="ki-timestamp" id="kiTimestamp"></span>
+  </div>
+  <div id="kiLearnings"></div>
+  <div id="kiSections" style="display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;"></div>
+
+  <!-- Trending-Themen (dynamic) -->
   <div class="card fade-up">
     <div class="card-title">Trending-Themen FemSurance</div>
+    <div id="perfSuggestions"></div>
     <table class="trend-table">
       <thead>
         <tr>
           <th>Thema</th>
-          <th>Relevanz</th>
-          <th>LinkedIn-Volumen</th>
-          <th>Trend</th>
+          <th>Hook-Winkel</th>
+          <th>Format</th>
+          <th>Potenzial</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td class="trend-name">Frauen in Führung</td>
-          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:92%"></div></div></td>
-          <td>12.400 Posts/Monat</td>
-          <td><span class="trend-badge trend-up">+18 %</span></td>
-        </tr>
-        <tr>
-          <td class="trend-name">Selfbranding</td>
-          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:85%"></div></div></td>
-          <td>9.800 Posts/Monat</td>
-          <td><span class="trend-badge trend-up">+24 %</span></td>
-        </tr>
-        <tr>
-          <td class="trend-name">Vereinbarkeit</td>
-          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:78%"></div></div></td>
-          <td>8.200 Posts/Monat</td>
-          <td><span class="trend-badge trend-stable">+3 %</span></td>
-        </tr>
-        <tr>
-          <td class="trend-name">Female Recruiting</td>
-          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:71%"></div></div></td>
-          <td>6.900 Posts/Monat</td>
-          <td><span class="trend-badge trend-up">+31 %</span></td>
-        </tr>
-        <tr>
-          <td class="trend-name">Diversität</td>
-          <td><div class="trend-bar-track"><div class="trend-bar-fill" style="width:67%"></div></div></td>
-          <td>7.500 Posts/Monat</td>
-          <td><span class="trend-badge trend-new">Neu</span></td>
-        </tr>
-      </tbody>
+      <tbody id="trendBody"></tbody>
     </table>
+    <button class="btn-add-row" id="btnAddTheme">+ Neues Thema hinzufügen</button>
   </div>
 
-  <!-- Hook-Formel-Bibliothek -->
+  <!-- Hook-Formel-Bibliothek (dynamic) -->
   <div class="card fade-up">
     <div class="card-title">Hook-Formel-Bibliothek</div>
-    <div class="hook-grid">
-      <div class="hook-item">
-        <div class="hook-category">Provokation</div>
-        <div class="hook-text">„Die meisten Maklerinnen machen diesen einen Fehler – und merken es nicht."</div>
-        <button class="hook-copy-btn" data-copy="Die meisten Maklerinnen machen diesen einen Fehler – und merken es nicht.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Statistik</div>
-        <div class="hook-text">„Nur 25 % der Führungskräfte in der Versicherung sind Frauen. Hier ist, warum sich das ändern muss."</div>
-        <button class="hook-copy-btn" data-copy="Nur 25 % der Führungskräfte in der Versicherung sind Frauen. Hier ist, warum sich das ändern muss.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Frage</div>
-        <div class="hook-text">„Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?"</div>
-        <button class="hook-copy-btn" data-copy="Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Storytelling</div>
-        <div class="hook-text">„Vor 3 Jahren saß ich weinend im Auto nach einem Kundentermin. Heute leite ich ein Team von 12 Beraterinnen."</div>
-        <button class="hook-copy-btn" data-copy="Vor 3 Jahren saß ich weinend im Auto nach einem Kundentermin. Heute leite ich ein Team von 12 Beraterinnen.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Listicle</div>
-        <div class="hook-text">„5 LinkedIn-Tipps, die meine Reichweite als Maklerin verdreifacht haben."</div>
-        <button class="hook-copy-btn" data-copy="5 LinkedIn-Tipps, die meine Reichweite als Maklerin verdreifacht haben.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Kontroverse</div>
-        <div class="hook-text">„Unpopuläre Meinung: Netzwerken ist wichtiger als jede Weiterbildung."</div>
-        <button class="hook-copy-btn" data-copy="Unpopuläre Meinung: Netzwerken ist wichtiger als jede Weiterbildung.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">Vergleich</div>
-        <div class="hook-text">„Der Unterschied zwischen erfolgreichen und durchschnittlichen Maklerinnen? Ein einziges Wort: Sichtbarkeit."</div>
-        <button class="hook-copy-btn" data-copy="Der Unterschied zwischen erfolgreichen und durchschnittlichen Maklerinnen? Ein einziges Wort: Sichtbarkeit.">Kopieren</button>
-      </div>
-      <div class="hook-item">
-        <div class="hook-category">How-To</div>
-        <div class="hook-text">„So baust du dir in 90 Tagen eine Personal Brand auf LinkedIn auf – Schritt für Schritt."</div>
-        <button class="hook-copy-btn" data-copy="So baust du dir in 90 Tagen eine Personal Brand auf LinkedIn auf – Schritt für Schritt.">Kopieren</button>
-      </div>
+    <div class="hook-grid" id="hookGrid"></div>
+    <div class="add-hook-form">
+      <select id="newHookCat">
+        <option>Provokation</option><option>Statistik</option><option>Frage</option>
+        <option>Storytelling</option><option>Listicle</option><option>Kontroverse</option>
+        <option>Vergleich</option><option>How-To</option>
+      </select>
+      <input type="text" id="newHookText" placeholder="Neuen Hook eingeben...">
+      <button id="btnAddHook">+ Hook</button>
     </div>
   </div>
 
@@ -364,21 +345,140 @@ body {
 </main>
 
 <script>
-// ── Copy Buttons ──
-document.querySelectorAll('.hook-copy-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    navigator.clipboard.writeText(btn.dataset.copy).then(() => {
-      btn.textContent = 'Kopiert!';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'Kopieren';
-        btn.classList.remove('copied');
-      }, 1500);
-    });
+// ══════════ TRENDING-THEMEN (dynamic) ══════════
+const DEFAULT_THEMES = [
+  { thema: 'Frauen in Führung', hook: 'Warum nur 25% der Führungskräfte weiblich sind', format: 'Karussell', potenzial: 3 },
+  { thema: 'Selfbranding', hook: 'Personal Brand aufbauen in 90 Tagen', format: 'How-To Post', potenzial: 3 },
+  { thema: 'Vereinbarkeit', hook: 'Teilzeit ≠ weniger Erfolg', format: 'Storytelling', potenzial: 2 },
+  { thema: 'Female Recruiting', hook: 'So gewinnen Versicherer mehr Frauen', format: 'Listicle', potenzial: 3 },
+  { thema: 'Diversität', hook: 'Was sich seit DKM 2023 verändert hat', format: 'Interview', potenzial: 2 },
+];
+
+let themes = JSON.parse(localStorage.getItem('fem_research_themes') || 'null') || [...DEFAULT_THEMES];
+function saveThemes() { localStorage.setItem('fem_research_themes', JSON.stringify(themes)); }
+
+function renderThemes() {
+  const tbody = document.getElementById('trendBody');
+  tbody.innerHTML = '';
+  themes.forEach((t, i) => {
+    const stars = '★'.repeat(t.potenzial || 1) + '☆'.repeat(3 - (t.potenzial || 1));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="trend-name">${t.thema}${t.badge ? ` <span class="trend-badge trend-up" style="font-size:9px;">${t.badge}</span>` : ''}</td>
+      <td style="font-size:12px; color:var(--text-secondary);">${t.hook || '–'}</td>
+      <td style="font-size:12px;">${t.format || '–'}</td>
+      <td><span class="potenzial" data-i="${i}">${stars}</span></td>
+      <td class="trend-actions">
+        <button title="Bearbeiten" data-edit="${i}">✏️</button>
+        <button title="Löschen" data-del="${i}">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
+}
+
+document.getElementById('trendBody').addEventListener('click', e => {
+  const delBtn = e.target.closest('[data-del]');
+  if (delBtn) { themes.splice(parseInt(delBtn.dataset.del), 1); saveThemes(); renderThemes(); return; }
+  const editBtn = e.target.closest('[data-edit]');
+  if (editBtn) {
+    const i = parseInt(editBtn.dataset.edit);
+    const t = themes[i];
+    const newThema = prompt('Thema:', t.thema); if (newThema === null) return;
+    const newHook = prompt('Hook-Winkel:', t.hook || '');
+    const newFormat = prompt('Format (z.B. Karussell, Listicle, Storytelling):', t.format || '');
+    t.thema = newThema || t.thema; t.hook = newHook || ''; t.format = newFormat || '';
+    saveThemes(); renderThemes(); return;
+  }
+  const pot = e.target.closest('.potenzial');
+  if (pot) {
+    const i = parseInt(pot.dataset.i);
+    themes[i].potenzial = ((themes[i].potenzial || 1) % 3) + 1;
+    saveThemes(); renderThemes();
+  }
 });
 
-// ── Outline Generator ──
+document.getElementById('btnAddTheme').addEventListener('click', () => {
+  const thema = prompt('Neues Thema:');
+  if (!thema) return;
+  themes.push({ thema, hook: '', format: '', potenzial: 1 });
+  saveThemes(); renderThemes();
+});
+
+// Performance suggestions
+function renderPerfSuggestions() {
+  const container = document.getElementById('perfSuggestions');
+  try {
+    const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+    const topPosts = [];
+    history.forEach(h => {
+      (h.posts || []).forEach(p => {
+        const eng = parseFloat(p.engagement_rate || p.engagement_rate_pct) || 0;
+        if (eng > 5 && p.titel) topPosts.push({ titel: p.titel, eng });
+      });
+    });
+    if (topPosts.length) {
+      container.innerHTML = `<div class="perf-suggest"><strong>Basierend auf deiner Performance:</strong><br>${topPosts.slice(0, 3).map(p => `📈 „${p.titel}" — ${p.eng.toFixed(1)}% Engagement`).join('<br>')}</div>`;
+    }
+  } catch {}
+}
+renderPerfSuggestions();
+renderThemes();
+
+// ══════════ HOOK-BIBLIOTHEK (dynamic) ══════════
+const DEFAULT_HOOKS = [
+  { cat: 'Provokation', text: 'Die meisten Maklerinnen machen diesen einen Fehler – und merken es nicht.' },
+  { cat: 'Statistik', text: 'Nur 25 % der Führungskräfte in der Versicherung sind Frauen. Hier ist, warum sich das ändern muss.' },
+  { cat: 'Frage', text: 'Was würdest du tun, wenn du wüsstest, dass du nicht scheitern kannst?' },
+  { cat: 'Storytelling', text: 'Vor 3 Jahren saß ich weinend im Auto nach einem Kundentermin. Heute leite ich ein Team von 12 Beraterinnen.' },
+  { cat: 'Listicle', text: '5 LinkedIn-Tipps, die meine Reichweite als Maklerin verdreifacht haben.' },
+  { cat: 'Kontroverse', text: 'Unpopuläre Meinung: Netzwerken ist wichtiger als jede Weiterbildung.' },
+  { cat: 'Vergleich', text: 'Der Unterschied zwischen erfolgreichen und durchschnittlichen Maklerinnen? Ein einziges Wort: Sichtbarkeit.' },
+  { cat: 'How-To', text: 'So baust du dir in 90 Tagen eine Personal Brand auf LinkedIn auf – Schritt für Schritt.' },
+];
+
+let hooks = JSON.parse(localStorage.getItem('fem_research_hooks') || 'null') || [...DEFAULT_HOOKS];
+function saveHooks() { localStorage.setItem('fem_research_hooks', JSON.stringify(hooks)); }
+
+function renderHooks() {
+  const grid = document.getElementById('hookGrid');
+  grid.innerHTML = '';
+  hooks.forEach((h, i) => {
+    const el = document.createElement('div');
+    el.className = 'hook-item';
+    el.innerHTML = `
+      <div class="hook-category">${h.cat}</div>
+      <div class="hook-text">„${h.text}"</div>
+      <button class="hook-copy-btn" data-copy="${h.text}">Kopieren</button>
+      <button class="hook-delete" data-del="${i}">🗑️</button>
+    `;
+    grid.appendChild(el);
+  });
+  // Bind copy buttons
+  grid.querySelectorAll('.hook-copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.copy).then(() => {
+        btn.textContent = 'Kopiert!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Kopieren'; btn.classList.remove('copied'); }, 1500);
+      });
+    });
+  });
+  grid.querySelectorAll('.hook-delete').forEach(btn => {
+    btn.addEventListener('click', () => { hooks.splice(parseInt(btn.dataset.del), 1); saveHooks(); renderHooks(); });
+  });
+}
+
+document.getElementById('btnAddHook').addEventListener('click', () => {
+  const text = document.getElementById('newHookText').value.trim();
+  if (!text) return;
+  const cat = document.getElementById('newHookCat').value;
+  hooks.push({ cat, text });
+  saveHooks(); renderHooks();
+  document.getElementById('newHookText').value = '';
+});
+renderHooks();
+
+// ══════════ OUTLINE GENERATOR ══════════
 const hookTemplates = [
   t => `Die meisten ${t}-Strategien scheitern. Hier ist, was stattdessen funktioniert.`,
   t => `3 Dinge, die ich über ${t} gelernt habe – die mir niemand gesagt hat.`,
@@ -388,14 +488,13 @@ const hookTemplates = [
   t => `Ich habe 100 ${t}-Posts analysiert. Das sind die 3 Muster, die viral gehen.`,
   t => `${t} wird unterschätzt. Hier sind die Zahlen, die das beweisen.`,
 ];
-
 const outlinePoints = [
   ['Warum das Thema jetzt relevant ist', 'Häufigster Fehler und Lösung', 'Konkretes Beispiel aus der Praxis', 'Call-to-Action für die Community'],
   ['Persönliche Erfahrung als Einstieg', 'Drei Kernpunkte mit Daten', 'Best Practice aus der Branche', 'Frage an die Leser:innen'],
   ['Provokante These als Hook', 'Gegenargument entkräften', 'Schritt-für-Schritt-Anleitung', 'Zusammenfassung + CTA'],
   ['Statistik als Aufmacher', 'Was das für Maklerinnen bedeutet', 'Interview-Zitat einbauen', 'Link zum ausführlichen Beitrag'],
   ['Storytelling-Einstieg', 'Lessons Learned (3 Punkte)', 'Umsetzbare Tipps', 'Engagement-Frage am Ende'],
-  ['Vergleich vorher/nachher', 'Die wichtigsten Do's und Don'ts', 'Tool-Empfehlung oder Ressource', 'Hashtag-Strategie'],
+  ['Vergleich vorher/nachher', 'Die wichtigsten Do\'s und Don\'ts', 'Tool-Empfehlung oder Ressource', 'Hashtag-Strategie'],
   ['Kontroverse Meinung als Start', 'Begründung mit Fakten', 'Karussell-Idee für visuelles Format', 'Community-Diskussion anregen'],
 ];
 
@@ -405,10 +504,8 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
   const count = parseInt(document.getElementById('genCount').value);
   const container = document.getElementById('outlineResults');
   container.innerHTML = '';
-
   const shuffled = [...hookTemplates].sort(() => Math.random() - 0.5);
   const shuffledPts = [...outlinePoints].sort(() => Math.random() - 0.5);
-
   for (let i = 0; i < count; i++) {
     const hook = shuffled[i % shuffled.length](theme);
     const pts = shuffledPts[i % shuffledPts.length];
@@ -424,15 +521,142 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
   }
 });
 
-// ── Send to Pipeline ──
+// ── Send to Pipeline + save to themes ──
 document.getElementById('outlineResults').addEventListener('click', e => {
   const btn = e.target.closest('.btn-to-pipeline');
   if (!btn) return;
+  const title = btn.dataset.title;
   const ideas = JSON.parse(localStorage.getItem('fem_pipeline_ideas') || '[]');
-  ideas.push({ title: btn.dataset.title, format: 'Company Page' });
+  ideas.push({ title, format: 'Company Page' });
   localStorage.setItem('fem_pipeline_ideas', JSON.stringify(ideas));
+  // Also save topic to themes if not already present
+  if (!themes.find(t => t.thema === title)) {
+    themes.push({ thema: title, hook: '', format: 'Outline', potenzial: 1 });
+    saveThemes(); renderThemes();
+  }
   btn.textContent = 'Gesendet!';
   btn.classList.add('sent');
+});
+
+// ══════════ KI-EMPFEHLUNGEN ══════════
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+const KI_SYSTEM_PROMPT = `Du bist der FemSurance Research-Assistent. Du analysierst die Performance-Daten und den Lernstand und gibst konkrete Empfehlungen was als nächstes getestet werden sollte.
+
+Antworte NUR im JSON-Format:
+{
+  "trending_themen": [
+    { "thema": "Thema", "hook_winkel": "Konkreter Hook-Winkel", "format": "Company Page / Gruppe / WhatsApp", "potenzial": 3, "begruendung": "Warum dieses Thema jetzt?" }
+  ],
+  "hooks": [
+    { "text": "Hook-Text", "typ": "Provokation / Statistik / Frage / Story", "begruendung": "Warum dieser Hook?" }
+  ],
+  "was_testen": ["Konkrete Empfehlung 1", "Konkrete Empfehlung 2"],
+  "was_vermeiden": ["Was nicht mehr tun 1"],
+  "learnings": "Kurze Zusammenfassung der wichtigsten Erkenntnisse"
+}`;
+
+function loadKiSuggestions() {
+  try { return JSON.parse(localStorage.getItem('fem_research_ki_suggestions') || 'null'); } catch { return null; }
+}
+
+function renderKiResults(data) {
+  if (!data) return;
+  // Learnings
+  const learningsEl = document.getElementById('kiLearnings');
+  if (data.learnings) {
+    learningsEl.innerHTML = `<div class="ki-learnings"><strong>🧠 KI-Erkenntnisse:</strong> ${data.learnings}</div>`;
+  }
+  // Sections
+  const sectionsEl = document.getElementById('kiSections');
+  let html = '';
+  if (data.was_testen && data.was_testen.length) {
+    html += `<div class="ki-section testen" style="flex:1; min-width:200px;"><div class="ki-section-title">✅ Was testen</div><ul>${data.was_testen.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+  }
+  if (data.was_vermeiden && data.was_vermeiden.length) {
+    html += `<div class="ki-section vermeiden" style="flex:1; min-width:200px;"><div class="ki-section-title">⛔ Was vermeiden</div><ul>${data.was_vermeiden.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+  }
+  sectionsEl.innerHTML = html;
+  // Timestamp
+  if (data.savedAt) {
+    const d = new Date(data.savedAt);
+    document.getElementById('kiTimestamp').textContent = `Zuletzt aktualisiert: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}`;
+  }
+  // Add KI themes to trending (with badge)
+  if (data.trending_themen) {
+    data.trending_themen.forEach(t => {
+      if (!themes.find(x => x.thema === t.thema)) {
+        themes.push({ thema: t.thema, hook: t.hook_winkel, format: t.format, potenzial: t.potenzial || 2, badge: '🤖 KI', ki: true });
+      }
+    });
+    saveThemes(); renderThemes();
+  }
+  // Add KI hooks
+  if (data.hooks) {
+    data.hooks.forEach(h => {
+      if (!hooks.find(x => x.text === h.text)) {
+        hooks.push({ cat: h.typ || 'KI', text: h.text, ki: true });
+      }
+    });
+    saveHooks(); renderHooks();
+  }
+}
+
+// Restore saved suggestions
+const savedKi = loadKiSuggestions();
+if (savedKi) renderKiResults(savedKi);
+
+// KI Button
+document.getElementById('kiBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('kiBtn');
+  btn.disabled = true;
+  btn.textContent = '🧠 Wird analysiert...';
+
+  try {
+    // Build user prompt from all data sources
+    const parts = [];
+    const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+    if (history.length) {
+      parts.push('## Performance (letzte Wochen)\n' + history.slice(0, 3).map(h => {
+        const imp = h.inhalte_30d?.impressions || h.site?.impressions || '–';
+        const posts = (h.posts || []).map(p => `${p.titel}: ${p.engagement_rate || '–'}% Eng.`).join(', ');
+        return `KW ${h.kw || '?'}: Impressions ${imp}${posts ? ', Posts: ' + posts : ''}`;
+      }).join('\n'));
+    }
+    const lernstand = localStorage.getItem('fem_lernstand');
+    if (lernstand) parts.push('## Lernstand\n' + lernstand);
+    parts.push('## Aktuelle Themen\n' + themes.map(t => `${t.thema} (${t.format || '–'}, Potenzial: ${'★'.repeat(t.potenzial || 1)})`).join('\n'));
+    const postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const topPosts = Object.entries(postPerf).filter(([,v]) => v.impressions).slice(0, 5);
+    if (topPosts.length) {
+      parts.push('## Top-Post Performance\n' + topPosts.map(([,v]) => `Impressions: ${v.impressions}, Eng: ${v.reaktionen || 0}+${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
+    }
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: KI_SYSTEM_PROMPT, messages: [{ role: 'user', content: parts.join('\n\n') || 'Keine Daten vorhanden. Gib allgemeine FemSurance-Empfehlungen.' }] })
+    });
+
+    if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
+    const data = await resp.json();
+    let jsonStr = data.content[0].text.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const result = JSON.parse(jsonStr);
+    result.savedAt = new Date().toISOString();
+    localStorage.setItem('fem_research_ki_suggestions', JSON.stringify(result));
+
+    // Remove old KI entries before adding new
+    themes = themes.filter(t => !t.ki);
+    hooks = hooks.filter(h => !h.ki);
+    renderKiResults(result);
+
+    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+  } catch (err) {
+    alert('Fehler: ' + err.message);
+    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+  }
+  btn.disabled = false;
 });
 </script>
 </body>
