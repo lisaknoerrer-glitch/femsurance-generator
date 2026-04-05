@@ -578,6 +578,22 @@ body {
 .pub-meta a:hover { text-decoration:underline; }
 .perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
 .perf-reminder:hover { background:#fde68a; }
+/* Score */
+.score-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; margin-top:6px; cursor:pointer; }
+.score-green { background:#dcfce7; color:#16a34a; }
+.score-yellow { background:#fef9c3; color:#a16207; }
+.score-red { background:#fef2f2; color:#dc2626; }
+.score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.score-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.score-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.score-detail { margin-top:6px; padding:8px 10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:11px; line-height:1.5; display:none; }
+.score-detail.open { display:block; }
+.score-detail .sd-row { display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px solid var(--border); }
+.score-detail .sd-row:last-child { border-bottom:none; }
+.score-detail .sd-label { color:var(--text-secondary); }
+.score-detail .sd-val { font-weight:600; }
+.score-detail .sd-reason { font-size:10px; color:var(--text-secondary); font-style:italic; }
+.score-detail .sd-rec { margin-top:4px; padding:4px 8px; background:var(--fem-pink-light); border-radius:4px; font-weight:600; color:var(--fem-pink); }
 </style>
 </head>
 <body>
@@ -1257,12 +1273,79 @@ async function generatePostsFromOutline(cardId, btnEl) {
   }
 }
 
+// ── Score Calculator ──
+const SCORE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Scorer. Bewerte diese Content-Idee auf einer Skala von 1-10.
+
+Analysiere:
+1. Trend-Stärke (0-2.5 Punkte): Ist das Thema aktuell trending?
+2. Eigene Performance (0-2.5 Punkte): Hat FemSurance mit ähnlichen Themen gut performt?
+3. Konkurrenz-Lücke (0-2.5 Punkte): Machen Wettbewerber das noch nicht?
+4. Ziel-Relevanz (0-2.5 Punkte): Passt es zu den FemSurance Fokus-Themen?
+
+Antworte NUR im JSON-Format:
+{
+  "score": 8,
+  "trend": { "punkte": 2, "begruendung": "Thema trending" },
+  "performance": { "punkte": 2.5, "begruendung": "Ähnliche Posts hatten gute Engagement" },
+  "luecke": { "punkte": 2, "begruendung": "Wettbewerber kaum aktiv" },
+  "relevanz": { "punkte": 1.5, "begruendung": "Passt zu Fokusthema" },
+  "empfehlung": "Diese Woche posten!",
+  "beste_plattform": "Company Page"
+}`;
+
+async function calculateScore(cardId, btnEl) {
+  const card = cards.find(c => c.id === cardId);
+  if (!card) return;
+  btnEl.disabled = true; btnEl.textContent = '⏳ Wird berechnet...';
+
+  try {
+    // Build context
+    let context = `Titel: ${card.title}`;
+    if (card.refmaterial) context += `\nReferenzmaterial: ${card.refmaterial}`;
+    if (card.themenwelt) context += `\nThemenwelt: ${card.themenwelt}`;
+
+    // Add data context
+    try {
+      const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
+      if (themes.length) context += `\nTrending-Themen: ${themes.slice(0, 5).map(t => t.thema).join(', ')}`;
+    } catch {}
+    try {
+      const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      const topPosts = Object.entries(perf).filter(([,v]) => v.impressions).slice(0, 5);
+      if (topPosts.length) context += `\nBisherige Top-Posts: ${topPosts.map(([,v]) => `${v.impressions} Imp.`).join(', ')}`;
+    } catch {}
+    try {
+      const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+      if (kd.accounts) context += `\nKonkurrenz: ${kd.accounts.filter(a => a.name).map(a => a.name).join(', ')}`;
+    } catch {}
+    try {
+      const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
+      if (strat.fokusThemen) context += `\nFokus-Themen: ${strat.fokusThemen.filter(Boolean).join(', ')}`;
+    } catch {}
+
+    const result = await callAnthropic(SCORE_SYSTEM_PROMPT, context, 512);
+    let jsonStr = result.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const scoreData = JSON.parse(jsonStr);
+
+    card.score = scoreData;
+    saveCards();
+    renderBoard();
+
+  } catch (err) {
+    alert(friendlyError(err));
+    btnEl.disabled = false; btnEl.textContent = '🎯 Score berechnen';
+  }
+}
+
 // ── Render Board ──
 function renderBoard() {
   const board = document.getElementById('kanbanBoard');
   board.innerHTML = '';
   colDefs.forEach(col => {
-    const colCards = cards.filter(c => c.col === col.id);
+    let colCards = cards.filter(c => c.col === col.id);
+    // Sort Ideen by score descending
+    if (col.id === 'ideen') colCards.sort((a, b) => ((b.score?.score || 0) - (a.score?.score || 0)));
     const colEl = document.createElement('div');
     colEl.className = 'kanban-col';
     colEl.innerHTML = `
@@ -1301,7 +1384,24 @@ function renderBoard() {
       // Action button per column
       let generateBtn = '';
       if (col.id === 'ideen') {
-        generateBtn = `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
+        let scoreHtml = '';
+        if (card.score) {
+          const sc = card.score;
+          const cls = sc.score >= 8 ? 'score-green' : sc.score >= 5 ? 'score-yellow' : 'score-red';
+          const emoji = sc.score >= 8 ? '🟢' : sc.score >= 5 ? '🟡' : '🔴';
+          scoreHtml = `<span class="score-badge ${cls}" data-score-id="${card.id}">${emoji} Score: ${sc.score}/10</span>`;
+          scoreHtml += `<div class="score-detail" id="scoreDetail_${card.id}">
+            <div class="sd-row"><span class="sd-label">Trend</span><span class="sd-val">${sc.trend?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.trend?.begruendung || ''}</div>
+            <div class="sd-row"><span class="sd-label">Performance</span><span class="sd-val">${sc.performance?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.performance?.begruendung || ''}</div>
+            <div class="sd-row"><span class="sd-label">Lücke</span><span class="sd-val">${sc.luecke?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.luecke?.begruendung || ''}</div>
+            <div class="sd-row"><span class="sd-label">Relevanz</span><span class="sd-val">${sc.relevanz?.punkte || 0}/2.5</span></div><div class="sd-reason">${sc.relevanz?.begruendung || ''}</div>
+            ${sc.empfehlung ? `<div class="sd-rec">${sc.empfehlung}</div>` : ''}
+            ${sc.beste_plattform ? `<div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">Beste Plattform: ${sc.beste_plattform}</div>` : ''}
+          </div>`;
+        }
+        generateBtn = scoreHtml
+          + `<button class="score-btn" data-score-card="${card.id}">🎯 Score berechnen</button>`
+          + `<button class="btn-generate" data-card-id="${card.id}">Entwurf generieren</button>`;
       } else if (col.id === 'entwurf') {
         generateBtn = `<button class="btn-generate btn-entwurf-gen" data-card-id="${card.id}">Post generieren</button>`;
       } else if (col.id === 'post') {
@@ -1363,6 +1463,23 @@ function renderBoard() {
             generateOutline(card.id, btn);
           });
         }
+        // Score badge toggle
+        const scoreBadge = el.querySelector('.score-badge');
+        if (scoreBadge) {
+          scoreBadge.addEventListener('click', e => {
+            e.stopPropagation();
+            const detail = document.getElementById('scoreDetail_' + card.id);
+            if (detail) detail.classList.toggle('open');
+          });
+        }
+        // Score button
+        const scoreBtn = el.querySelector('.score-btn');
+        if (scoreBtn) {
+          scoreBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            calculateScore(card.id, scoreBtn);
+          });
+        }
       }
       if (col.id === 'entwurf') {
         const btn = el.querySelector('.btn-entwurf-gen');
@@ -1421,7 +1538,7 @@ function renderBoard() {
 
       // Click to open detail modal
       el.addEventListener('click', e => {
-        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result') || e.target.closest('.perf-reminder') || e.target.closest('.pub-meta a')) return;
+        if (e.target.closest('.btn-generate') || e.target.closest('.btn-plan-post') || e.target.closest('.btn-entwurf-gen') || e.target.closest('.btn-canva') || e.target.closest('.btn-canva-prompt') || e.target.closest('.btn-copy-canva') || e.target.closest('.btn-publish') || e.target.closest('.gen-result-area') || e.target.closest('.canva-prompt-result') || e.target.closest('.perf-reminder') || e.target.closest('.pub-meta a') || e.target.closest('.score-btn') || e.target.closest('.score-badge') || e.target.closest('.score-detail')) return;
         openCardModal(card.id);
       });
 
