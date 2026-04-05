@@ -322,6 +322,12 @@ body {
 .analyse-card .ac-title { font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:6px; }
 .analyse-card .ac-val { font-size:22px; font-weight:700; color:var(--fem-pink); }
 .analyse-card .ac-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+/* Toast */
+.fem-toast { position:fixed; bottom:20px; right:20px; padding:12px 20px; border-radius:var(--radius-sm); background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.15); font-size:13px; z-index:999; animation:fadeUp 0.3s ease; }
+.fem-toast.success { border-left:4px solid #16a34a; }
+.fem-toast.warn { border-left:4px solid #a16207; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
 .analyse-result { margin-top:12px; padding:14px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:13px; line-height:1.6; white-space:pre-wrap; }
 
 .kpi-section-row td {
@@ -1020,6 +1026,69 @@ document.getElementById('ppBody').addEventListener('click', e => {
   });
 });
 
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'fem-toast ' + (type || 'success');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+function runFeedbackLoop(cardId, perfData) {
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const card = cards.find(c => String(c.id) === String(cardId));
+  if (!card) return;
+
+  const imp = parseFloat(perfData.impressions) || 0;
+  const reak = parseFloat(perfData.reaktionen) || 0;
+  const komm = parseFloat(perfData.kommentare) || 0;
+  const shares = parseFloat(perfData.shares) || 0;
+  const engRate = imp > 0 ? (reak + komm + shares) / imp * 100 : 0;
+  if (imp === 0) return;
+
+  const title = card.title || '';
+  const log = JSON.parse(localStorage.getItem('fem_feedback_log') || '[]');
+
+  // Update research themes
+  const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
+  const topic = title.split(/[·:–—]/)[0].trim().slice(0, 40);
+
+  if (engRate >= 5) {
+    if (!themes.find(t => t.thema === topic)) {
+      themes.push({ thema: topic, hook: title, format: card.format || '', potenzial: 3, badge: '📈 ' + engRate.toFixed(1) + '%' });
+      localStorage.setItem('fem_research_themes', JSON.stringify(themes));
+    }
+    const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+    if (!pb.was_funktioniert) pb.was_funktioniert = [];
+    pb.was_funktioniert.push({ text: `${topic} hatte ${engRate.toFixed(1)}% Engagement`, neu: true });
+    localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    showToast('✓ Thema zu Research hinzugefügt: ' + topic, 'success');
+    log.push({ type: 'good', topic, engRate: engRate.toFixed(1), ts: new Date().toISOString() });
+  } else if (engRate < 2) {
+    if (!themes.find(t => t.thema === topic)) {
+      themes.push({ thema: topic, hook: title, format: card.format || '', potenzial: 1, badge: '⚠️ ' + engRate.toFixed(1) + '%' });
+      localStorage.setItem('fem_research_themes', JSON.stringify(themes));
+    }
+    const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+    if (!pb.was_nicht) pb.was_nicht = [];
+    pb.was_nicht.push({ text: `${topic} hatte nur ${engRate.toFixed(1)}% Engagement`, neu: true });
+    localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    showToast('⚠️ Schwaches Thema markiert: ' + topic, 'warn');
+    log.push({ type: 'weak', topic, engRate: engRate.toFixed(1), ts: new Date().toISOString() });
+  }
+
+  // Update hook performance
+  if (card.hookType) {
+    const hookPerf = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+    if (!hookPerf[card.hookType]) hookPerf[card.hookType] = { total: 0, count: 0 };
+    hookPerf[card.hookType].total += engRate;
+    hookPerf[card.hookType].count++;
+    localStorage.setItem('fem_hook_performance', JSON.stringify(hookPerf));
+  }
+
+  localStorage.setItem('fem_feedback_log', JSON.stringify(log.slice(-50)));
+}
+
 document.getElementById('ppSave').addEventListener('click', () => {
   if (!ppActiveId) return;
   if (!postPerf[ppActiveId]) postPerf[ppActiveId] = {};
@@ -1029,8 +1098,10 @@ document.getElementById('ppSave').addEventListener('click', () => {
     if (el) p[k] = el.value;
   });
   savePostPerf();
+  runFeedbackLoop(ppActiveId, p);
   document.getElementById('ppModal').classList.remove('open');
   renderPostTable();
+  renderAnalyse();
 });
 
 document.getElementById('ppClose').addEventListener('click', () => {

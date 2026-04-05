@@ -573,6 +573,26 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
+  <!-- ── Positionierungs-Check ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="posHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
+      <span class="insight-timestamp" id="posTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="posBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
+      </div>
+      <div id="posOutput"></div>
+      <div class="insight-actions" id="posActions" style="display:none;">
+        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Stats Row ── -->
   <div class="stats-row">
 
@@ -1263,6 +1283,113 @@ Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt
     b6.text = (b6.text ? b6.text + '\n\n' : '') + '--- Insights KW ' + currentKW + ' ---\n' + text;
     localStorage.setItem('fem_wp_block6', JSON.stringify(b6));
     const btn = document.getElementById('insightToWP');
+    btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '→ Wochenplan übernehmen'; btn.classList.remove('success'); }, 2000);
+  });
+
+  // ══════════ POSITIONIERUNGS-CHECK ══════════
+  document.getElementById('posHeader').addEventListener('click', () => {
+    document.getElementById('posHeader').classList.toggle('collapsed');
+    document.getElementById('posBody').classList.toggle('collapsed');
+  });
+
+  // Restore saved check
+  const posKey = `fem_positionierung_KW${currentKW}`;
+  const savedPos = localStorage.getItem(posKey);
+  if (savedPos) {
+    try {
+      const data = JSON.parse(savedPos);
+      showPosResult(data.text, data.savedAt);
+    } catch { showPosResult(savedPos); }
+  }
+
+  function showPosResult(text, savedAt) {
+    document.getElementById('posOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('posActions').style.display = 'flex';
+    if (savedAt) {
+      const d = new Date(savedAt);
+      document.getElementById('posTimestamp').textContent = `Zuletzt: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+    }
+    document.getElementById('posHeader').classList.remove('collapsed');
+    document.getElementById('posBody').classList.remove('collapsed');
+  }
+
+  document.getElementById('posGenBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('posGenBtn');
+    btn.disabled = true; btn.textContent = '🪞 Wird analysiert...';
+    try {
+      const parts = [`Aktuelle KW: ${currentKW}`];
+      // Last 10 posts
+      const pCards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+      const pubPosts = pCards.filter(c => c.col === 'publish' && !c.archivedOutline).slice(0, 10);
+      const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      if (pubPosts.length) {
+        parts.push('## Letzte Posts\n' + pubPosts.map(c => {
+          const p = perf[c.id] || {};
+          return `${c.title} (${c.format || '–'}) · Imp: ${p.impressions||'–'}, Eng: ${p.reaktionen||0}+${p.kommentare||0}`;
+        }).join('\n'));
+      }
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
+      try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+          system:`Du bist der FemSurance Positionierungs-Analyst. Analysiere die letzten Posts und gib ehrliches Feedback wie FemSurance aktuell wirkt.
+
+Antworte in diesem Format:
+
+🪞 POSITIONIERUNGS-CHECK KW [X]
+
+DU WIRKST AKTUELL:
+→ [Eigenschaft 1]
+→ [Eigenschaft 2]
+→ [Eigenschaft 3]
+
+DEINE HÄUFIGSTEN THEMEN:
+→ [Thema 1] ([X]x)
+→ [Thema 2] ([X]x)
+
+WAS FEHLT:
+→ [Fehlendes Element 1]
+→ [Fehlendes Element 2]
+
+STÄRKEN:
+→ [Stärke 1]
+→ [Stärke 2]
+
+EMPFEHLUNG FÜR NÄCHSTE WOCHE:
+→ [Konkrete Empfehlung 1]
+→ [Konkrete Empfehlung 2]
+
+Sei ehrlich und direkt. Keine generischen Aussagen.`,
+          messages:[{role:'user',content:parts.join('\n\n')}]
+        })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      const text = data.content[0].text;
+      const savedAt = new Date().toISOString();
+      localStorage.setItem(posKey, JSON.stringify({ text, savedAt }));
+      showPosResult(text, savedAt);
+    } catch (err) { alert('Fehler: ' + err.message); }
+    btn.disabled = false; btn.textContent = '🪞 Check starten';
+  });
+
+  document.getElementById('posCopy').addEventListener('click', () => {
+    const text = document.querySelector('#posOutput .insight-output')?.textContent || '';
+    navigator.clipboard.writeText(text);
+    const btn = document.getElementById('posCopy');
+    btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  document.getElementById('posToWP').addEventListener('click', () => {
+    const text = document.querySelector('#posOutput .insight-output')?.textContent || '';
+    const b6 = JSON.parse(localStorage.getItem('fem_wp_block6') || '{}');
+    b6.text = (b6.text ? b6.text + '\n\n' : '') + '--- Positionierungs-Check KW ' + currentKW + ' ---\n' + text;
+    localStorage.setItem('fem_wp_block6', JSON.stringify(b6));
+    const btn = document.getElementById('posToWP');
     btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
     setTimeout(() => { btn.textContent = '→ Wochenplan übernehmen'; btn.classList.remove('success'); }, 2000);
   });
