@@ -500,6 +500,10 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
     </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
+    </a>
     <a href="wochenplan.html">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Wochenplan
@@ -1351,6 +1355,8 @@ Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt
       }
       try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
       try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+
+      try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
 
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
