@@ -424,6 +424,27 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-post-body.open { display:block; }
 .btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
 .btn-add-post:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+
+/* ── Collapsible Blocks ── */
+.block-title { cursor:pointer; display:flex; align-items:center; user-select:none; }
+.block-title .block-chevron {
+  margin-left:auto; font-size:12px; color:var(--text-secondary);
+  transition:transform 0.25s; flex-shrink:0;
+}
+.block-title.collapsed .block-chevron { transform:rotate(-90deg); }
+.block-title .block-content-badge {
+  display:none; margin-left:8px; padding:1px 8px; border-radius:10px;
+  font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a;
+  text-transform:none; letter-spacing:0;
+}
+.block-title.collapsed .block-content-badge { display:inline-block; }
+.block-body {
+  overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s ease;
+  max-height:3000px; opacity:1;
+}
+.block-body.collapsed {
+  max-height:0; opacity:0; margin:0; padding:0;
+}
 /* Export file list */
 .export-file-item {
   display:flex; align-items:center; gap:8px; padding:5px 8px;
@@ -530,7 +551,8 @@ textarea { resize: vertical; line-height: 1.6; }
 
       <!-- BLOCK 1: Datenquellen -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span></div>
+        <div class="block-title" data-block="1"><span class="block-num">1</span> Datenquellen <span class="info-tip" data-tip="Lade hier deine LinkedIn Analytics Screenshots oder einen CSV/XLSX Export hoch. Claude extrahiert die Kennzahlen automatisch.">ℹ️</span><span class="block-content-badge" id="badge1"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="1">
         <div class="row-2" style="margin-bottom:12px;">
           <div class="field">
             <label class="field-label">KW</label>
@@ -559,11 +581,13 @@ textarea { resize: vertical; line-height: 1.6; }
         <!-- Extract Button -->
         <button class="btn-extract" id="btnExtract">📊 Daten extrahieren</button>
         <div class="extract-results" id="extractResults"></div>
+        </div>
       </div>
 
       <!-- BLOCK 2: Performance-Daten -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span></div>
+        <div class="block-title" data-block="2"><span class="block-num">2</span> Performance-Daten <span class="info-tip" data-tip="Die KPIs werden automatisch aus Block 1 extrahiert oder du trägst sie manuell ein. Diese Zahlen fließen in die Wochenauswertung ein.">ℹ️</span><span class="block-content-badge" id="badge2"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="2">
         <button class="btn-load-last" id="b2LoadLast">📥 Letzte Woche übernehmen</button>
 
         <div class="b2-section">Post-Ebene</div>
@@ -614,11 +638,13 @@ textarea { resize: vertical; line-height: 1.6; }
         <div class="b2-section">Post-Performance (Organisches Engagement)</div>
         <div id="b2PostPerf"></div>
         <button class="btn-add-post" id="b2AddPost">+ Weiteren Post hinzufügen</button>
+        </div>
       </div>
 
       <!-- BLOCK 3: Follower-Ziel -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span></div>
+        <div class="block-title" data-block="3"><span class="block-num">3</span> Follower-Zahlen <span class="info-tip" data-tip="Aktuelle Follower-Zahlen werden automatisch aus den Screenshots extrahiert und mit allen anderen Dashboard-Seiten synchronisiert.">ℹ️</span><span class="block-content-badge" id="badge3"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="3">
         <div class="row-2">
           <div class="field">
             <label class="field-label">FemSurance Follower aktuell</label>
@@ -633,37 +659,46 @@ textarea { resize: vertical; line-height: 1.6; }
           <div class="calc-item">Abstand: <strong id="b3Diff">–</strong></div>
           <div class="calc-item">Geschätzt: <strong id="b3Months">–</strong></div>
         </div>
+        </div>
       </div>
 
       <!-- BLOCK 4: URLs -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span></div>
+        <div class="block-title" data-block="4"><span class="block-num">4</span> Referenz-URLs <span class="info-tip" data-tip="Füge URLs von AssCompact-Artikeln ein die diese Woche erschienen sind. Claude liest die Artikel automatisch und nutzt sie als Grundlage für die Content-Outlines.">ℹ️</span><span class="block-content-badge" id="badge4"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="4">
         <div id="urlList"></div>
         <button class="btn-add-url" id="btnAddUrl">+ Weitere URL</button>
+        </div>
       </div>
 
       <!-- BLOCK 5: Branchenbeobachtung -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span></div>
+        <div class="block-title" data-block="5"><span class="block-num">5</span> Branchenbeobachtung <span class="info-tip" data-tip="Kopiere hier alles rein was Wettbewerber und Branchenmedien diese Woche gepostet haben. Claude analysiert die Themen und berücksichtigt sie bei der Content-Planung.">ℹ️</span><span class="block-content-badge" id="badge5"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="5">
         <div class="field">
           <label class="field-label">Branchenbeobachtung &amp; Wettbewerber</label>
           <textarea id="b5Text" rows="15" placeholder="Einfach alles reinkopieren was du diese Woche gefunden hast — Posts, Artikel, Kommentare, Follower-Zahlen. Kein bestimmtes Format nötig."></textarea>
+        </div>
         </div>
       </div>
 
       <!-- BLOCK 6: Notizen & Kontext -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span></div>
+        <div class="block-title" data-block="6"><span class="block-num">6</span> Notizen &amp; Kontext <span class="info-tip" data-tip="Freier Notizbereich — alles was diese Woche passiert ist und für den Content relevant sein könnte.">ℹ️</span><span class="block-content-badge" id="badge6"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="6">
         <div class="field">
           <textarea id="b6Text" rows="8" placeholder="Was ist diese Woche noch relevant? Events, Interviews, Personen kontaktiert, Newsletter-Aktionen, Besonderheiten, Ideen..."></textarea>
+        </div>
         </div>
       </div>
 
       <!-- BLOCK 7: Lernstand -->
       <div class="block fade-up">
-        <div class="block-title"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span></div>
+        <div class="block-title" data-block="7"><span class="block-num">7</span> Kumulierter Lernstand <span class="info-tip" data-tip="Dein kumulierter Lernstand wird wöchentlich ergänzt. Claude liest ihn und baut darauf auf.">ℹ️</span><span class="block-content-badge" id="badge7"></span><span class="block-chevron">▼</span></div>
+        <div class="block-body" data-body="7">
         <div class="field">
           <textarea id="b7Lernstand" rows="8"></textarea>
+        </div>
         </div>
       </div>
 
@@ -1817,6 +1852,90 @@ btnLernstand.addEventListener('click', () => {
     btnLernstand.classList.add('success');
     setTimeout(() => { btnLernstand.textContent = '🔄 Lernstand aktualisieren'; btnLernstand.classList.remove('success'); }, 2500);
   }
+});
+
+// ══════════ COLLAPSIBLE BLOCKS ══════════
+const BLOCK_DEFAULTS = { '1': true, '2': true, '3': true, '4': false, '5': false, '6': false, '7': false };
+const collapseState = JSON.parse(localStorage.getItem('fem_wp_collapse_state') || 'null') || { ...BLOCK_DEFAULTS };
+
+function updateBlockBadges() {
+  // Block 1: screenshots + files count
+  const ssCount = (load('fem_wp_screenshots', [])).length;
+  const efCount = (load('fem_wp_export_data', [])).filter(f => f && f.fileName).length;
+  const b1Parts = [];
+  if (ssCount) b1Parts.push(`${ssCount} Screenshots`);
+  if (efCount) b1Parts.push(`${efCount} Dateien`);
+  document.getElementById('badge1').textContent = b1Parts.length ? b1Parts.join(' · ') : '';
+
+  // Block 2: check if any field filled
+  const b2data = load('fem_wp_block2', {});
+  const b2Filled = Object.values(b2data).some(v => v && v !== '');
+  document.getElementById('badge2').textContent = b2Filled ? 'Ausgefüllt ✓' : '';
+
+  // Block 3: follower value
+  const b3Val = document.getElementById('b3Current')?.value;
+  document.getElementById('badge3').textContent = b3Val ? `${parseInt(b3Val).toLocaleString('de-DE')} Follower` : '';
+
+  // Block 4: URL count
+  const urlCount = (load('fem_wp_block4', [])).filter(u => u.url && u.url.trim()).length;
+  document.getElementById('badge4').textContent = urlCount ? `${urlCount} URLs` : '';
+
+  // Block 5: text present
+  const b5 = load('fem_wp_block5', {});
+  document.getElementById('badge5').textContent = (b5.text && b5.text.trim()) ? 'Ausgefüllt ✓' : '';
+
+  // Block 6: text present
+  const b6 = load('fem_wp_block6', {});
+  document.getElementById('badge6').textContent = (b6.text && b6.text.trim()) ? 'Ausgefüllt ✓' : '';
+
+  // Block 7: lernstand present
+  const ls = localStorage.getItem('fem_lernstand');
+  document.getElementById('badge7').textContent = ls ? 'Vorhanden ✓' : '';
+}
+
+function applyCollapseState() {
+  for (let i = 1; i <= 7; i++) {
+    const isOpen = collapseState[String(i)] !== false;
+    const title = document.querySelector(`[data-block="${i}"]`);
+    const body = document.querySelector(`[data-body="${i}"]`);
+    if (!title || !body) continue;
+    if (!isOpen) {
+      title.classList.add('collapsed');
+      body.classList.add('collapsed');
+    } else {
+      title.classList.remove('collapsed');
+      body.classList.remove('collapsed');
+    }
+  }
+  updateBlockBadges();
+}
+
+document.querySelectorAll('.block-title[data-block]').forEach(title => {
+  title.addEventListener('click', e => {
+    if (e.target.closest('.info-tip')) return; // Don't toggle when clicking tooltip
+    const blockNum = title.dataset.block;
+    const body = document.querySelector(`[data-body="${blockNum}"]`);
+    if (!body) return;
+    const isCollapsed = title.classList.contains('collapsed');
+    if (isCollapsed) {
+      title.classList.remove('collapsed');
+      body.classList.remove('collapsed');
+      collapseState[blockNum] = true;
+    } else {
+      title.classList.add('collapsed');
+      body.classList.add('collapsed');
+      collapseState[blockNum] = false;
+    }
+    localStorage.setItem('fem_wp_collapse_state', JSON.stringify(collapseState));
+    updateBlockBadges();
+  });
+});
+
+applyCollapseState();
+// Re-check badges when inputs change
+document.querySelector('.col-left').addEventListener('input', () => {
+  clearTimeout(window._badgeTimer);
+  window._badgeTimer = setTimeout(updateBlockBadges, 500);
 });
 </script>
 </body>
