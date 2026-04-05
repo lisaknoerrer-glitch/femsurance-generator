@@ -677,28 +677,68 @@ function sparkSVG(val) {
 }
 
 function renderPostTable() {
+  // Merge posts from pipeline + performance history
   const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
-  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline).slice(0, 20);
-  const tbody = document.getElementById('ppBody');
+  const pipelinePosts = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
 
-  if (!published.length) {
+  // Collect history posts with KPIs
+  const historyPosts = [];
+  history.forEach(h => {
+    if (h.posts) h.posts.forEach(hp => {
+      if (hp.titel && !historyPosts.find(x => x.titel === hp.titel)) {
+        historyPosts.push({ ...hp, weekKey: h.weekKey });
+      }
+    });
+  });
+
+  // Merge: pipeline cards + history posts (deduplicate by title)
+  const allPosts = [];
+  const seen = new Set();
+  pipelinePosts.forEach(card => {
+    allPosts.push({ type: 'card', card, title: card.title });
+    seen.add(card.title);
+  });
+  historyPosts.forEach(hp => {
+    if (!seen.has(hp.titel)) {
+      allPosts.push({ type: 'history', hp, title: hp.titel });
+      seen.add(hp.titel);
+    }
+  });
+
+  const tbody = document.getElementById('ppBody');
+  if (!allPosts.length) {
     tbody.innerHTML = `<tr><td colspan="11" class="pp-empty">Noch keine veröffentlichten Posts. Verschiebe Posts im Kanban zu „Veröffentlicht".</td></tr>`;
     return;
   }
 
   tbody.innerHTML = '';
-  published.forEach(card => {
-    // Check by card ID first, then by title match
-    let p = postPerf[card.id] || {};
+  allPosts.slice(0, 20).forEach(item => {
+    const cardId = item.card ? item.card.id : 'hist_' + item.title;
+    const format = item.card ? item.card.format : 'Company Page';
+    const due = item.card ? (item.card.due || '–') : (item.hp?.weekKey || '–');
+    const title = item.title;
+
+    // Find KPIs: fem_post_performance by ID/title, then history post data
+    let p = postPerf[cardId] || {};
     if (!p.impressions) {
-      const titleKey = 'title_' + card.title;
+      const titleKey = 'title_' + title;
       if (postPerf[titleKey]) p = postPerf[titleKey];
-      // Also check partial title matches from wochenplan
       for (const [k, v] of Object.entries(postPerf)) {
-        if (k.startsWith('title_') && card.title.includes(k.replace('title_', '')) && v.impressions) {
-          p = v; postPerf[card.id] = v; savePostPerf(); break;
+        if (k.startsWith('title_') && title.includes(k.replace('title_', '')) && v.impressions) {
+          p = v; break;
         }
       }
+    }
+    // Fallback to history post data
+    if (!p.impressions && item.hp) {
+      p = {
+        impressions: item.hp.impressions, reaktionen: item.hp.reaktionen,
+        kommentare: item.hp.kommentare, shares: item.hp.geteilte_beitraege,
+        klicks: item.hp.klicks, ind_impressions: item.hp.individuelle_impressions,
+        engagements: item.hp.engagements, follower: item.hp.gewonnene_follower,
+        besucher: item.hp.generierte_seitenbesucher
+      };
     }
     const hasKPIs = !!(p.impressions || p.reaktionen || p.klicks);
     const imp = parseFloat(p.impressions) || 0;
@@ -709,19 +749,19 @@ function renderPostTable() {
     const eng = imp > 0 ? Math.round((reak + komm + shares) / imp * 10000) / 100 : 0;
     const ctr = imp > 0 ? Math.round(klicks / imp * 10000) / 100 : 0;
     const engClass = eng >= 5 ? 'green' : eng >= 3 ? 'yellow' : 'red';
-    const badgeClass = card.format === 'Company Page' ? 'pp-badge-cp' : card.format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
+    const badgeClass = format === 'Company Page' ? 'pp-badge-cp' : format === 'Gruppe' ? 'pp-badge-gr' : 'pp-badge-wa';
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="pp-title" data-id="${card.id}">${card.title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
-      <td><span class="pp-badge ${badgeClass}">${card.format}</span></td>
-      <td>${card.due || '–'}</td>
-      <td><input value="${p.impressions || ''}" data-id="${card.id}" data-k="impressions"></td>
-      <td><input value="${p.reaktionen || ''}" data-id="${card.id}" data-k="reaktionen"></td>
-      <td><input value="${p.kommentare || ''}" data-id="${card.id}" data-k="kommentare"></td>
-      <td><input value="${p.shares || ''}" data-id="${card.id}" data-k="shares"></td>
+      <td><span class="pp-title" data-id="${cardId}">${title}</span>${hasKPIs ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>' : ''}</td>
+      <td><span class="pp-badge ${badgeClass}">${format}</span></td>
+      <td>${due}</td>
+      <td><input value="${p.impressions || ''}" data-id="${cardId}" data-k="impressions"></td>
+      <td><input value="${p.reaktionen || ''}" data-id="${cardId}" data-k="reaktionen"></td>
+      <td><input value="${p.kommentare || ''}" data-id="${cardId}" data-k="kommentare"></td>
+      <td><input value="${p.shares || ''}" data-id="${cardId}" data-k="shares"></td>
       <td><span class="pp-eng ${imp > 0 ? engClass : ''}">${imp > 0 ? eng.toFixed(1) + '%' : '–'}</span></td>
-      <td><input value="${p.klicks || ''}" data-id="${card.id}" data-k="klicks"></td>
+      <td><input value="${p.klicks || ''}" data-id="${cardId}" data-k="klicks"></td>
       <td>${imp > 0 ? ctr.toFixed(1) + '%' : '–'}</td>
       <td><div class="pp-spark">${sparkSVG(imp)}</div></td>
     `;
@@ -1106,29 +1146,21 @@ if (kpiAnalytics) setKpiValues(kpiAnalytics);
 
 // ══════════ KPI TRACKING TABLE ══════════
 const KPI_DEFS = [
-  { section: 'Post-Ebene' },
-  { key: 'post_impressions', label: 'Impressions', defaultTarget: 2000, paths: ['post.impressions', 'post_analytics.impressions', 'post_impressions'] },
-  { key: 'post_eng_rate', label: 'Engagement-Rate %', defaultTarget: 5, paths: ['post.engagement_rate_pct', 'post_analytics.engagement_rate_pct', 'post_eng_rate'], pct: true },
-  { key: 'post_klicks', label: 'Klicks', defaultTarget: 100, paths: ['post.klicks', 'post_analytics.klicks', 'post_klicks'] },
-  { key: 'post_ctr', label: 'CTR %', defaultTarget: 5, paths: ['post.ctr_pct', 'post_analytics.ctr_pct', 'post_ctr'], pct: true },
-  { key: 'post_reaktionen', label: 'Reaktionen', defaultTarget: 50, paths: ['post.reaktionen', 'post_analytics.reaktionen', 'post_reaktionen'] },
-  { key: 'post_kommentare', label: 'Kommentare', defaultTarget: 10, paths: ['post.kommentare', 'post_analytics.kommentare', 'post_kommentare'] },
-  { key: 'post_shares', label: 'Shares', defaultTarget: 5, paths: ['post.shares', 'post_analytics.shares', 'post_shares'] },
   { section: 'Inhalte (letzte 30 Tage)' },
-  { key: 'site_impressions', label: 'Impressions (letzte 30 Tage)', defaultTarget: 8000, paths: ['site.impressions', 'content_summary.impressions', 'site_impressions'] },
-  { key: 'site_reaktionen', label: 'Reaktionen (letzte 30 Tage)', defaultTarget: 200, paths: ['site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
-  { key: 'site_kommentare', label: 'Kommentare (letzte 30 Tage)', defaultTarget: 30, paths: ['site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
-  { key: 'site_shares', label: 'Direkt geteilte Beiträge (letzte 30 Tage)', defaultTarget: 15, paths: ['site.shares', 'content_summary.shares', 'site_shares'] },
+  { key: 'inhalte_impressions', label: 'Impressions', defaultTarget: 8000, paths: ['inhalte_30d.impressions', 'site.impressions', 'content_summary.impressions', 'site_impressions'] },
+  { key: 'inhalte_reaktionen', label: 'Reaktionen', defaultTarget: 200, paths: ['inhalte_30d.reaktionen', 'site.reaktionen', 'content_summary.reaktionen', 'site_reaktionen'] },
+  { key: 'inhalte_kommentare', label: 'Kommentare', defaultTarget: 30, paths: ['inhalte_30d.kommentare', 'site.kommentare', 'content_summary.kommentare', 'site_kommentare'] },
+  { key: 'inhalte_shares', label: 'Direkt geteilte Beiträge', defaultTarget: 15, paths: ['inhalte_30d.geteilte_beitraege', 'site.shares', 'content_summary.shares', 'site_shares'] },
   { section: 'Besucher:innen' },
-  { key: 'visitor_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
-  { key: 'visitor_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
-  { key: 'visitor_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
+  { key: 'besucher_aufrufe', label: 'Seitenaufrufe', defaultTarget: 500, paths: ['besucher.seitenaufrufe', 'visitor.seitenaufrufe', 'visitor_summary.seitenaufrufe', 'visitor_aufrufe'] },
+  { key: 'besucher_unique', label: 'Individuelle Besucher:innen', defaultTarget: 200, paths: ['besucher.individuelle_besucher', 'visitor.individuelle_besucher', 'visitor_summary.individuelle_besucher', 'visitor_unique'] },
+  { key: 'besucher_button', label: 'Klicks auf den eigenen Button', defaultTarget: 50, paths: ['besucher.klicks_eigener_button', 'visitor.button_klicks', 'visitor_summary.button_klicks', 'visitor_button_klicks'] },
   { section: 'Follower:innen' },
-  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
-  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
-  { key: 'follower_premium', label: 'Via Premium-Einladung', defaultTarget: 5, paths: ['follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
+  { key: 'follower_gesamt', label: 'Follower:innen insgesamt', defaultTarget: 2500, paths: ['follower.gesamt', 'follower.follower_gesamt', 'follower_summary.follower_gesamt', 'follower_gesamt'] },
+  { key: 'follower_neu', label: 'Neue Follower:innen (letzte 30 Tage)', defaultTarget: 30, paths: ['follower.neue_30d', 'follower.neue_follower', 'follower_summary.neue_follower', 'follower_neu'] },
+  { key: 'follower_premium', label: 'Neue via Premium-Einladung', defaultTarget: 5, paths: ['follower.neue_premium', 'follower.premium_einladung', 'follower_summary.premium_einladung', 'follower_premium'] },
   { section: 'Seiten-Suche (letzte 7 Tage)' },
-  { key: 'search_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['search.seitensuchen', 'search_summary.seitensuchen', 'search.suchanzeigen', 'search_summary.suchanzeigen', 'search_seitensuchen'] },
+  { key: 'suche_seitensuchen', label: 'Seitensuchen', defaultTarget: 200, paths: ['suche_7d.seitensuchen', 'search.seitensuchen', 'search_summary.seitensuchen', 'search_seitensuchen'] },
 ];
 
 function getNestedVal(obj, path) {

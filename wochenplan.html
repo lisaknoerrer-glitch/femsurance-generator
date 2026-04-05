@@ -1817,6 +1817,55 @@ btnSave.addEventListener('click', () => {
   const year = new Date().getFullYear();
   const key = `fem_wochenplan_KW${kw}_${year}`;
   localStorage.setItem(key, outputArea.value);
+
+  // Save structured KPIs to fem_performance_history
+  const b2 = load('fem_wp_block2', {});
+  const b2Posts = load('fem_wp_b2_posts', []);
+  const entry = {
+    weekKey: `KW${kw}_${year}`,
+    kw: kw,
+    savedAt: new Date().toISOString(),
+    inhalte_30d: {
+      impressions: b2.site_impressions || '',
+      reaktionen: b2.site_reaktionen || '',
+      kommentare: b2.site_kommentare || '',
+      geteilte_beitraege: b2.site_shares || ''
+    },
+    besucher: {
+      seitenaufrufe: b2.visitor_aufrufe || '',
+      individuelle_besucher: b2.visitor_unique || '',
+      klicks_eigener_button: b2.visitor_button_klicks || ''
+    },
+    follower: {
+      gesamt: b2.follower_gesamt || '',
+      neue_30d: b2.follower_neu || '',
+      neue_premium: b2.follower_premium || ''
+    },
+    suche_7d: {
+      seitensuchen: b2.search_seitensuchen || ''
+    },
+    posts: b2Posts.filter(p => p.titel).map(p => ({
+      titel: p.titel || '',
+      impressions: p.impressions || '',
+      individuelle_impressions: p.ind_impressions || '',
+      engagements: p.engagements || '',
+      engagement_rate: p.eng_rate || '',
+      klicks: p.klicks || '',
+      ctr: p.ctr || '',
+      reaktionen: p.reaktionen || '',
+      kommentare: p.kommentare || '',
+      geteilte_beitraege: p.shares || '',
+      generierte_seitenbesucher: p.besucher || '',
+      gewonnene_follower: p.follower || ''
+    }))
+  };
+
+  const history = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+  const existIdx = history.findIndex(h => h.weekKey === entry.weekKey);
+  if (existIdx >= 0) history[existIdx] = entry; else history.unshift(entry);
+  if (history.length > 20) history.length = 20;
+  localStorage.setItem('fem_performance_history', JSON.stringify(history));
+
   btnSave.textContent = 'Gespeichert ✓';
   btnSave.classList.add('success');
   renderArchiv();
