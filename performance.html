@@ -400,15 +400,8 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     <div class="header-meta">LinkedIn Analytics</div>
   </div>
 
-  <!-- Tab Navigation -->
-  <div class="perf-tabs">
-    <button class="tab-btn active" data-tab="woche">Woche</button>
-    <button class="tab-btn" data-tab="monat">Monat</button>
-    <button class="tab-btn" data-tab="quartal">Quartal</button>
-  </div>
-
-  <!-- ═══ WOCHE TAB ═══ -->
-  <div class="tab-content" id="tab-woche" style="display:block">
+  <!-- Content (formerly Woche tab) -->
+  <div id="tab-woche" style="display:block">
 
   <!-- KPI-Center -->
   <div class="card fade-up">
@@ -689,8 +682,8 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 
   </div><!-- /tab-woche -->
 
-  <!-- ═══ MONAT TAB ═══ -->
-  <div class="tab-content" id="tab-monat">
+  <!-- ═══ MONAT TAB (hidden) ═══ -->
+  <div class="tab-content" id="tab-monat" style="display:none">
     <div class="card" style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:0;">Monatsübersicht</div>
@@ -714,8 +707,8 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     </div>
   </div>
 
-  <!-- ═══ QUARTAL TAB ═══ -->
-  <div class="tab-content" id="tab-quartal">
+  <!-- ═══ QUARTAL TAB (hidden) ═══ -->
+  <div class="tab-content" id="tab-quartal" style="display:none">
     <div class="card" style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
         <div class="card-title" style="margin-bottom:0;">Quartalsübersicht</div>
