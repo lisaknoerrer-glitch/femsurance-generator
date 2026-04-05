@@ -606,27 +606,49 @@ try {
 renderTable();
 
 // ══════════ WACHSTUMS-VERGLEICH ══════════
-let growthHistory = JSON.parse(localStorage.getItem('fem_growth_history') || '{}');
-function saveGrowthHistory() { localStorage.setItem('fem_growth_history', JSON.stringify(growthHistory)); }
+let growthData = JSON.parse(localStorage.getItem('fem_growth_history') || '{"accounts":[]}');
+// Migration from old format
+if (!growthData.accounts && typeof growthData === 'object') {
+  const migrated = { accounts: [] };
+  Object.entries(growthData).forEach(([name, entries]) => {
+    if (Array.isArray(entries)) migrated.accounts.push({ name, entries });
+  });
+  growthData = migrated;
+}
+function saveGrowth() { localStorage.setItem('fem_growth_history', JSON.stringify(growthData)); }
 
-function sparkGrowth(entries) {
+function sparkGrowth(entries, color) {
   if (entries.length < 2) return '';
   const vals = entries.map(e => e.followers);
   const max = Math.max(...vals), min = Math.min(...vals);
   const range = max - min || 1;
   const pts = vals.map((v, i) => `${i * (100 / (vals.length - 1))},${22 - ((v - min) / range) * 20}`).join(' ');
-  return `<svg viewBox="0 0 100 24" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#E91E8C" stroke-width="2" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 100 24" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color || '#E91E8C'}" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
-function renderGrowth() {
+// Ensure FemSurance is always first
+function ensureFemSurance() {
   const data = loadData();
-  const container = document.getElementById('growthContent');
-  // Build accounts list: FemSurance + competitors
-  const accounts = [{ name: 'FemSurance', current: data.femFollower }];
-  (data.accounts || []).forEach(a => { if (a.name) accounts.push({ name: a.name, current: parseInt(a.followers) || 0 }); });
+  if (!growthData.accounts.find(a => a.name === 'FemSurance')) {
+    growthData.accounts.unshift({ name: 'FemSurance', entries: [] });
+  }
+  // Add current FemSurance follower as latest entry if not today
+  const fem = growthData.accounts.find(a => a.name === 'FemSurance');
+  const today = new Date().toISOString().split('T')[0];
+  if (data.femFollower && (!fem.entries.length || fem.entries[fem.entries.length - 1].date !== today)) {
+    fem.entries.push({ date: today, followers: data.femFollower });
+    saveGrowth();
+  }
+}
+ensureFemSurance();
 
-  container.innerHTML = accounts.map(acc => {
-    const entries = (growthHistory[acc.name] || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+function renderGrowth() {
+  const container = document.getElementById('growthContent');
+  let html = '';
+
+  growthData.accounts.forEach((acc, ai) => {
+    const entries = (acc.entries || []).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const latest = entries.length ? entries[entries.length - 1].followers : 0;
     let growthBadge = '';
     if (entries.length >= 2) {
       const last = entries[entries.length - 1], prev = entries[entries.length - 2];
@@ -635,36 +657,115 @@ function renderGrowth() {
       const cls = perWeek >= 0 ? 'growth-pos' : 'growth-neg';
       growthBadge = `<span class="growth-badge ${cls}">${perWeek >= 0 ? '+' : ''}${perWeek} / Woche</span>`;
     }
-    return `
-      <div class="growth-account" data-acc="${acc.name}">
+    html += `
+      <div class="growth-account" data-gi="${ai}">
         <div class="growth-header">
-          <span class="growth-name">${acc.name}</span>
-          <span>${acc.current ? acc.current.toLocaleString('de-DE') + ' Follower' : '–'} ${growthBadge}</span>
+          <span class="growth-name">${acc.name}${acc.name === 'FemSurance' ? '' : ` <button class="btn-remove" data-gdel="${ai}" style="margin-left:4px;">×</button>`}</span>
+          <span>${latest ? latest.toLocaleString('de-DE') + ' Follower' : '–'} ${growthBadge}</span>
         </div>
         <div class="growth-spark">${sparkGrowth(entries)}</div>
         <div style="font-size:10px; color:var(--text-secondary); margin:4px 0;">${entries.length} Einträge</div>
         <div class="growth-add">
           <input type="date" class="ga-date" value="${new Date().toISOString().split('T')[0]}">
-          <input type="number" class="ga-fol" placeholder="Follower" value="${acc.current || ''}" style="width:80px;">
-          <button class="ga-btn">+ Eintrag</button>
+          <input type="number" class="ga-fol" placeholder="Follower" style="width:80px;">
+          <button class="ga-btn" data-gadd="${ai}">+ Eintrag</button>
         </div>
       </div>
     `;
-  }).join('');
+  });
 
-  // Bind add buttons
-  container.querySelectorAll('.ga-btn').forEach(btn => {
+  // Add account button
+  html += `<div id="growthAddForm" style="margin-top:10px;">
+    <button class="btn-add" id="growthAddBtn" style="width:100%;">+ Account zum Wachstumsvergleich hinzufügen</button>
+  </div>`;
+
+  // Compare button
+  if (growthData.accounts.length >= 2) {
+    html += `<button class="ca-btn-pink" id="growthCompare" style="margin-top:12px; width:100%;">📊 Wachstum vergleichen</button>`;
+    html += `<div id="growthCompareChart" style="margin-top:10px;"></div>`;
+  }
+
+  container.innerHTML = html;
+
+  // Bind entry add buttons
+  container.querySelectorAll('[data-gadd]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const acc = btn.closest('.growth-account');
-      const name = acc.dataset.acc;
-      const date = acc.querySelector('.ga-date').value;
-      const fol = parseInt(acc.querySelector('.ga-fol').value) || 0;
-      if (!date || !fol) return;
-      if (!growthHistory[name]) growthHistory[name] = [];
-      growthHistory[name].push({ date, followers: fol });
-      saveGrowthHistory();
+      const ai = parseInt(btn.dataset.gadd);
+      const row = btn.closest('.growth-account');
+      const date = row.querySelector('.ga-date').value;
+      const fol = parseInt(row.querySelector('.ga-fol').value) || 0;
+      if (!date || !fol) { alert('Bitte Datum und Follower-Zahl eintragen.'); return; }
+      growthData.accounts[ai].entries.push({ date, followers: fol });
+      saveGrowth();
       btn.textContent = '✓'; setTimeout(() => renderGrowth(), 500);
     });
+  });
+
+  // Bind delete account buttons
+  container.querySelectorAll('[data-gdel]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!confirm('Account entfernen?')) return;
+      growthData.accounts.splice(parseInt(btn.dataset.gdel), 1);
+      saveGrowth(); renderGrowth();
+    });
+  });
+
+  // Add account form
+  document.getElementById('growthAddBtn')?.addEventListener('click', () => {
+    const form = document.getElementById('growthAddForm');
+    form.innerHTML = `
+      <div style="padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-top:8px;">
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
+          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="ca-btn-pink" id="gaNewSave">Hinzufügen</button>
+          <button class="ca-btn" id="gaNewCancel">Abbrechen</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('gaNewName').focus();
+    document.getElementById('gaNewCancel').addEventListener('click', () => renderGrowth());
+    document.getElementById('gaNewSave').addEventListener('click', () => {
+      const name = document.getElementById('gaNewName').value.trim();
+      const fol = parseInt(document.getElementById('gaNewFol').value) || 0;
+      if (!name) { alert('Bitte Account-Name eintragen.'); return; }
+      if (growthData.accounts.find(a => a.name === name)) { alert('Account existiert bereits.'); return; }
+      const entries = fol ? [{ date: new Date().toISOString().split('T')[0], followers: fol }] : [];
+      growthData.accounts.push({ name, entries });
+      saveGrowth(); renderGrowth();
+    });
+  });
+
+  // Compare chart
+  document.getElementById('growthCompare')?.addEventListener('click', () => {
+    const chart = document.getElementById('growthCompareChart');
+    const colors = ['#E91E8C', '#7C3AED', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626'];
+    let html = '<div style="height:120px; position:relative; background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px;">';
+    // Find global min/max
+    let allVals = [];
+    growthData.accounts.forEach(a => a.entries.forEach(e => allVals.push(e.followers)));
+    if (!allVals.length) { chart.innerHTML = '<div style="color:var(--text-secondary); font-size:12px;">Noch keine Daten.</div>'; return; }
+    const gMin = Math.min(...allVals), gMax = Math.max(...allVals);
+    const gRange = gMax - gMin || 1;
+    // SVG overlay
+    html += '<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:100%;">';
+    growthData.accounts.forEach((acc, i) => {
+      const entries = (acc.entries || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+      if (entries.length < 2) return;
+      const pts = entries.map((e, j) => `${j * (300 / (entries.length - 1))},${95 - ((e.followers - gMin) / gRange) * 90}`).join(' ');
+      html += `<polyline points="${pts}" fill="none" stroke="${colors[i % colors.length]}" stroke-width="2.5" stroke-linecap="round"/>`;
+    });
+    html += '</svg></div>';
+    // Legend
+    html += '<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">';
+    growthData.accounts.forEach((acc, i) => {
+      html += `<span style="font-size:11px; display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:${colors[i % colors.length]}; border-radius:2px; display:inline-block;"></span>${acc.name}</span>`;
+    });
+    html += '</div>';
+    chart.innerHTML = html;
   });
 }
 renderGrowth();
