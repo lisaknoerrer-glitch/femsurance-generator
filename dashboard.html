@@ -432,6 +432,24 @@ body {
 /* ── Scrollbar ── */
 .sidebar-right::-webkit-scrollbar { width: 4px; }
 .sidebar-right::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Insight Engine */
+.insight-header { display:flex; align-items:center; cursor:pointer; user-select:none; }
+.insight-header .card-title { margin-bottom:0; flex:1; }
+.insight-chevron { font-size:12px; color:var(--text-secondary); transition:transform 0.25s; }
+.insight-header.collapsed .insight-chevron { transform:rotate(-90deg); }
+.insight-timestamp { font-size:11px; color:var(--text-secondary); margin-left:10px; }
+.insight-body { overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s; max-height:2000px; opacity:1; }
+.insight-body.collapsed { max-height:0; opacity:0; padding:0; }
+.insight-btn { padding:10px 22px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
+.insight-btn:hover { opacity:0.9; }
+.insight-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.insight-btn-outline { padding:8px 16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); cursor:pointer; transition:all 0.2s; }
+.insight-btn-outline:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.insight-btn-outline.success { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.insight-output { margin-top:14px; padding:18px 22px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; color:var(--text-primary); }
+.insight-output strong { color:var(--fem-pink); }
+.insight-actions { display:flex; gap:8px; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -498,6 +516,26 @@ body {
       <div class="label">Top-Post der letzten 7 Tage</div>
       <div class="value" style="font-size:15px; line-height:1.35; margin-top:2px;">„5 Tipps für Maklerinnen im Vertrieb"</div>
       <div class="sub">1.240 Impressionen · 6,2 % Engagement</div>
+    </div>
+  </div>
+
+  <!-- ── Insight Engine ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="insightHeader">
+      <div class="card-title">🧠 Weekly Insights</div>
+      <span class="insight-timestamp" id="insightTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body" id="insightBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
+      </div>
+      <div id="insightOutput"></div>
+      <div class="insight-actions" id="insightActions" style="display:none;">
+        <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
+      </div>
     </div>
   </div>
 
@@ -993,6 +1031,162 @@ body {
     `).join('');
   }
   buildFeed();
+
+  // ══════════ INSIGHT ENGINE ══════════
+  const INSIGHT_API_KEY = 'DEIN_API_KEY_HIER';
+  const currentKW = kw;
+
+  // Collapse toggle
+  const insightCollapsed = localStorage.getItem('fem_insights_collapsed') === 'true';
+  if (insightCollapsed) {
+    document.getElementById('insightHeader').classList.add('collapsed');
+    document.getElementById('insightBody').classList.add('collapsed');
+  }
+  document.getElementById('insightHeader').addEventListener('click', () => {
+    const h = document.getElementById('insightHeader');
+    const b = document.getElementById('insightBody');
+    h.classList.toggle('collapsed');
+    b.classList.toggle('collapsed');
+    localStorage.setItem('fem_insights_collapsed', h.classList.contains('collapsed'));
+  });
+
+  // Show last saved insights
+  const insightKey = `fem_insights_KW${currentKW}`;
+  const savedInsight = localStorage.getItem(insightKey);
+  if (savedInsight) {
+    try {
+      const data = JSON.parse(savedInsight);
+      showInsight(data.text, data.savedAt);
+    } catch { showInsight(savedInsight); }
+  } else {
+    // If no insights, collapse by default
+    if (!insightCollapsed) {
+      document.getElementById('insightHeader').classList.add('collapsed');
+      document.getElementById('insightBody').classList.add('collapsed');
+    }
+  }
+
+  function showInsight(text, savedAt) {
+    document.getElementById('insightOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('insightActions').style.display = 'flex';
+    if (savedAt) {
+      const d = new Date(savedAt);
+      document.getElementById('insightTimestamp').textContent = `Zuletzt: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+    }
+    // Open if collapsed
+    document.getElementById('insightHeader').classList.remove('collapsed');
+    document.getElementById('insightBody').classList.remove('collapsed');
+  }
+
+  // Generate
+  document.getElementById('insightGenBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('insightGenBtn');
+    btn.disabled = true; btn.textContent = 'Wird analysiert...';
+
+    try {
+      // Collect all data
+      const parts = [`Aktuelle KW: ${currentKW}`];
+
+      const hist = JSON.parse(localStorage.getItem('fem_performance_history') || '[]');
+      if (hist.length) {
+        parts.push('## Performance (letzte 4 Wochen)\n' + hist.slice(0, 4).map(h => {
+          const imp = h.inhalte_30d?.impressions || '';
+          const fol = h.follower?.gesamt || '';
+          const posts = (h.posts || []).map(p => `${p.titel}: ${p.engagement_rate || '–'}%`).join(', ');
+          return `KW ${h.kw || '?'}: Impressions ${imp || '–'}, Follower ${fol || '–'}${posts ? ', Posts: ' + posts : ''}`;
+        }).join('\n'));
+      }
+
+      const postPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      const topPosts = Object.entries(postPerf).filter(([,v]) => v.impressions).slice(0, 10);
+      if (topPosts.length) {
+        parts.push('## Letzte Posts\n' + topPosts.map(([id, v]) => `Imp: ${v.impressions}, Reak: ${v.reaktionen || 0}, Komm: ${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
+      }
+
+      try {
+        const kdRaw = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
+        if (!Array.isArray(kdRaw)) {
+          parts.push(`## Kanäle\nFollower: ${kdRaw.femFollower || '–'}, Ziel: ${kdRaw.goal || '–'}, Gruppe: ${kdRaw.gruppeMembers || '–'}, WhatsApp: ${kdRaw.whatsappMembers || '–'}, Newsletter: ${kdRaw.newsletterSubscribers || '–'}`);
+          if (kdRaw.accounts) parts.push('Konkurrenz: ' + kdRaw.accounts.filter(a => a.name).map(a => `${a.name}: ${a.followers || '–'} Follower`).join(', '));
+        }
+      } catch {}
+
+      const lernstand = localStorage.getItem('fem_lernstand');
+      if (lernstand) parts.push('## Lernstand\n' + lernstand.slice(0, 500));
+
+      try {
+        const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
+        if (themes.length) parts.push('## Aktuelle Themen\n' + themes.slice(0, 5).map(t => t.thema).join(', '));
+      } catch {}
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': INSIGHT_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 1500,
+          system: `Du bist die FemSurance Insight Engine. Analysiere alle verfügbaren Daten und erstelle konkrete, actionable Insights für diese Woche.
+
+Antworte in diesem exakten Format:
+
+🧠 INSIGHTS KW [X]
+
+📈 WAS FUNKTIONIERT:
+— [Erkenntnis 1 mit konkreten Zahlen]
+— [Erkenntnis 2 mit konkreten Zahlen]
+— [Erkenntnis 3 mit konkreten Zahlen]
+
+⚠️ WAS NICHT FUNKTIONIERT:
+— [Erkenntnis 1]
+— [Erkenntnis 2]
+
+🎯 DIESE WOCHE TESTEN:
+— [Konkrete Empfehlung 1]
+— [Konkrete Empfehlung 2]
+
+🔍 KONKURRENZ-LÜCKE:
+— [Was machen Wettbewerber nicht was FemSurance machen könnte]
+
+💡 EMPFEHLUNG:
+— [1-2 konkrete Aktionen für diese Woche]
+
+Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt muss spezifisch und umsetzbar sein.`,
+          messages: [{ role: 'user', content: parts.join('\n\n') }]
+        })
+      });
+
+      if (!resp.ok) throw new Error('API-Fehler: ' + resp.status);
+      const data = await resp.json();
+      const text = data.content[0].text;
+      const savedAt = new Date().toISOString();
+
+      localStorage.setItem(insightKey, JSON.stringify({ text, savedAt }));
+      showInsight(text, savedAt);
+
+    } catch (err) {
+      alert('Fehler: ' + err.message);
+    }
+    btn.disabled = false; btn.textContent = 'Insights generieren';
+  });
+
+  // Copy
+  document.getElementById('insightCopy').addEventListener('click', () => {
+    const text = document.querySelector('.insight-output')?.textContent || '';
+    navigator.clipboard.writeText(text);
+    const btn = document.getElementById('insightCopy');
+    btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  // Send to Wochenplan
+  document.getElementById('insightToWP').addEventListener('click', () => {
+    const text = document.querySelector('.insight-output')?.textContent || '';
+    const b6 = JSON.parse(localStorage.getItem('fem_wp_block6') || '{}');
+    b6.text = (b6.text ? b6.text + '\n\n' : '') + '--- Insights KW ' + currentKW + ' ---\n' + text;
+    localStorage.setItem('fem_wp_block6', JSON.stringify(b6));
+    const btn = document.getElementById('insightToWP');
+    btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '→ Wochenplan übernehmen'; btn.classList.remove('success'); }, 2000);
+  });
 })();
 </script>
 </body>
