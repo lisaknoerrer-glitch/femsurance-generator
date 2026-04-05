@@ -531,66 +531,6 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
-  <!-- ── Insight Engine ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header" id="insightHeader">
-      <div class="card-title">🧠 Weekly Insights</div>
-      <span class="insight-timestamp" id="insightTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body" id="insightBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
-      </div>
-      <div id="insightOutput"></div>
-      <div class="insight-actions" id="insightActions" style="display:none;">
-        <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Positionierungs-Check ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header" id="posHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
-      <span class="insight-timestamp" id="posTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body collapsed" id="posBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
-      </div>
-      <div id="posOutput"></div>
-      <div class="insight-actions" id="posActions" style="display:none;">
-        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Content-DNA ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
-      <span class="insight-timestamp" id="dnaTimestamp"></span>
-      <span class="insight-chevron">▼</span>
-    </div>
-    <div class="insight-body collapsed" id="dnaBody">
-      <div style="margin-bottom:12px;">
-        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
-      </div>
-      <div id="dnaOutput"></div>
-      <div class="insight-actions" id="dnaActions" style="display:none;">
-        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
-        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ── Stats Row ── -->
   <div class="stats-row">
 
@@ -742,6 +682,98 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
+  <!-- ── Team-Aufgaben ── -->
+  <div class="team-section fade-up">
+    <div class="card-title" style="margin-bottom: 14px;">Team-Aufgaben</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">N1</div>
+        <div class="team-name">Name 1</div>
+        <div class="team-role">Marketing</div>
+        <div class="team-tasks"><strong>4</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N2</div>
+        <div class="team-name">Name 2</div>
+        <div class="team-role">Redaktion</div>
+        <div class="team-tasks"><strong>6</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N3</div>
+        <div class="team-name">Name 3</div>
+        <div class="team-role">Content</div>
+        <div class="team-tasks"><strong>3</strong> offene Aufgaben</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">N4</div>
+        <div class="team-name">Name 4</div>
+        <div class="team-role">Analyse</div>
+        <div class="team-tasks"><strong>5</strong> offene Aufgaben</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Insight Engine ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="insightHeader">
+      <div class="card-title">🧠 Weekly Insights</div>
+      <span class="insight-timestamp" id="insightTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body" id="insightBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
+      </div>
+      <div id="insightOutput"></div>
+      <div class="insight-actions" id="insightActions" style="display:none;">
+        <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Positionierungs-Check ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="posHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
+      <span class="insight-timestamp" id="posTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="posBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
+      </div>
+      <div id="posOutput"></div>
+      <div class="insight-actions" id="posActions" style="display:none;">
+        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Content-DNA ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
+      <span class="insight-timestamp" id="dnaTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="dnaBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
+      </div>
+      <div id="dnaOutput"></div>
+      <div class="insight-actions" id="dnaActions" style="display:none;">
+        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ── Content Pipeline Kanban ── -->
   <div class="kanban-section card fade-up">
     <div class="card-title">Content Pipeline</div>
@@ -842,36 +874,7 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
     </div>
   </div>
 
-  <!-- ── Team-Aufgaben ── -->
-  <div class="team-section fade-up">
-    <div class="card-title" style="margin-bottom: 14px;">Team-Aufgaben</div>
-    <div class="team-grid">
-      <div class="team-card">
-        <div class="team-avatar">N1</div>
-        <div class="team-name">Name 1</div>
-        <div class="team-role">Marketing</div>
-        <div class="team-tasks"><strong>4</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N2</div>
-        <div class="team-name">Name 2</div>
-        <div class="team-role">Redaktion</div>
-        <div class="team-tasks"><strong>6</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N3</div>
-        <div class="team-name">Name 3</div>
-        <div class="team-role">Content</div>
-        <div class="team-tasks"><strong>3</strong> offene Aufgaben</div>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar">N4</div>
-        <div class="team-name">Name 4</div>
-        <div class="team-role">Analyse</div>
-        <div class="team-tasks"><strong>5</strong> offene Aufgaben</div>
-      </div>
-    </div>
-  </div>
+
 
 </main>
 
