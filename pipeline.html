@@ -746,7 +746,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
       </div>
       <div class="cm-field">
         <div class="cm-label">Fälligkeitsdatum</div>
-        <input type="text" id="cmDue" placeholder="z. B. 10.04.">
+        <input type="date" id="cmDue">
       </div>
     </div>
     <div class="cm-field">
@@ -1595,7 +1595,18 @@ function openCardModal(cardId) {
 
   document.getElementById('cmTitle').value = card.title;
   document.getElementById('cmAssignee').value = card.assignee || '';
-  document.getElementById('cmDue').value = card.due || '';
+  // Convert DD.MM. or DD.MM.YYYY to YYYY-MM-DD for date input
+  let dueVal = card.dueISO || card.due || '';
+  if (dueVal && !dueVal.includes('-')) {
+    const parts = dueVal.replace(/\.$/, '').split('.');
+    if (parts.length >= 2) {
+      const day = parts[0].padStart(2, '0');
+      const month = parts[1].padStart(2, '0');
+      const year = parts[2] || new Date().getFullYear();
+      dueVal = `${year}-${month}-${day}`;
+    }
+  }
+  document.getElementById('cmDue').value = dueVal;
   document.getElementById('cmUrl').value = card.url || '';
   document.getElementById('cmRefmaterial').value = card.refmaterial || '';
   document.getElementById('cmThemenwelt').value = card.themenwelt || 'Alle 4';
@@ -1739,7 +1750,15 @@ document.getElementById('cmSave').addEventListener('click', () => {
   if (!card) return;
   card.title = document.getElementById('cmTitle').value.trim() || card.title;
   card.assignee = document.getElementById('cmAssignee').value.trim();
-  card.due = document.getElementById('cmDue').value.trim();
+  // Convert YYYY-MM-DD back to DD.MM. for card display
+  const rawDue = document.getElementById('cmDue').value.trim();
+  if (rawDue && rawDue.includes('-')) {
+    const [y, m, d] = rawDue.split('-');
+    card.due = `${d}.${m}.`;
+    card.dueISO = rawDue;
+  } else {
+    card.due = rawDue;
+  }
   card.url = document.getElementById('cmUrl').value.trim();
   card.refmaterial = document.getElementById('cmRefmaterial').value.trim();
   card.themenwelt = document.getElementById('cmThemenwelt').value;
