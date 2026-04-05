@@ -823,12 +823,40 @@ function addExportFile(file) {
   if (ext === 'csv') {
     const reader = new FileReader();
     reader.onload = e => {
-      const text = e.target.result;
-      const sep = text.includes(';') ? ';' : ',';
-      const lines = text.split('\n').filter(l => l.trim());
-      const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
-      const rows = lines.slice(1).map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
-      console.log(`Parsed ${file.name}: ${headers.length} Spalten, ${rows.length} Zeilen`);
+      let text = e.target.result;
+      // Strip UTF-8 BOM
+      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+      // Detect delimiter: count ; vs , outside quotes in first line
+      const firstLine = text.split('\n')[0] || '';
+      let semis = 0, commas = 0, inQ = false;
+      for (const ch of firstLine) {
+        if (ch === '"') inQ = !inQ;
+        else if (!inQ && ch === ';') semis++;
+        else if (!inQ && ch === ',') commas++;
+      }
+      const sep = semis >= commas ? ';' : ',';
+      // Parse CSV with proper quote handling
+      function parseCsvLine(line) {
+        const cells = []; let cell = '', inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (inQuote) {
+            if (ch === '"' && line[i + 1] === '"') { cell += '"'; i++; }
+            else if (ch === '"') inQuote = false;
+            else cell += ch;
+          } else {
+            if (ch === '"') inQuote = true;
+            else if (ch === sep) { cells.push(cell.trim()); cell = ''; }
+            else cell += ch;
+          }
+        }
+        cells.push(cell.trim());
+        return cells;
+      }
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      const headers = parseCsvLine(lines[0]);
+      const rows = lines.slice(1).map(parseCsvLine).filter(r => r.some(c => c));
+      console.log(`Parsed ${file.name}: Delimiter="${sep}" · ${headers.length} Spalten · ${rows.length} Zeilen`);
       exportFiles.push({ fileName: file.name, headers, rows, columnMap: null });
       saveExportFiles();
       renderExportFileList();
