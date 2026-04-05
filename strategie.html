@@ -71,6 +71,22 @@ textarea { resize:vertical; line-height:1.6; }
 .fokus-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
 .fokus-badge { display:inline-block; padding:4px 12px; border-radius:20px; background:var(--fem-pink); color:#fff; font-size:12px; font-weight:600; }
 
+.dyn-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.dyn-item input { flex:1; }
+.voice-badges { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.voice-badge { padding:6px 14px; border:1px solid var(--border); border-radius:20px; cursor:pointer; font-size:12px; font-weight:500; transition:all 0.2s; user-select:none; }
+.voice-badge.selected { background:var(--fem-pink); color:#fff; border-color:var(--fem-pink); }
+.voice-badge:not(.selected) { background:var(--bg-card); color:var(--text-secondary); }
+.voice-badge:hover { border-color:var(--fem-pink); }
+.check-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; }
+.check-actions { display:flex; gap:8px; margin-top:10px; }
+.check-btn { padding:8px 18px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
+.check-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.check-btn.ok { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.btn-check { padding:10px 24px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.btn-check:hover { opacity:0.9; }
+.btn-check:disabled { opacity:0.5; cursor:not-allowed; }
+
 .btn-export { display:block; margin-top:20px; padding:10px 24px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
 .btn-export:hover { opacity:0.9; }
 
@@ -150,6 +166,48 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     </div>
   </div>
 
+  <!-- CARD 5: Zielgruppe -->
+  <div class="card fade-up">
+    <div class="card-header" data-card="5"><div class="card-title">👥 Zielgruppe</div><span class="chevron">▼</span></div>
+    <div class="card-body" data-body="5">
+      <div id="zielgruppeList"></div>
+      <button class="btn-add" id="addZielgruppe">+ Zielgruppe hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- CARD 6: Was wir nicht posten -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="6"><div class="card-title">🚫 Was wir nicht posten</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="6">
+      <div id="nichtPostenList"></div>
+      <button class="btn-add" id="addNichtPosten">+ Hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- CARD 7: Brand Voice -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="7"><div class="card-title">🎙️ Brand Voice</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="7">
+      <div class="voice-badges" id="voiceBadges"></div>
+      <div class="field"><label class="fl">Tonalität in eigenen Worten</label><textarea id="voiceTon" rows="3" placeholder="z.B. Wie eine erfahrene Mentorin die auf Augenhöhe spricht"></textarea></div>
+    </div>
+  </div>
+
+  <!-- CARD 8: Strategie-Check -->
+  <div class="card fade-up">
+    <div class="card-header collapsed" data-card="8"><div class="card-title">🧠 Strategie-Check</div><span class="chevron">▼</span></div>
+    <div class="card-body collapsed" data-body="8">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <button class="btn-check" id="stratCheckBtn">Strategie prüfen</button>
+        <span style="font-size:11px; color:var(--text-secondary);" id="checkTs"></span>
+      </div>
+      <div id="checkOutput"></div>
+      <div class="check-actions" id="checkActions" style="display:none;">
+        <button class="check-btn" id="checkCopy">📋 Kopieren</button>
+      </div>
+    </div>
+  </div>
+
   <button class="btn-export" id="btnExport">📋 Strategie exportieren</button>
 </main>
 
@@ -160,7 +218,9 @@ let strat = load('fem_strategie', {
   ziele: { goal:'', gruppeGoal:'', whatsappGoal:'', newsletterGoal:'', zeitraum:'Q3 2026', weitere:[] },
   fokusThemen: [],
   positionierung: { wirken:'', nichtWirken:'', einzigartig:'' },
-  contentPrinzip: { prinzip:'', erfolgsformel:'', frequenz:'4x/Woche' }
+  contentPrinzip: { prinzip:'', erfolgsformel:'', frequenz:'4x/Woche' },
+  zielgruppe: [],
+  brandVoice: { badges:[], tonalitaet:'' }
 });
 function save() {
   localStorage.setItem('fem_strategie', JSON.stringify(strat));
@@ -177,7 +237,7 @@ function save() {
 }
 
 // ══════════ COLLAPSIBLE ══════════
-const DEFAULTS_OPEN = {1:true, 2:true, 3:true, 4:true};
+const DEFAULTS_OPEN = {1:true, 2:true, 3:true, 4:true, 5:true, 6:false, 7:false, 8:false};
 const colState = load('fem_strategie_collapse', DEFAULTS_OPEN);
 document.querySelectorAll('.card-header').forEach(h => {
   const n = h.dataset.card;
@@ -282,6 +342,139 @@ document.getElementById('cpFrequenz').addEventListener('change', e => {
   strat.contentPrinzip.frequenz = e.target.value; save();
 });
 
+// ══════════ CARD 5: ZIELGRUPPE ══════════
+const ZG_DEFAULTS = ['Maklerinnen und Finanzberaterinnen', 'Frauen die in die Versicherungsbranche einsteigen', 'Führungskräfte in Versicherungsunternehmen'];
+if (!strat.zielgruppe || !strat.zielgruppe.length) strat.zielgruppe = [...ZG_DEFAULTS];
+
+function renderZielgruppe() {
+  const c = document.getElementById('zielgruppeList'); c.innerHTML = '';
+  strat.zielgruppe.forEach((z, i) => {
+    const row = document.createElement('div'); row.className = 'dyn-item';
+    row.innerHTML = `<input type="text" value="${z}" placeholder="z.B. Maklerinnen 30-50 Jahre" data-zgi="${i}"><button class="btn-remove" data-zgd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+}
+document.getElementById('zielgruppeList').addEventListener('input', e => {
+  if (e.target.dataset.zgi !== undefined) { strat.zielgruppe[parseInt(e.target.dataset.zgi)] = e.target.value; save(); }
+});
+document.getElementById('zielgruppeList').addEventListener('click', e => {
+  if (e.target.dataset.zgd !== undefined) { strat.zielgruppe.splice(parseInt(e.target.dataset.zgd), 1); save(); renderZielgruppe(); }
+});
+document.getElementById('addZielgruppe').addEventListener('click', () => { strat.zielgruppe.push(''); save(); renderZielgruppe(); });
+renderZielgruppe();
+
+// ══════════ CARD 6: NICHT POSTEN ══════════
+const NP_DEFAULTS = ['Allgemeine Motivationssprüche', 'Zu breite Versicherungsthemen', 'Werbliche Inhalte'];
+let nichtPosten = JSON.parse(localStorage.getItem('fem_nicht_posten') || 'null') || [...NP_DEFAULTS];
+
+function saveNP() { localStorage.setItem('fem_nicht_posten', JSON.stringify(nichtPosten)); save(); }
+function renderNichtPosten() {
+  const c = document.getElementById('nichtPostenList'); c.innerHTML = '';
+  nichtPosten.forEach((item, i) => {
+    const row = document.createElement('div'); row.className = 'dyn-item';
+    row.innerHTML = `<input type="text" value="${item}" placeholder="z.B. Allgemeine Motivationssprüche" data-npi="${i}"><button class="btn-remove" data-npd="${i}">×</button>`;
+    c.appendChild(row);
+  });
+}
+document.getElementById('nichtPostenList').addEventListener('input', e => {
+  if (e.target.dataset.npi !== undefined) { nichtPosten[parseInt(e.target.dataset.npi)] = e.target.value; saveNP(); }
+});
+document.getElementById('nichtPostenList').addEventListener('click', e => {
+  if (e.target.dataset.npd !== undefined) { nichtPosten.splice(parseInt(e.target.dataset.npd), 1); saveNP(); renderNichtPosten(); }
+});
+document.getElementById('addNichtPosten').addEventListener('click', () => { nichtPosten.push(''); saveNP(); renderNichtPosten(); });
+renderNichtPosten();
+
+// ══════════ CARD 7: BRAND VOICE ══════════
+const VOICE_OPTIONS = ['warm', 'klar', 'empowernd', 'direkt', 'fachkundig', 'mutig', 'authentisch', 'praxisnah', 'inspirierend'];
+if (!strat.brandVoice) strat.brandVoice = { badges: [], tonalitaet: '' };
+
+function renderVoiceBadges() {
+  const c = document.getElementById('voiceBadges'); c.innerHTML = '';
+  VOICE_OPTIONS.forEach(v => {
+    const sel = (strat.brandVoice.badges || []).includes(v);
+    const btn = document.createElement('span');
+    btn.className = 'voice-badge' + (sel ? ' selected' : '');
+    btn.textContent = v;
+    btn.addEventListener('click', () => {
+      const idx = strat.brandVoice.badges.indexOf(v);
+      if (idx >= 0) strat.brandVoice.badges.splice(idx, 1); else strat.brandVoice.badges.push(v);
+      save(); renderVoiceBadges();
+    });
+    c.appendChild(btn);
+  });
+}
+document.getElementById('voiceTon').value = strat.brandVoice.tonalitaet || '';
+document.getElementById('voiceTon').addEventListener('input', e => { strat.brandVoice.tonalitaet = e.target.value; save(); });
+renderVoiceBadges();
+
+// ══════════ CARD 8: STRATEGIE-CHECK ══════════
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+// Restore saved check
+const savedCheck = localStorage.getItem('fem_strategie_check');
+if (savedCheck) {
+  try {
+    const d = JSON.parse(savedCheck);
+    document.getElementById('checkOutput').innerHTML = `<div class="check-output">${d.text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('checkActions').style.display = 'flex';
+    if (d.savedAt) document.getElementById('checkTs').textContent = 'Zuletzt: ' + new Date(d.savedAt).toLocaleDateString('de-DE');
+  } catch {}
+}
+
+document.getElementById('stratCheckBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('stratCheckBtn');
+  btn.disabled = true; btn.textContent = '⏳ Wird geprüft...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+        system:`Du bist der FemSurance Strategie-Berater. Analysiere die definierte Strategie und gib konkretes Feedback.
+
+Antworte in diesem Format:
+
+🧠 STRATEGIE-CHECK
+
+STÄRKEN DER STRATEGIE:
+→ [Stärke 1]
+→ [Stärke 2]
+
+LÜCKEN / RISIKEN:
+→ [Lücke 1]
+→ [Lücke 2]
+
+KONSISTENZ-CHECK:
+→ Ziele und Content-Prinzip: [konsistent/inkonsistent] — [Begründung]
+→ Zielgruppe und Tonalität: [konsistent/inkonsistent] — [Begründung]
+
+EMPFEHLUNGEN:
+→ [Empfehlung 1]
+→ [Empfehlung 2]
+
+FAZIT:
+[2-3 Sätze Gesamtbewertung]`,
+        messages:[{role:'user',content:JSON.stringify(strat,null,2)}]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    localStorage.setItem('fem_strategie_check', JSON.stringify({ text, savedAt: new Date().toISOString() }));
+    document.getElementById('checkOutput').innerHTML = `<div class="check-output">${text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('checkActions').style.display = 'flex';
+    document.getElementById('checkTs').textContent = 'Zuletzt: ' + new Date().toLocaleDateString('de-DE');
+  } catch (err) { alert('Fehler: ' + err.message); }
+  btn.disabled = false; btn.textContent = 'Strategie prüfen';
+});
+
+document.getElementById('checkCopy').addEventListener('click', () => {
+  const text = document.querySelector('.check-output')?.textContent || '';
+  navigator.clipboard.writeText(text);
+  const btn = document.getElementById('checkCopy');
+  btn.textContent = 'Kopiert ✓'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('ok'); }, 2000);
+});
+
 // ══════════ EXPORT ══════════
 document.getElementById('btnExport').addEventListener('click', () => {
   const lines = ['FemSurance Strategie-Board', '═'.repeat(40), ''];
@@ -305,6 +498,16 @@ document.getElementById('btnExport').addEventListener('click', () => {
   lines.push(`Prinzip: ${strat.contentPrinzip?.prinzip || '–'}`);
   lines.push(`Erfolgsformel: ${strat.contentPrinzip?.erfolgsformel || '–'}`);
   lines.push(`Frequenz: ${strat.contentPrinzip?.frequenz || '–'}`);
+  lines.push('');
+  lines.push('👥 ZIELGRUPPE');
+  (strat.zielgruppe || []).forEach(z => lines.push(`→ ${z}`));
+  lines.push('');
+  lines.push('🚫 NICHT POSTEN');
+  nichtPosten.forEach(n => lines.push(`→ ${n}`));
+  lines.push('');
+  lines.push('🎙️ BRAND VOICE');
+  lines.push(`Badges: ${(strat.brandVoice?.badges || []).join(', ') || '–'}`);
+  lines.push(`Tonalität: ${strat.brandVoice?.tonalitaet || '–'}`);
   navigator.clipboard.writeText(lines.join('\n'));
   const btn = document.getElementById('btnExport');
   btn.textContent = 'Kopiert ✓'; setTimeout(() => { btn.textContent = '📋 Strategie exportieren'; }, 2000);
