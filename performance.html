@@ -316,12 +316,30 @@ body {
 .at-green { background:#dcfce7; color:#16a34a; }
 .at-yellow { background:#fef9c3; color:#a16207; }
 .at-red { background:#fef2f2; color:#dc2626; }
+/* Themenwelten */
+.tw-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; box-shadow:var(--shadow); }
+.tw-card .tw-title { font-size:12px; font-weight:600; margin-bottom:8px; }
+.tw-card .tw-val { font-size:22px; font-weight:700; color:var(--fem-pink); }
+.tw-card .tw-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+.tw-card .tw-best { font-size:11px; color:var(--text-secondary); margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
+.tw-card .tw-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; margin-top:6px; }
+.tw-badge-star { background:#dcfce7; color:#16a34a; }
+.tw-badge-ok { background:#dcfce7; color:#16a34a; }
+.tw-badge-warn { background:#fef9c3; color:#a16207; }
+.tw-badge-data { background:var(--bg-secondary); color:var(--text-secondary); }
+
 .analyse-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:13px; }
 .analyse-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .analyse-card { background:var(--bg-secondary); border-radius:var(--radius-sm); padding:14px; text-align:center; }
 .analyse-card .ac-title { font-size:10px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:6px; }
 .analyse-card .ac-val { font-size:22px; font-weight:700; color:var(--fem-pink); }
 .analyse-card .ac-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+/* Toast */
+.fem-toast { position:fixed; bottom:20px; right:20px; padding:12px 20px; border-radius:var(--radius-sm); background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.15); font-size:13px; z-index:999; animation:fadeUp 0.3s ease; }
+.fem-toast.success { border-left:4px solid #16a34a; }
+.fem-toast.warn { border-left:4px solid #a16207; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
 .analyse-result { margin-top:12px; padding:14px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:13px; line-height:1.6; white-space:pre-wrap; }
 
 .kpi-section-row td {
@@ -329,9 +347,16 @@ body {
   color:var(--fem-pink) !important; text-transform:uppercase; letter-spacing:0.03em;
   border-bottom:1px solid var(--fem-pink-light) !important; background:var(--bg-secondary);
 }
+/* -- Dark Mode -- */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
@@ -356,6 +381,10 @@ body {
     <a href="konkurrenz.html">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
+    </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
     </a>
     <a href="wochenplan.html">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -585,6 +614,12 @@ body {
         <tbody id="kpiTrackBody"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Themenwelten-Analyse -->
+  <div class="card fade-up">
+    <div class="card-title">🌍 Themenwelten-Analyse</div>
+    <div id="themenweltenGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;"></div>
   </div>
 
   <!-- Themen & Format Analyse -->
@@ -1013,6 +1048,69 @@ document.getElementById('ppBody').addEventListener('click', e => {
   });
 });
 
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'fem-toast ' + (type || 'success');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+function runFeedbackLoop(cardId, perfData) {
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const card = cards.find(c => String(c.id) === String(cardId));
+  if (!card) return;
+
+  const imp = parseFloat(perfData.impressions) || 0;
+  const reak = parseFloat(perfData.reaktionen) || 0;
+  const komm = parseFloat(perfData.kommentare) || 0;
+  const shares = parseFloat(perfData.shares) || 0;
+  const engRate = imp > 0 ? (reak + komm + shares) / imp * 100 : 0;
+  if (imp === 0) return;
+
+  const title = card.title || '';
+  const log = JSON.parse(localStorage.getItem('fem_feedback_log') || '[]');
+
+  // Update research themes
+  const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
+  const topic = title.split(/[·:–—]/)[0].trim().slice(0, 40);
+
+  if (engRate >= 5) {
+    if (!themes.find(t => t.thema === topic)) {
+      themes.push({ thema: topic, hook: title, format: card.format || '', potenzial: 3, badge: '📈 ' + engRate.toFixed(1) + '%' });
+      localStorage.setItem('fem_research_themes', JSON.stringify(themes));
+    }
+    const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+    if (!pb.was_funktioniert) pb.was_funktioniert = [];
+    pb.was_funktioniert.push({ text: `${topic} hatte ${engRate.toFixed(1)}% Engagement`, neu: true });
+    localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    showToast('✓ Thema zu Research hinzugefügt: ' + topic, 'success');
+    log.push({ type: 'good', topic, engRate: engRate.toFixed(1), ts: new Date().toISOString() });
+  } else if (engRate < 2) {
+    if (!themes.find(t => t.thema === topic)) {
+      themes.push({ thema: topic, hook: title, format: card.format || '', potenzial: 1, badge: '⚠️ ' + engRate.toFixed(1) + '%' });
+      localStorage.setItem('fem_research_themes', JSON.stringify(themes));
+    }
+    const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+    if (!pb.was_nicht) pb.was_nicht = [];
+    pb.was_nicht.push({ text: `${topic} hatte nur ${engRate.toFixed(1)}% Engagement`, neu: true });
+    localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    showToast('⚠️ Schwaches Thema markiert: ' + topic, 'warn');
+    log.push({ type: 'weak', topic, engRate: engRate.toFixed(1), ts: new Date().toISOString() });
+  }
+
+  // Update hook performance
+  if (card.hookType) {
+    const hookPerf = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+    if (!hookPerf[card.hookType]) hookPerf[card.hookType] = { total: 0, count: 0 };
+    hookPerf[card.hookType].total += engRate;
+    hookPerf[card.hookType].count++;
+    localStorage.setItem('fem_hook_performance', JSON.stringify(hookPerf));
+  }
+
+  localStorage.setItem('fem_feedback_log', JSON.stringify(log.slice(-50)));
+}
+
 document.getElementById('ppSave').addEventListener('click', () => {
   if (!ppActiveId) return;
   if (!postPerf[ppActiveId]) postPerf[ppActiveId] = {};
@@ -1022,8 +1120,10 @@ document.getElementById('ppSave').addEventListener('click', () => {
     if (el) p[k] = el.value;
   });
   savePostPerf();
+  runFeedbackLoop(ppActiveId, p);
   document.getElementById('ppModal').classList.remove('open');
   renderPostTable();
+  renderAnalyse();
 });
 
 document.getElementById('ppClose').addEventListener('click', () => {
@@ -1112,7 +1212,28 @@ function renderAnalyse() {
   // ── KI-Analyse Button ──
   const analyseBtn = `<div style="margin-top:16px;"><button class="report-btn pink" id="formatAnalyseBtn">🧠 Format-Analyse generieren</button></div><div id="formatAnalyseResult"></div>`;
 
-  container.innerHTML = kanalHtml + formatHtml + themenHtml + analyseBtn;
+  // ── Hook-Analyse ──
+  const hookTypes = {};
+  dataset.forEach(d => {
+    const ht = d.hookType || 'Ohne Angabe';
+    if (!hookTypes[ht]) hookTypes[ht] = { posts: 0, engSum: 0, best: null };
+    const h = hookTypes[ht];
+    h.posts++; h.engSum += d.eng;
+    if (!h.best || d.imp > h.best.imp) h.best = d;
+  });
+  let hookHtml = '';
+  if (Object.keys(hookTypes).length > 1 || !hookTypes['Ohne Angabe']) {
+    hookHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Hook-Analyse</div>';
+    hookHtml += '<table class="analyse-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th><th>Bester Post</th></tr></thead><tbody>';
+    Object.entries(hookTypes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([typ, h]) => {
+      const avgEng = h.engSum / h.posts;
+      const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
+      hookHtml += `<tr><td class="at-name">${typ}</td><td>${h.posts}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td style="font-size:11px;">${h.best ? h.best.title.slice(0,30) : '–'}</td></tr>`;
+    });
+    hookHtml += '</tbody></table>';
+  }
+
+  container.innerHTML = kanalHtml + formatHtml + themenHtml + hookHtml + analyseBtn;
 
   // KI Analyse handler
   document.getElementById('formatAnalyseBtn').addEventListener('click', async () => {
@@ -1133,6 +1254,48 @@ function renderAnalyse() {
   });
 }
 renderAnalyse();
+
+// ══════════ THEMENWELTEN-ANALYSE ══════════
+function renderThemenwelten() {
+  const grid = document.getElementById('themenweltenGrid');
+  const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+  const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
+  const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+  const clusters = JSON.parse(localStorage.getItem('fem_post_clusters') || '{}');
+  const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
+  const ICONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+  const data = {};
+  WELTEN.forEach(w => { data[w] = { posts: 0, engSum: 0, engCount: 0, best: null, bestEng: 0 }; });
+  published.forEach(c => {
+    const p = perf[c.id] || {};
+    const imp = parseFloat(p.impressions) || 0;
+    const r = parseFloat(p.reaktionen)||0, k = parseFloat(p.kommentare)||0, s = parseFloat(p.shares)||0;
+    const eng = imp > 0 ? (r+k+s)/imp*100 : 0;
+    let tw = c.themenwelt || clusters[c.id] || '';
+    if (tw === 'Alle 4' || !WELTEN.includes(tw)) return;
+    const d = data[tw]; d.posts++;
+    if (eng > 0) { d.engSum += eng; d.engCount++; }
+    if (eng > d.bestEng) { d.bestEng = eng; d.best = c.title; }
+  });
+  grid.innerHTML = WELTEN.map((w, i) => {
+    const d = data[w];
+    const avgEng = d.engCount ? d.engSum/d.engCount : 0;
+    const engCls = avgEng >= 5 ? '#16a34a' : avgEng >= 3 ? '#a16207' : d.posts ? '#dc2626' : 'var(--text-secondary)';
+    let badge, badgeCls;
+    if (d.posts >= 3 && avgEng >= 5) { badge='⭐ Mehr davon!'; badgeCls='tw-badge-star'; }
+    else if (d.posts >= 2 && avgEng >= 3) { badge='✅ Gut'; badgeCls='tw-badge-ok'; }
+    else if (d.posts >= 3 && avgEng < 3) { badge='⚠️ Reduzieren'; badgeCls='tw-badge-warn'; }
+    else { badge='📊 Mehr Daten nötig'; badgeCls='tw-badge-data'; }
+    return `<div class="tw-card">
+      <div class="tw-title">${ICONS[i]} ${w}</div>
+      <div class="tw-val">${d.posts}</div>
+      <div class="tw-sub">Posts · Ø ${d.engCount ? avgEng.toFixed(1):'–'}% <span style="color:${engCls};font-weight:600;">Engagement</span></div>
+      ${d.best ? `<div class="tw-best">🏆 ${d.best.slice(0,35)}... · ${d.bestEng.toFixed(1)}%</div>` : ''}
+      <div class="tw-badge ${badgeCls}">${badge}</div>
+    </div>`;
+  }).join('');
+}
+renderThemenwelten();
 
 // ── Reichweiten-Ziel + Kanal-Blöcke from localStorage ──
 try {

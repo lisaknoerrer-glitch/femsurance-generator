@@ -207,6 +207,32 @@ body {
 .add-hook-form input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
 .add-hook-form input:focus { outline:none; border-color:var(--fem-pink); }
 .add-hook-form select { padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
+/* Insights */
+.insight-item { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; position:relative; }
+.insight-item .ii-text { font-size:13px; font-weight:500; margin-bottom:4px; line-height:1.45; }
+.insight-item .ii-meta { font-size:11px; color:var(--text-secondary); display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.insight-item .ii-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; }
+.ii-badge-thema { background:var(--fem-pink-light); color:var(--fem-pink); }
+.ii-badge-typ { background:var(--fem-purple-light); color:var(--fem-purple); }
+.insight-item .ii-actions { display:flex; gap:4px; margin-top:6px; }
+.insight-item .ii-btn { padding:3px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:10px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.insight-item .ii-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+/* Playbook */
+.pb-section { margin-bottom:12px; padding:10px 14px; border-radius:var(--radius-sm); }
+.pb-section.pb-green { background:#dcfce7; }
+.pb-section.pb-red { background:#fef2f2; }
+.pb-section.pb-pink { background:var(--fem-pink-light); }
+.pb-section.pb-yellow { background:#fef9c3; }
+.pb-title { font-size:11px; font-weight:600; text-transform:uppercase; margin-bottom:6px; }
+.pb-item { display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12.5px; }
+.pb-item span { flex:1; }
+.pb-item .pb-new { font-size:9px; background:var(--fem-purple-light); color:var(--fem-purple); padding:1px 5px; border-radius:8px; font-weight:600; }
+.pb-item button { border:none; background:none; cursor:pointer; font-size:12px; color:var(--text-secondary); opacity:0.5; }
+.pb-item button:hover { opacity:1; color:#dc2626; }
+.pb-add { padding:4px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-size:11px; color:var(--text-secondary); font-family:inherit; margin-top:4px; }
+.pb-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.insight-item .ii-btn.copied { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+
 .add-hook-form button { padding:8px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
 /* KI Empfehlungen */
 .ki-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 20px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
@@ -224,9 +250,16 @@ body {
 .ki-section.vermeiden .ki-section-title { color:#dc2626; }
 .ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
 .ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
+/* -- Dark Mode -- */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
@@ -251,6 +284,10 @@ body {
     <a href="konkurrenz.html">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
+    </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
     </a>
     <a href="wochenplan.html">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -279,6 +316,13 @@ body {
   <div class="card fade-up">
     <div class="card-title">Trending-Themen FemSurance</div>
     <div id="perfSuggestions"></div>
+    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;" id="twFilter">
+      <button class="filter-btn active" data-tw="all" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; cursor:pointer; font-family:inherit; font-weight:500;">Alle</button>
+      <button class="filter-btn" data-tw="Business & Vertrieb" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Business & Vertrieb</button>
+      <button class="filter-btn" data-tw="Marketing & Sichtbarkeit" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Marketing & Sichtbarkeit</button>
+      <button class="filter-btn" data-tw="Fachliche Weiterbildung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Fachliche Weiterbildung</button>
+      <button class="filter-btn" data-tw="Persönlichkeitsentwicklung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Persönlichkeitsentwicklung</button>
+    </div>
     <table class="trend-table">
       <thead>
         <tr>
@@ -286,6 +330,8 @@ body {
           <th>Hook-Winkel</th>
           <th>Format</th>
           <th>Potenzial</th>
+          <th>Posts</th>
+          <th>Ø Eng.</th>
           <th></th>
         </tr>
       </thead>
@@ -306,6 +352,15 @@ body {
       </select>
       <input type="text" id="newHookText" placeholder="Neuen Hook eingeben...">
       <button id="btnAddHook">+ Hook</button>
+    </div>
+  </div>
+
+  <!-- Wissenschaftliche Insights -->
+  <div class="card fade-up">
+    <div class="card-title" style="cursor:pointer;" id="insightsToggle">📊 Wissenschaftliche Insights <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div id="insightsBody">
+      <div id="insightsList" style="margin-bottom:10px;"></div>
+      <button class="btn-add-row" id="btnAddInsight">+ Eigenen Insight hinzufügen</button>
     </div>
   </div>
 
@@ -340,6 +395,33 @@ body {
       </div>
     </div>
     <div class="outline-results" id="outlineResults"></div>
+    <div id="autoPushSection" style="display:none; margin-top:12px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="autoPushCount" style="padding:7px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
+          <option value="1">Top 1 übernehmen</option>
+          <option value="3" selected>Top 3 übernehmen</option>
+          <option value="5">Alle 5 übernehmen</option>
+        </select>
+        <button class="btn-generate" id="autoPushBtn" style="white-space:nowrap;">🚀 Zur Pipeline</button>
+      </div>
+      <div id="autoPushStatus" style="font-size:12px; margin-top:6px; color:var(--text-secondary);"></div>
+    </div>
+  </div>
+
+  <!-- Wissenschaftliche Insights -->
+  <div class="card fade-up">
+    <div class="card-title" style="cursor:pointer;" id="playbookToggle">📖 FemSurance Playbook <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div id="playbookBody">
+      <div id="playbookContent"></div>
+    </div>
+  </div>
+
+  <!-- Hook-Performance -->
+  <div class="card fade-up">
+    <div class="card-title" style="cursor:pointer;" id="hookPerfToggle">🎣 Hook-Performance <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div id="hookPerfBody">
+      <div id="hookPerfContent"></div>
+    </div>
   </div>
 
 </main>
@@ -357,17 +439,49 @@ const DEFAULT_THEMES = [
 let themes = JSON.parse(localStorage.getItem('fem_research_themes') || 'null') || [...DEFAULT_THEMES];
 function saveThemes() { localStorage.setItem('fem_research_themes', JSON.stringify(themes)); }
 
+function getThemePerf(thema) {
+  try {
+    const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+    const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const kw = thema.toLowerCase().split(/\s+/);
+    const matches = cards.filter(c => c.col === 'publish' && !c.archivedOutline && kw.some(w => w.length > 3 && c.title.toLowerCase().includes(w)));
+    if (!matches.length) return { posts: 0, avgEng: 0, bestFormat: '' };
+    let engSum = 0, engCount = 0, formats = {};
+    matches.forEach(c => {
+      const p = perf[c.id] || {};
+      const imp = parseFloat(p.impressions) || 0;
+      const r = parseFloat(p.reaktionen) || 0, k = parseFloat(p.kommentare) || 0, s = parseFloat(p.shares) || 0;
+      const eng = imp > 0 ? (r + k + s) / imp * 100 : 0;
+      if (eng > 0) { engSum += eng; engCount++; }
+      const fmt = c.format || 'Company Page';
+      formats[fmt] = (formats[fmt] || 0) + (eng || 1);
+    });
+    const bestFormat = Object.entries(formats).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+    return { posts: matches.length, avgEng: engCount ? engSum / engCount : 0, bestFormat };
+  } catch { return { posts: 0, avgEng: 0, bestFormat: '' }; }
+}
+
 function renderThemes() {
   const tbody = document.getElementById('trendBody');
   tbody.innerHTML = '';
+  const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
   themes.forEach((t, i) => {
+    // Filter by Themenwelt
+    if (activeFilter && activeFilter !== 'all') {
+      const matchesTW = t.themenwelt === activeFilter || t.format === activeFilter || (t.thema && t.thema.toLowerCase().includes(activeFilter.toLowerCase().split(' ')[0]));
+      if (!matchesTW) return;
+    }
     const stars = '★'.repeat(t.potenzial || 1) + '☆'.repeat(3 - (t.potenzial || 1));
+    const tp = getThemePerf(t.thema);
+    const engCls = tp.avgEng >= 5 ? 'trend-up' : tp.avgEng >= 3 ? 'trend-stable' : tp.posts ? 'trend-new' : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="trend-name">${t.thema}${t.badge ? ` <span class="trend-badge trend-up" style="font-size:9px;">${t.badge}</span>` : ''}</td>
       <td style="font-size:12px; color:var(--text-secondary);">${t.hook || '–'}</td>
       <td style="font-size:12px;">${t.format || '–'}</td>
       <td><span class="potenzial" data-i="${i}">${stars}</span></td>
+      <td style="font-size:12px; text-align:center;">${tp.posts || '–'}</td>
+      <td>${tp.posts ? `<span class="trend-badge ${engCls}" style="font-size:10px;">${tp.avgEng.toFixed(1)}%</span>` : '–'}</td>
       <td class="trend-actions">
         <button title="Bearbeiten" data-edit="${i}">✏️</button>
         <button title="Löschen" data-del="${i}">🗑️</button>
@@ -424,6 +538,19 @@ function renderPerfSuggestions() {
 }
 renderPerfSuggestions();
 renderThemes();
+
+// Themenwelt filter
+let activeFilter = 'all';
+document.getElementById('twFilter').addEventListener('click', e => {
+  const btn = e.target.closest('[data-tw]');
+  if (!btn) return;
+  activeFilter = btn.dataset.tw;
+  document.querySelectorAll('#twFilter button').forEach(b => {
+    b.style.background = b.dataset.tw === activeFilter ? 'var(--fem-pink)' : 'var(--bg-card)';
+    b.style.color = b.dataset.tw === activeFilter ? '#fff' : 'var(--text-secondary)';
+  });
+  renderThemes();
+});
 
 // ══════════ HOOK-BIBLIOTHEK (dynamic) ══════════
 const DEFAULT_HOOKS = [
@@ -519,6 +646,9 @@ document.getElementById('btnGenerate').addEventListener('click', () => {
     `;
     container.appendChild(el);
   }
+  // Show auto-push section
+  document.getElementById('autoPushSection').style.display = 'block';
+  document.getElementById('autoPushStatus').textContent = '';
 });
 
 // ── Send to Pipeline + save to themes ──
@@ -631,6 +761,8 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     if (topPosts.length) {
       parts.push('## Top-Post Performance\n' + topPosts.map(([,v]) => `Impressions: ${v.impressions}, Eng: ${v.reaktionen || 0}+${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
     }
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -658,6 +790,238 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
   }
   btn.disabled = false;
 });
+
+// ══════════ WISSENSCHAFTLICHE INSIGHTS ══════════
+const DEFAULT_INSIGHTS = [
+  { thema:'Frauen in Führung', insight:'Unternehmen mit Frauen im Vorstand sind um 25% profitabler', quelle:'McKinsey 2023', typ:'Statistik' },
+  { thema:'Diversität', insight:'Diverse Teams treffen in 87% der Fälle bessere Entscheidungen', quelle:'Harvard Business Review 2022', typ:'Statistik' },
+  { thema:'Selfbranding', insight:'70% aller Kaufentscheidungen werden von Frauen beeinflusst', quelle:'Nielsen 2023', typ:'Statistik' },
+  { thema:'Recruiting', insight:'Unternehmen mit Diversitätsstrategie haben 35% weniger Fluktuation', quelle:'Deloitte 2023', typ:'Statistik' },
+  { thema:'Frauen in Führung', insight:'Nur 29% der Führungspositionen in der Versicherungsbranche sind mit Frauen besetzt', quelle:'GDV 2023', typ:'Branche' },
+  { thema:'Sichtbarkeit', insight:'Personal Branding erhöht Karrierechancen um bis zu 40%', quelle:'LinkedIn 2023', typ:'Statistik' },
+  { thema:'Netzwerken', insight:'85% aller Jobs werden über persönliche Netzwerke vergeben', quelle:'LinkedIn 2022', typ:'Statistik' },
+  { thema:'Vereinbarkeit', insight:'Flexible Arbeitsmodelle steigern Produktivität um 13%', quelle:'Stanford 2022', typ:'Studie' },
+  { thema:'Frauen & Finanzen', insight:'Frauen investieren erfolgreicher als Männer — im Schnitt 1,8% mehr Rendite', quelle:'Fidelity 2023', typ:'Statistik' },
+  { thema:'Diversität', insight:'Gemischte Teams sind um 60% innovativer als homogene Teams', quelle:'BCG 2023', typ:'Statistik' },
+  { thema:'Recruiting', insight:'40% der Auszubildenden in der Versicherungsbranche sind weiblich', quelle:'GDV 2023', typ:'Branche' },
+  { thema:'Selfbranding', insight:'LinkedIn-Profile mit Foto erhalten 21x mehr Profilaufrufe', quelle:'LinkedIn 2023', typ:'Plattform' },
+];
+
+let sciInsights = JSON.parse(localStorage.getItem('fem_research_insights') || 'null') || [...DEFAULT_INSIGHTS];
+function saveSciInsights() { localStorage.setItem('fem_research_insights', JSON.stringify(sciInsights)); }
+
+function renderSciInsights() {
+  const list = document.getElementById('insightsList');
+  list.innerHTML = '';
+  sciInsights.forEach((ins, i) => {
+    const el = document.createElement('div');
+    el.className = 'insight-item';
+    el.innerHTML = `
+      <div class="ii-text">${ins.insight}</div>
+      <div class="ii-meta">
+        <span class="ii-badge ii-badge-thema">${ins.thema}</span>
+        <span class="ii-badge ii-badge-typ">${ins.typ}</span>
+        <span>Quelle: ${ins.quelle}</span>
+      </div>
+      <div class="ii-actions">
+        <button class="ii-btn" data-copy-ins="${i}">📋 Kopieren</button>
+        <button class="ii-btn" data-convert-ins="${i}">✨ In Content umwandeln</button>
+        <button class="ii-btn" data-del-ins="${i}">🗑️</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+document.getElementById('insightsList').addEventListener('click', async e => {
+  const copyBtn = e.target.closest('[data-copy-ins]');
+  if (copyBtn) {
+    const ins = sciInsights[parseInt(copyBtn.dataset.copyIns)];
+    navigator.clipboard.writeText(`${ins.insight} (${ins.quelle})`);
+    copyBtn.textContent = 'Kopiert!'; copyBtn.classList.add('copied');
+    setTimeout(() => { copyBtn.textContent = '📋 Kopieren'; copyBtn.classList.remove('copied'); }, 1500);
+    return;
+  }
+  const delBtn = e.target.closest('[data-del-ins]');
+  if (delBtn) { sciInsights.splice(parseInt(delBtn.dataset.delIns), 1); saveSciInsights(); renderSciInsights(); return; }
+  const convBtn = e.target.closest('[data-convert-ins]');
+  if (convBtn) {
+    const ins = sciInsights[parseInt(convBtn.dataset.convertIns)];
+    convBtn.textContent = '⏳...'; convBtn.disabled = true;
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'Erstelle aus diesem wissenschaftlichen Insight einen LinkedIn-Hook und eine kurze Content-Outline-Idee für FemSurance. Schreibe auf Deutsch.',messages:[{role:'user',content:`Insight: ${ins.insight}\nQuelle: ${ins.quelle}\nThema: ${ins.thema}`}]})
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      alert(data.content[0].text);
+    } catch (err) { alert('Fehler: ' + err.message); }
+    convBtn.textContent = '✨ In Content umwandeln'; convBtn.disabled = false;
+  }
+});
+
+document.getElementById('btnAddInsight').addEventListener('click', () => {
+  const insight = prompt('Insight-Text:'); if (!insight) return;
+  const quelle = prompt('Quelle:') || '';
+  const thema = prompt('Thema:') || '';
+  sciInsights.push({ insight, quelle, thema, typ: 'Eigener' });
+  saveSciInsights(); renderSciInsights();
+});
+
+// Toggle
+document.getElementById('insightsToggle').addEventListener('click', () => {
+  const body = document.getElementById('insightsBody');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+});
+
+renderSciInsights();
+
+// ══════════ HOOK-PERFORMANCE ══════════
+function renderHookPerf() {
+  const container = document.getElementById('hookPerfContent');
+  const hookPerf = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+  if (!Object.keys(hookPerf).length) {
+    container.innerHTML = '<div style="padding:14px; color:var(--text-secondary); font-size:13px;">Noch keine Daten — füge Hook-Typen zu deinen Pipeline-Karten hinzu und trage Performance ein.</div>';
+    return;
+  }
+  const sorted = Object.entries(hookPerf).map(([typ, d]) => ({ typ, avg: d.count ? d.total / d.count : 0, count: d.count })).sort((a, b) => b.avg - a.avg);
+  let html = '<table class="trend-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th></tr></thead><tbody>';
+  sorted.forEach((h, i) => {
+    const cls = h.avg >= 5 ? 'trend-up' : h.avg >= 3 ? 'trend-stable' : 'trend-new';
+    html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up" style="font-size:9px;">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+document.getElementById('hookPerfToggle').addEventListener('click', () => {
+  const body = document.getElementById('hookPerfBody');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+});
+renderHookPerf();
+
+// ══════════ AUTO-PUSH TO PIPELINE ══════════
+document.getElementById('autoPushBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('autoPushBtn');
+  const status = document.getElementById('autoPushStatus');
+  const count = parseInt(document.getElementById('autoPushCount').value);
+  const outlines = document.querySelectorAll('.outline-item');
+  if (!outlines.length) { status.textContent = 'Keine Outlines vorhanden.'; return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Wird bewertet...';
+  status.textContent = `${outlines.length} Outlines werden gescored...`;
+
+  try {
+    // Collect outline texts
+    const items = Array.from(outlines).map(el => ({
+      hook: el.querySelector('.outline-hook')?.textContent || '',
+      points: el.querySelector('.outline-points')?.textContent || ''
+    }));
+
+    // Score via API
+    const context = [];
+    try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) context.push('Trending: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+    try { const p = JSON.parse(localStorage.getItem('fem_post_performance') || '{}'); const top = Object.values(p).filter(v=>v.impressions).slice(0,3); if (top.length) context.push('Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch {}
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:512,
+        system:'Bewerte diese Content-Outlines auf einer Skala von 1-10 nach Trend-Relevanz, Performance-Potenzial und Zielgruppen-Fit. Antworte NUR als JSON-Array: [{"index":0,"score":8,"plattform":"Company Page"},...]',
+        messages:[{role:'user',content:`Outlines:\n${items.map((it,i)=>`${i}: ${it.hook}`).join('\n')}\n\nKontext: ${context.join('; ')}`}]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    let jsonStr = data.content[0].text.trim();
+    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    const scores = JSON.parse(jsonStr);
+
+    // Sort by score, take top N
+    scores.sort((a,b) => b.score - a.score);
+    const selected = scores.slice(0, Math.min(count, scores.length));
+
+    // Create pipeline cards
+    const pipeCards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+    const maxId = Math.max(...pipeCards.map(c => c.id), 0);
+
+    selected.forEach((s, i) => {
+      const outline = items[s.index];
+      pipeCards.push({
+        id: maxId + i + 1,
+        col: 'ideen',
+        title: outline.hook.slice(0, 80),
+        format: s.plattform || 'Company Page',
+        tag: s.plattform === 'Gruppe' ? 'tag-purple' : s.plattform === 'WhatsApp' ? 'tag-gray' : 'tag-pink',
+        assignee: 'Offen', due: '',
+        body: '', outline: outline.hook + '\n\n' + outline.points,
+        score: { score: s.score },
+        refmaterial: '', themenwelt: 'Alle 4'
+      });
+    });
+    localStorage.setItem('fem_pipeline_board', JSON.stringify(pipeCards));
+
+    status.innerHTML = `<span style="color:#16a34a; font-weight:600;">✓ ${selected.length} Outlines zur Pipeline hinzugefügt</span> (Scores: ${selected.map(s=>s.score+'/10').join(', ')})`;
+  } catch (err) {
+    status.textContent = 'Fehler: ' + err.message;
+  }
+  btn.disabled = false; btn.textContent = '🚀 Zur Pipeline';
+});
+
+// ══════════ PLAYBOOK ══════════
+const PB_DEFAULTS = {
+  was_funktioniert: ['Interview-Posts performen überdurchschnittlich', 'Fragen am Ende erhöhen Kommentare'],
+  was_nicht: ['Posts ohne Frage hatten 0 Kommentare', 'Zu lange Texte ohne Absätze'],
+  regeln: ['Immer mit persönlichem Bezug starten', 'Direkte Du-Ansprache'],
+  testen: ['Story-Format auf Company Page', 'Provokations-Hooks dienstags']
+};
+let playbook = JSON.parse(localStorage.getItem('fem_playbook') || 'null') || JSON.parse(JSON.stringify(PB_DEFAULTS));
+function savePlaybook() { localStorage.setItem('fem_playbook', JSON.stringify(playbook)); }
+
+const PB_SECTIONS = [
+  { key: 'was_funktioniert', title: '✅ Was funktioniert', cls: 'pb-green' },
+  { key: 'was_nicht', title: '❌ Was nicht funktioniert', cls: 'pb-red' },
+  { key: 'regeln', title: '🎯 Unsere Regeln', cls: 'pb-pink' },
+  { key: 'testen', title: '🧪 Aktuell testen', cls: 'pb-yellow' },
+];
+
+function renderPlaybook() {
+  const container = document.getElementById('playbookContent');
+  container.innerHTML = PB_SECTIONS.map(sec => {
+    const items = playbook[sec.key] || [];
+    return `<div class="pb-section ${sec.cls}">
+      <div class="pb-title">${sec.title}</div>
+      ${items.map((item, i) => {
+        const isNew = typeof item === 'object';
+        const text = isNew ? item.text : item;
+        return `<div class="pb-item"><span>${text}</span>${isNew ? '<span class="pb-new">🆕 Diese Woche</span>' : ''}<button data-pb-del="${sec.key}_${i}">×</button></div>`;
+      }).join('')}
+      <button class="pb-add" data-pb-add="${sec.key}">+ Hinzufügen</button>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('[data-pb-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const [key, idx] = btn.dataset.pbDel.split('_');
+      playbook[key].splice(parseInt(idx), 1);
+      savePlaybook(); renderPlaybook();
+    });
+  });
+  container.querySelectorAll('[data-pb-add]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = prompt('Neuer Eintrag:');
+      if (!text) return;
+      if (!playbook[btn.dataset.pbAdd]) playbook[btn.dataset.pbAdd] = [];
+      playbook[btn.dataset.pbAdd].push(text);
+      savePlaybook(); renderPlaybook();
+    });
+  });
+}
+
+document.getElementById('playbookToggle').addEventListener('click', () => {
+  const body = document.getElementById('playbookBody');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+});
+renderPlaybook();
 </script>
 </body>
 </html>

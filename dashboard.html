@@ -450,9 +450,31 @@ body {
 .insight-output { margin-top:14px; padding:18px 22px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; color:var(--text-primary); }
 .insight-output strong { color:var(--fem-pink); }
 .insight-actions { display:flex; gap:8px; margin-top:12px; }
+/* ── Dark Mode ── */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+body.dark-mode .sidebar-right { background:var(--bg-card); }
+.dm-toggle { position:fixed; top:12px; right:284px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
+/* Nicht posten */
+.np-header { display:flex; align-items:center; cursor:pointer; user-select:none; }
+.np-header .card-title { margin-bottom:0; flex:1; }
+.np-chevron { font-size:12px; color:var(--text-secondary); transition:transform 0.25s; }
+.np-header.collapsed .np-chevron { transform:rotate(-90deg); }
+.np-body { overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s; max-height:1000px; opacity:1; margin-top:10px; }
+.np-body.collapsed { max-height:0; opacity:0; margin:0; }
+.np-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.np-item input { flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12.5px; }
+.np-item input:focus { outline:none; border-color:var(--fem-pink); }
+.np-item button { width:24px; height:24px; border:none; background:none; cursor:pointer; font-size:14px; color:var(--text-secondary); border-radius:50%; }
+.np-item button:hover { background:#fef2f2; color:#dc2626; }
+.np-add { padding:5px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); transition:all 0.2s; }
+.np-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem('fem_dark_mode')==='true'){document.body.classList.add('dark-mode');document.getElementById('dmToggle').textContent='☀️';}document.getElementById('dmToggle').addEventListener('click',function(){document.body.classList.toggle('dark-mode');const on=document.body.classList.contains('dark-mode');localStorage.setItem('fem_dark_mode',on);this.textContent=on?'☀️':'🌙';});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
@@ -477,6 +499,10 @@ body {
     <a href="konkurrenz.html">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
+    </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
     </a>
     <a href="wochenplan.html">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -519,6 +545,18 @@ body {
     </div>
   </div>
 
+  <!-- ── Nicht posten ── -->
+  <div class="card fade-up" style="margin-bottom:14px;">
+    <div class="np-header collapsed" id="npHeader">
+      <div class="card-title" id="npTitle">🚫 Nicht posten</div>
+      <span class="np-chevron">▼</span>
+    </div>
+    <div class="np-body collapsed" id="npBody">
+      <div id="npList"></div>
+      <button class="np-add" id="npAdd">+ Hinzufügen</button>
+    </div>
+  </div>
+
   <!-- ── Insight Engine ── -->
   <div class="card fade-up" style="margin-bottom:22px;">
     <div class="insight-header" id="insightHeader">
@@ -535,6 +573,46 @@ body {
       <div class="insight-actions" id="insightActions" style="display:none;">
         <button class="insight-btn-outline" id="insightCopy">📋 Kopieren</button>
         <button class="insight-btn-outline" id="insightToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Positionierungs-Check ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header" id="posHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
+      <span class="insight-timestamp" id="posTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="posBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
+      </div>
+      <div id="posOutput"></div>
+      <div class="insight-actions" id="posActions" style="display:none;">
+        <button class="insight-btn-outline" id="posCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="posToWP">→ Wochenplan übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Content-DNA ── -->
+  <div class="card fade-up" style="margin-bottom:22px;">
+    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
+      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
+      <span class="insight-timestamp" id="dnaTimestamp"></span>
+      <span class="insight-chevron">▼</span>
+    </div>
+    <div class="insight-body collapsed" id="dnaBody">
+      <div style="margin-bottom:12px;">
+        <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
+        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
+      </div>
+      <div id="dnaOutput"></div>
+      <div class="insight-actions" id="dnaActions" style="display:none;">
+        <button class="insight-btn-outline" id="dnaCopy">📋 Kopieren</button>
+        <button class="insight-btn-outline" id="dnaToPlaybook">→ Playbook übernehmen</button>
       </div>
     </div>
   </div>
@@ -923,6 +1001,51 @@ body {
     const ng = parseInt(kd.newsletterGoal) || 0;
     updateGoalBlock(ns, ng, 'dashNewsletterCount', 'dashNewsletterCurrent', 'dashNewsletterGoalVal', 'dashNewsletterBar', 'dashNewsletterDiff', 'Abonnenten');
   } catch (e) {}
+  // ══════════ NICHT POSTEN ══════════
+  const NP_DEFAULTS = ['Allgemeine Motivationssprüche', 'Zu breite Versicherungsthemen', 'Werbliche Inhalte'];
+  let npItems = JSON.parse(localStorage.getItem('fem_nicht_posten') || 'null') || [...NP_DEFAULTS];
+
+  function saveNP() { localStorage.setItem('fem_nicht_posten', JSON.stringify(npItems)); updateNPTitle(); }
+
+  function updateNPTitle() {
+    document.getElementById('npTitle').textContent = `🚫 Nicht posten${npItems.length ? ` (${npItems.length})` : ''}`;
+  }
+
+  function renderNP() {
+    const list = document.getElementById('npList');
+    list.innerHTML = '';
+    npItems.forEach((item, i) => {
+      const row = document.createElement('div');
+      row.className = 'np-item';
+      row.innerHTML = `<input value="${item}" data-npi="${i}" placeholder="z.B. Allgemeine Motivationssprüche"><button data-npd="${i}">×</button>`;
+      list.appendChild(row);
+    });
+    updateNPTitle();
+  }
+
+  document.getElementById('npList').addEventListener('input', e => {
+    if (e.target.dataset.npi !== undefined) {
+      npItems[parseInt(e.target.dataset.npi)] = e.target.value;
+      saveNP();
+    }
+  });
+  document.getElementById('npList').addEventListener('click', e => {
+    if (e.target.dataset.npd !== undefined) {
+      npItems.splice(parseInt(e.target.dataset.npd), 1);
+      saveNP(); renderNP();
+    }
+  });
+  document.getElementById('npAdd').addEventListener('click', () => {
+    npItems.push(''); saveNP(); renderNP();
+    const inputs = document.querySelectorAll('#npList input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+  document.getElementById('npHeader').addEventListener('click', () => {
+    document.getElementById('npHeader').classList.toggle('collapsed');
+    document.getElementById('npBody').classList.toggle('collapsed');
+  });
+  renderNP();
+
   // ══════════ AKTIVITÄTS-FEED ══════════
   function relTime(dateStr) {
     if (!dateStr) return '';
@@ -1184,6 +1307,210 @@ Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt
     b6.text = (b6.text ? b6.text + '\n\n' : '') + '--- Insights KW ' + currentKW + ' ---\n' + text;
     localStorage.setItem('fem_wp_block6', JSON.stringify(b6));
     const btn = document.getElementById('insightToWP');
+    btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '→ Wochenplan übernehmen'; btn.classList.remove('success'); }, 2000);
+  });
+
+  // ══════════ POSITIONIERUNGS-CHECK ══════════
+  document.getElementById('posHeader').addEventListener('click', () => {
+    document.getElementById('posHeader').classList.toggle('collapsed');
+    document.getElementById('posBody').classList.toggle('collapsed');
+  });
+
+  // Restore saved check
+  const posKey = `fem_positionierung_KW${currentKW}`;
+  const savedPos = localStorage.getItem(posKey);
+  if (savedPos) {
+    try {
+      const data = JSON.parse(savedPos);
+      showPosResult(data.text, data.savedAt);
+    } catch { showPosResult(savedPos); }
+  }
+
+  function showPosResult(text, savedAt) {
+    document.getElementById('posOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('posActions').style.display = 'flex';
+    if (savedAt) {
+      const d = new Date(savedAt);
+      document.getElementById('posTimestamp').textContent = `Zuletzt: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+    }
+    document.getElementById('posHeader').classList.remove('collapsed');
+    document.getElementById('posBody').classList.remove('collapsed');
+  }
+
+  document.getElementById('posGenBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('posGenBtn');
+    btn.disabled = true; btn.textContent = '🪞 Wird analysiert...';
+    try {
+      const parts = [`Aktuelle KW: ${currentKW}`];
+      // Last 10 posts
+      const pCards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
+      const pubPosts = pCards.filter(c => c.col === 'publish' && !c.archivedOutline).slice(0, 10);
+      const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      if (pubPosts.length) {
+        parts.push('## Letzte Posts\n' + pubPosts.map(c => {
+          const p = perf[c.id] || {};
+          return `${c.title} (${c.format || '–'}) · Imp: ${p.impressions||'–'}, Eng: ${p.reaktionen||0}+${p.kommentare||0}`;
+        }).join('\n'));
+      }
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
+      try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+
+      try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+          system:`Du bist der FemSurance Positionierungs-Analyst. Analysiere die letzten Posts und gib ehrliches Feedback wie FemSurance aktuell wirkt.
+
+Antworte in diesem Format:
+
+🪞 POSITIONIERUNGS-CHECK KW [X]
+
+DU WIRKST AKTUELL:
+→ [Eigenschaft 1]
+→ [Eigenschaft 2]
+→ [Eigenschaft 3]
+
+DEINE HÄUFIGSTEN THEMEN:
+→ [Thema 1] ([X]x)
+→ [Thema 2] ([X]x)
+
+WAS FEHLT:
+→ [Fehlendes Element 1]
+→ [Fehlendes Element 2]
+
+STÄRKEN:
+→ [Stärke 1]
+→ [Stärke 2]
+
+EMPFEHLUNG FÜR NÄCHSTE WOCHE:
+→ [Konkrete Empfehlung 1]
+→ [Konkrete Empfehlung 2]
+
+Sei ehrlich und direkt. Keine generischen Aussagen.`,
+          messages:[{role:'user',content:parts.join('\n\n')}]
+        })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      const text = data.content[0].text;
+      const savedAt = new Date().toISOString();
+      localStorage.setItem(posKey, JSON.stringify({ text, savedAt }));
+      showPosResult(text, savedAt);
+    } catch (err) { alert('Fehler: ' + err.message); }
+    btn.disabled = false; btn.textContent = '🪞 Check starten';
+  });
+
+  document.getElementById('posCopy').addEventListener('click', () => {
+    const text = document.querySelector('#posOutput .insight-output')?.textContent || '';
+    navigator.clipboard.writeText(text);
+    const btn = document.getElementById('posCopy');
+    btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  // ══════════ CONTENT-DNA ══════════
+  document.getElementById('dnaHeader').addEventListener('click', () => {
+    document.getElementById('dnaHeader').classList.toggle('collapsed');
+    document.getElementById('dnaBody').classList.toggle('collapsed');
+  });
+  const savedDNA = localStorage.getItem('fem_content_dna');
+  if (savedDNA) { try { const d = JSON.parse(savedDNA); showDNA(d.text, d.savedAt); } catch {} }
+
+  function showDNA(text, savedAt) {
+    document.getElementById('dnaOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('dnaActions').style.display = 'flex';
+    if (savedAt) { const d = new Date(savedAt); document.getElementById('dnaTimestamp').textContent = `Zuletzt: ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`; }
+    document.getElementById('dnaHeader').classList.remove('collapsed');
+    document.getElementById('dnaBody').classList.remove('collapsed');
+  }
+
+  document.getElementById('dnaGenBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('dnaGenBtn');
+    btn.disabled = true; btn.textContent = '🧬 Wird analysiert...';
+    try {
+      const parts = [];
+      const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+      const topPosts = Object.entries(perf).filter(([,v]) => v.impressions).sort((a,b) => {
+        const engA = (parseFloat(a[1].reaktionen)||0)/(parseFloat(a[1].impressions)||1);
+        const engB = (parseFloat(b[1].reaktionen)||0)/(parseFloat(b[1].impressions)||1);
+        return engB - engA;
+      }).slice(0, 10);
+      if (topPosts.length) parts.push('## Top 10 Posts\n' + topPosts.map(([,v]) => `Imp: ${v.impressions}, Reak: ${v.reaktionen||0}, Komm: ${v.kommentare||0}`).join('\n'));
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
+      const ls = localStorage.getItem('fem_lernstand'); if (ls) parts.push('Lernstand: ' + ls.slice(0, 300));
+      const hp = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
+      if (Object.keys(hp).length) parts.push('Hook-Performance: ' + Object.entries(hp).map(([t,d]) => `${t}: Ø ${(d.total/d.count).toFixed(1)}% (${d.count}x)`).join(', '));
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+          system:`Du bist der FemSurance Content-DNA-Analyst. Analysiere die erfolgreichsten Posts und erkenne das Muster das FemSurance einzigartig macht.
+
+Antworte in diesem Format:
+
+🧬 FEMSURANCE CONTENT-DNA
+
+DEINE ERFOLGSFORMEL:
+→ [Eigenschaft 1] + [Eigenschaft 2] + [Eigenschaft 3]
+
+DEIN UNVERWECHSELBARER STIL:
+→ Ton: [Beschreibung]
+→ Struktur: [Beschreibung]
+→ Themen: [Beschreibung]
+
+DEINE STÄRKSTEN ELEMENTE:
+→ [Element 1]: funktioniert weil [Grund]
+→ [Element 2]: funktioniert weil [Grund]
+
+DEINE CONTENT-SIGNATUR:
+[1-2 Sätze die FemSurance Content unverwechselbar beschreiben]
+
+EMPFEHLUNG:
+→ Nutze [Element] öfter
+→ Reduziere [Element]
+
+Analysiere NUR echte Muster aus den Daten.`,
+          messages:[{role:'user',content:parts.join('\n\n')||'Noch keine Daten.'}]
+        })
+      });
+      if (!resp.ok) throw new Error('API ' + resp.status);
+      const data = await resp.json();
+      const text = data.content[0].text;
+      localStorage.setItem('fem_content_dna', JSON.stringify({ text, savedAt: new Date().toISOString() }));
+      showDNA(text, new Date().toISOString());
+    } catch (err) { alert('Fehler: ' + err.message); }
+    btn.disabled = false; btn.textContent = '🧬 DNA analysieren';
+  });
+
+  document.getElementById('dnaCopy').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.querySelector('#dnaOutput .insight-output')?.textContent || '');
+    const btn = document.getElementById('dnaCopy');
+    btn.textContent = 'Kopiert ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.classList.remove('success'); }, 2000);
+  });
+
+  document.getElementById('dnaToPlaybook').addEventListener('click', () => {
+    const text = document.querySelector('#dnaOutput .insight-output')?.textContent || '';
+    const lines = text.split('\n').filter(l => l.startsWith('→')).map(l => l.replace('→ ', '').trim()).filter(Boolean);
+    if (lines.length) {
+      const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+      if (!pb.regeln) pb.regeln = [];
+      lines.slice(0, 3).forEach(l => { if (!pb.regeln.find(r => (typeof r === 'object' ? r.text : r) === l)) pb.regeln.push({ text: l, neu: true }); });
+      localStorage.setItem('fem_playbook', JSON.stringify(pb));
+    }
+    const btn = document.getElementById('dnaToPlaybook');
+    btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
+    setTimeout(() => { btn.textContent = '→ Playbook übernehmen'; btn.classList.remove('success'); }, 2000);
+  });
+
+  document.getElementById('posToWP').addEventListener('click', () => {
+    const text = document.querySelector('#posOutput .insight-output')?.textContent || '';
+    const b6 = JSON.parse(localStorage.getItem('fem_wp_block6') || '{}');
+    b6.text = (b6.text ? b6.text + '\n\n' : '') + '--- Positionierungs-Check KW ' + currentKW + ' ---\n' + text;
+    localStorage.setItem('fem_wp_block6', JSON.stringify(b6));
+    const btn = document.getElementById('posToWP');
     btn.textContent = 'Übernommen ✓'; btn.classList.add('success');
     setTimeout(() => { btn.textContent = '→ Wochenplan übernehmen'; btn.classList.remove('success'); }, 2000);
   });

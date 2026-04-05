@@ -506,9 +506,16 @@ textarea { resize: vertical; line-height: 1.6; }
 
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* -- Dark Mode -- */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
@@ -533,6 +540,10 @@ textarea { resize: vertical; line-height: 1.6; }
     <a href="konkurrenz.html">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
+    </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
     </a>
     <a href="wochenplan.html" class="active">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1783,6 +1794,34 @@ function collectPrompt() {
   const lernstand = document.getElementById('b7Lernstand').value.trim();
   if (lernstand) parts.push(`## Kumulierter Lernstand\n${lernstand}`);
 
+  // Nicht posten
+  try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
+  // Playbook
+  try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); const pbParts = []; if (pb.was_funktioniert) pbParts.push('Was funktioniert: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.was_nicht) pbParts.push('Was nicht: ' + pb.was_nicht.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.regeln) pbParts.push('Regeln: ' + pb.regeln.map(x => typeof x==='object'?x.text:x).join(', ')); if (pbParts.length) parts.push('## FemSurance Playbook\n' + pbParts.join('\n')); } catch {}
+
+  // Strategie
+  try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+
+  // Themenwelten-Performance
+  try {
+    const twCards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]').filter(c => c.col === 'publish' && !c.archivedOutline);
+    const twPerf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
+    const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
+    const twData = {};
+    WELTEN.forEach(w => { twData[w] = { posts: 0, engSum: 0, engCount: 0 }; });
+    twCards.forEach(c => {
+      const tw = c.themenwelt;
+      if (!tw || tw === 'Alle 4' || !WELTEN.includes(tw)) return;
+      const p = twPerf[c.id] || {};
+      const imp = parseFloat(p.impressions) || 0;
+      const eng = imp > 0 ? ((parseFloat(p.reaktionen)||0)+(parseFloat(p.kommentare)||0)+(parseFloat(p.shares)||0))/imp*100 : 0;
+      twData[tw].posts++; if (eng > 0) { twData[tw].engSum += eng; twData[tw].engCount++; }
+    });
+    const twLines = WELTEN.map(w => { const d = twData[w]; return `${w}: ${d.posts} Posts · Ø ${d.engCount ? (d.engSum/d.engCount).toFixed(1) : '–'}%`; });
+    const bestTW = WELTEN.reduce((best, w) => { const d = twData[w]; const avg = d.engCount ? d.engSum/d.engCount : 0; return avg > (best.avg||0) ? {w, avg} : best; }, {});
+    if (twLines.some(l => !l.includes('0 Posts'))) parts.push(`## Themenwelten-Performance\n${twLines.join('\n')}\nEmpfehlung: Fokus auf ${bestTW.w || 'alle gleichmäßig'}`);
+  } catch {}
+
   return parts.join('\n\n');
 }
 
@@ -1965,6 +2004,25 @@ btnSave.addEventListener('click', () => {
   btnSave.classList.add('success');
   renderArchiv();
   setTimeout(() => { btnSave.textContent = '💾 Speichern'; btnSave.classList.remove('success'); }, 2000);
+
+  // Auto-update Playbook in background
+  try {
+    const wpText = outputArea.value;
+    if (wpText && ANTHROPIC_API_KEY !== 'DEIN_API_KEY_HIER') {
+      fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:'Analysiere diese Wochendaten und extrahiere 1-2 neue Best Practices. Antworte NUR im JSON: {"was_funktioniert":["..."],"was_nicht":["..."]}',messages:[{role:'user',content:wpText.slice(0,2000)}]})
+      }).then(r=>r.json()).then(data=>{
+        let js=data.content[0].text.trim();
+        if(js.startsWith('```'))js=js.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'');
+        const updates=JSON.parse(js);
+        const pb=JSON.parse(localStorage.getItem('fem_playbook')||'{}');
+        if(updates.was_funktioniert)(updates.was_funktioniert).forEach(t=>{if(!pb.was_funktioniert)pb.was_funktioniert=[];pb.was_funktioniert.push({text:t,neu:true});});
+        if(updates.was_nicht)(updates.was_nicht).forEach(t=>{if(!pb.was_nicht)pb.was_nicht=[];pb.was_nicht.push({text:t,neu:true});});
+        localStorage.setItem('fem_playbook',JSON.stringify(pb));
+      }).catch(()=>{});
+    }
+  } catch {}
 });
 
 // ══════════ COPY BUTTON ══════════

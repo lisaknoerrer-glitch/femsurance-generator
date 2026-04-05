@@ -173,9 +173,53 @@ body {
   margin-left: auto;
 }
 .save-indicator.show { opacity: 1; }
+/* -- Dark Mode -- */
+body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
+.dm-toggle:hover { border-color:var(--fem-pink); }
+/* Content-Analyse */
+.comp-analyse { padding:14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin:8px 0; display:none; }
+.comp-analyse.open { display:block; }
+.ca-post { border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; margin-bottom:8px; background:var(--bg-card); }
+.ca-post textarea { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px; min-height:40px; resize:vertical; }
+.ca-post textarea:focus { outline:none; border-color:var(--fem-pink); }
+.ca-post select, .ca-post input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:11px; }
+.ca-post select:focus, .ca-post input:focus { outline:none; border-color:var(--fem-pink); }
+.ca-row { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; align-items:center; }
+.ca-btn { padding:5px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); }
+.ca-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.ca-btn-pink { padding:6px 14px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+.ca-btn-pink:hover { opacity:0.9; }
+.ca-btn-pink:disabled { opacity:0.5; cursor:not-allowed; }
+.ca-profile { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+.ca-profile-item { background:var(--bg-card); border-radius:4px; padding:8px; text-align:center; font-size:11px; }
+.ca-profile-item strong { display:block; color:var(--fem-pink); font-size:13px; }
+.ca-result { margin-top:10px; padding:12px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:12px; line-height:1.6; }
+.gap-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; }
+.gap-actions { display:flex; gap:8px; margin-top:12px; }
+.gap-btn { padding:8px 16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
+.gap-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.gap-btn.success { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+
+/* Growth */
+.growth-account { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; }
+.growth-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.growth-name { font-weight:600; font-size:13px; }
+.growth-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.growth-pos { background:#dcfce7; color:#16a34a; }
+.growth-neg { background:#fef2f2; color:#dc2626; }
+.growth-spark { width:120px; height:24px; }
+.growth-spark svg { width:100%; height:100%; }
+.growth-add { display:flex; gap:6px; margin-top:6px; }
+.growth-add input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
+.growth-add input:focus { outline:none; border-color:var(--fem-pink); }
+.growth-add button { padding:4px 12px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; font-size:11px; font-weight:600; cursor:pointer; }
 </style>
 </head>
 <body>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left">
@@ -200,6 +244,10 @@ body {
     <a href="konkurrenz.html" class="active">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Konkurrenz
+    </a>
+    <a href="strategie.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+      Strategie
     </a>
     <a href="wochenplan.html">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -253,6 +301,27 @@ body {
     </div>
     <div class="btn-row">
       <button class="btn-add" id="btnAdd">+ Account hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- Wachstums-Vergleich -->
+  <div class="card fade-up">
+    <div class="card-title">📈 Wachstums-Vergleich</div>
+    <div id="growthContent"></div>
+  </div>
+
+  <!-- Gap-Analyse -->
+  <div class="card fade-up">
+    <div class="card-title">🔍 Gap-Analyse</div>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <button class="ca-btn-pink" id="gapBtn">🔍 Gap-Analyse starten</button>
+      <span style="font-size:11px; color:var(--text-secondary);" id="gapTimestamp"></span>
+    </div>
+    <div id="gapOutput"></div>
+    <div class="gap-actions" id="gapActions" style="display:none;">
+      <button class="gap-btn" id="gapCopy">📋 Kopieren</button>
+      <button class="gap-btn" id="gapToResearch">→ Research übernehmen</button>
+      <button class="gap-btn" id="gapToWP">→ Wochenplan übernehmen</button>
     </div>
   </div>
 
@@ -408,9 +477,15 @@ function renderTable() {
       <td><input type="text" value="${acc.engagement}" placeholder="0.0" data-i="${i}" data-field="engagement" style="width:80px;"></td>
       <td><input type="number" value="${acc.postsWeek}" placeholder="0" data-i="${i}" data-field="postsWeek" style="width:70px;"></td>
       <td style="font-size:12px; color:var(--text-secondary)">${diffText}</td>
-      <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button></td>
+      <td><button class="btn-remove" data-i="${i}" title="Entfernen">&times;</button> ${acc.name ? `<button class="ca-btn" data-analyse="${i}" style="margin-left:4px;">📊</button>` : ''}</td>
     `;
     tbody.appendChild(tr);
+    // Content analyse row
+    if (acc.name) {
+      const trA = document.createElement('tr');
+      trA.innerHTML = `<td colspan="8"><div class="comp-analyse" id="compAnalyse_${i}" data-acc-name="${acc.name}"></div></td>`;
+      tbody.appendChild(trA);
+    }
   });
 
   updateHero(femCurrent, currentGoal);
@@ -537,6 +612,289 @@ document.getElementById('compBody').addEventListener('input', e => {
 });
 
 renderTable();
+
+// ══════════ WACHSTUMS-VERGLEICH ══════════
+let growthHistory = JSON.parse(localStorage.getItem('fem_growth_history') || '{}');
+function saveGrowthHistory() { localStorage.setItem('fem_growth_history', JSON.stringify(growthHistory)); }
+
+function sparkGrowth(entries) {
+  if (entries.length < 2) return '';
+  const vals = entries.map(e => e.followers);
+  const max = Math.max(...vals), min = Math.min(...vals);
+  const range = max - min || 1;
+  const pts = vals.map((v, i) => `${i * (100 / (vals.length - 1))},${22 - ((v - min) / range) * 20}`).join(' ');
+  return `<svg viewBox="0 0 100 24" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#E91E8C" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+
+function renderGrowth() {
+  const data = loadData();
+  const container = document.getElementById('growthContent');
+  // Build accounts list: FemSurance + competitors
+  const accounts = [{ name: 'FemSurance', current: data.femFollower }];
+  (data.accounts || []).forEach(a => { if (a.name) accounts.push({ name: a.name, current: parseInt(a.followers) || 0 }); });
+
+  container.innerHTML = accounts.map(acc => {
+    const entries = (growthHistory[acc.name] || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+    let growthBadge = '';
+    if (entries.length >= 2) {
+      const last = entries[entries.length - 1], prev = entries[entries.length - 2];
+      const weeks = Math.max(1, (new Date(last.date) - new Date(prev.date)) / (7 * 86400000));
+      const perWeek = Math.round((last.followers - prev.followers) / weeks);
+      const cls = perWeek >= 0 ? 'growth-pos' : 'growth-neg';
+      growthBadge = `<span class="growth-badge ${cls}">${perWeek >= 0 ? '+' : ''}${perWeek} / Woche</span>`;
+    }
+    return `
+      <div class="growth-account" data-acc="${acc.name}">
+        <div class="growth-header">
+          <span class="growth-name">${acc.name}</span>
+          <span>${acc.current ? acc.current.toLocaleString('de-DE') + ' Follower' : '–'} ${growthBadge}</span>
+        </div>
+        <div class="growth-spark">${sparkGrowth(entries)}</div>
+        <div style="font-size:10px; color:var(--text-secondary); margin:4px 0;">${entries.length} Einträge</div>
+        <div class="growth-add">
+          <input type="date" class="ga-date" value="${new Date().toISOString().split('T')[0]}">
+          <input type="number" class="ga-fol" placeholder="Follower" value="${acc.current || ''}" style="width:80px;">
+          <button class="ga-btn">+ Eintrag</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Bind add buttons
+  container.querySelectorAll('.ga-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const acc = btn.closest('.growth-account');
+      const name = acc.dataset.acc;
+      const date = acc.querySelector('.ga-date').value;
+      const fol = parseInt(acc.querySelector('.ga-fol').value) || 0;
+      if (!date || !fol) return;
+      if (!growthHistory[name]) growthHistory[name] = [];
+      growthHistory[name].push({ date, followers: fol });
+      saveGrowthHistory();
+      btn.textContent = '✓'; setTimeout(() => renderGrowth(), 500);
+    });
+  });
+}
+renderGrowth();
+
+// ═══════���══ CONTENT-ANALYSE PRO WETTBEWERBER ══════════
+const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+
+// Toggle analyse sections
+document.getElementById('compBody').addEventListener('click', e => {
+  const aBtn = e.target.closest('[data-analyse]');
+  if (!aBtn) return;
+  const idx = aBtn.dataset.analyse;
+  const section = document.getElementById('compAnalyse_' + idx);
+  if (!section) return;
+  section.classList.toggle('open');
+  if (section.classList.contains('open') && !section.dataset.loaded) {
+    section.dataset.loaded = 'true';
+    renderCompAnalyse(section, section.dataset.accName);
+  }
+});
+
+function renderCompAnalyse(container, accName) {
+  const content = JSON.parse(localStorage.getItem('fem_konkurrenz_content') || '{}');
+  const accData = content[accName] || { posts: [] };
+  const posts = accData.posts || [];
+
+  function save() { content[accName] = accData; localStorage.setItem('fem_konkurrenz_content', JSON.stringify(content)); }
+
+  function render() {
+    let html = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin-bottom:8px;">Top-Posts diese Woche</div>';
+    posts.forEach((p, i) => {
+      html += `<div class="ca-post" data-pi="${i}">
+        <textarea placeholder="Post-Text / Titel...">${p.text || ''}</textarea>
+        <div class="ca-row">
+          <select data-f="hook"><option value="">Hook</option><option${p.hook==='Provokation'?' selected':''}>Provokation</option><option${p.hook==='Story'?' selected':''}>Story</option><option${p.hook==='Frage'?' selected':''}>Frage</option><option${p.hook==='Statistik'?' selected':''}>Statistik</option><option${p.hook==='Zitat'?' selected':''}>Zitat</option></select>
+          <select data-f="format"><option value="">Format</option><option${p.format==='Carousel'?' selected':''}>Carousel</option><option${p.format==='Text'?' selected':''}>Text</option><option${p.format==='Bild'?' selected':''}>Bild</option><option${p.format==='Video'?' selected':''}>Video</option></select>
+          <select data-f="ton"><option value="">Ton</option><option${p.ton==='sachlich'?' selected':''}>sachlich</option><option${p.ton==='emotional'?' selected':''}>emotional</option><option${p.ton==='motivierend'?' selected':''}>motivierend</option><option${p.ton==='fachlich'?' selected':''}>fachlich</option></select>
+          <input type="number" data-f="reaktionen" value="${p.reaktionen||''}" placeholder="Reak." style="width:60px;">
+          <input type="number" data-f="kommentare" value="${p.kommentare||''}" placeholder="Komm." style="width:60px;">
+          <button style="border:none;background:none;cursor:pointer;color:var(--text-secondary);" data-remove="${i}">×</button>
+        </div>
+      </div>`;
+    });
+    if (posts.length < 5) html += `<button class="ca-btn" id="caAdd_${accName}">+ Post hinzufügen</button>`;
+
+    // Profile
+    if (posts.length) {
+      const hooks = {}, formats = {}, tons = {}; let reakSum = 0, kommSum = 0;
+      posts.forEach(p => { if(p.hook)hooks[p.hook]=(hooks[p.hook]||0)+1; if(p.format)formats[p.format]=(formats[p.format]||0)+1; if(p.ton)tons[p.ton]=(tons[p.ton]||0)+1; reakSum+=parseInt(p.reaktionen)||0; kommSum+=parseInt(p.kommentare)||0; });
+      const topHook = Object.entries(hooks).sort((a,b)=>b[1]-a[1])[0]?.[0] || '–';
+      const topFmt = Object.entries(formats).sort((a,b)=>b[1]-a[1])[0]?.[0] || '–';
+      const topTon = Object.entries(tons).sort((a,b)=>b[1]-a[1])[0]?.[0] || '–';
+      html += `<div class="ca-profile">
+        <div class="ca-profile-item"><strong>${topHook}</strong>Häufigster Hook</div>
+        <div class="ca-profile-item"><strong>${topFmt}</strong>Häufigstes Format</div>
+        <div class="ca-profile-item"><strong>Ø ${Math.round(reakSum/posts.length)}</strong>Reaktionen</div>
+      </div>`;
+      html += `<button class="ca-btn-pink" id="caScan_${accName}" style="margin-top:10px;">🔬 Posts analysieren</button>`;
+      html += `<div id="caResult_${accName}"></div>`;
+    }
+
+    // Show saved analysis
+    if (accData.analyse) {
+      const a = accData.analyse;
+      html += `<div class="ca-result" style="margin-top:10px;">
+        <strong>Erfolgsrezept:</strong> ${a.muster?.was_funktioniert || '–'}<br>
+        <strong>Top-Post:</strong> ${a.top_post?.titel || '–'} — ${a.top_post?.warum_erfolgreich || ''}<br>
+        <strong>FemSurance-Chance:</strong> ${a.femsurance_chance || '–'}
+        <div style="margin-top:6px;">
+          <button class="ca-btn" data-to-research="${accName}">→ Research</button>
+          <button class="ca-btn" data-to-playbook="${accName}">→ Playbook</button>
+        </div>
+      </div>`;
+    }
+
+    container.innerHTML = html;
+
+    // Bind events
+    container.querySelectorAll('.ca-post').forEach(el => {
+      const idx = parseInt(el.dataset.pi);
+      el.querySelector('textarea').addEventListener('input', e => { posts[idx].text = e.target.value; save(); });
+      el.querySelectorAll('select, input').forEach(inp => {
+        if (inp.dataset.f) inp.addEventListener('change', () => { posts[idx][inp.dataset.f] = inp.value; save(); });
+      });
+    });
+    container.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', () => { posts.splice(parseInt(btn.dataset.remove), 1); save(); render(); });
+    });
+    const addBtn = container.querySelector(`#caAdd_${CSS.escape(accName)}`);
+    if (addBtn) addBtn.addEventListener('click', () => { posts.push({}); save(); render(); });
+
+    // Scan button
+    const scanBtn = container.querySelector(`#caScan_${CSS.escape(accName)}`);
+    if (scanBtn) scanBtn.addEventListener('click', async () => {
+      scanBtn.disabled = true; scanBtn.textContent = '⏳ Wird analysiert...';
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+            system:'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
+            messages:[{role:'user',content:`Account: ${accName}\nPosts:\n${posts.map(p=>`${p.text||'–'} (Hook:${p.hook||'–'}, Format:${p.format||'–'}, Reak:${p.reaktionen||0})`).join('\n')}`}]
+          })
+        });
+        if (!resp.ok) throw new Error('API ' + resp.status);
+        const data = await resp.json();
+        let js = data.content[0].text.trim();
+        if (js.startsWith('```')) js = js.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'');
+        accData.analyse = JSON.parse(js); save(); render();
+      } catch (err) { alert('Fehler: ' + err.message); }
+      scanBtn.disabled = false; scanBtn.textContent = '🔬 Posts analysieren';
+    });
+
+    // Research/Playbook buttons
+    container.querySelectorAll('[data-to-research]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
+        if (accData.analyse?.femsurance_chance && !themes.find(t => t.thema === accData.analyse.femsurance_chance)) {
+          themes.push({ thema: accData.analyse.femsurance_chance.slice(0,40), hook: accData.analyse.femsurance_chance, format: '', potenzial: 2, badge: '🏆 Top-Post-Insight' });
+          localStorage.setItem('fem_research_themes', JSON.stringify(themes));
+        }
+        btn.textContent = '✓'; setTimeout(() => { btn.textContent = '→ Research'; }, 1500);
+      });
+    });
+    container.querySelectorAll('[data-to-playbook]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}');
+        if (!pb.was_funktioniert) pb.was_funktioniert = [];
+        if (accData.analyse?.top_post?.lerneffekt) pb.was_funktioniert.push({ text: `${accName}: ${accData.analyse.top_post.lerneffekt}`, neu: true });
+        localStorage.setItem('fem_playbook', JSON.stringify(pb));
+        btn.textContent = '✓'; setTimeout(() => { btn.textContent = '→ Playbook'; }, 1500);
+      });
+    });
+  }
+  render();
+}
+
+// ══════════ GAP-ANALYSE ══════════
+const gapSaved = localStorage.getItem('fem_gap_analyse_KW' + (Math.ceil(((new Date() - new Date(new Date().getFullYear(),0,1))/86400000+1)/7)));
+if (gapSaved) { try { const d = JSON.parse(gapSaved); document.getElementById('gapOutput').innerHTML = `<div class="gap-output">${d.text.replace(/\n/g,'<br>')}</div>`; document.getElementById('gapActions').style.display = 'flex'; if (d.savedAt) document.getElementById('gapTimestamp').textContent = 'Zuletzt: ' + new Date(d.savedAt).toLocaleDateString('de-DE'); } catch {} }
+
+document.getElementById('gapBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('gapBtn');
+  btn.disabled = true; btn.textContent = '🔍 Wird analysiert...';
+  try {
+    const parts = [];
+    const data = loadData();
+    parts.push(`FemSurance: ${data.femFollower} Follower`);
+    if (data.accounts) parts.push('Wettbewerber:\n' + data.accounts.filter(a=>a.name).map(a=>`${a.name}: ${a.followers||'–'} Follower, ${a.engagement||'–'}% Eng.`).join('\n'));
+    const content = JSON.parse(localStorage.getItem('fem_konkurrenz_content') || '{}');
+    Object.entries(content).forEach(([name, d]) => {
+      if (d.posts?.length) parts.push(`${name} Posts:\n` + d.posts.map(p=>p.text||'').filter(Boolean).join('\n'));
+      if (d.analyse) parts.push(`${name} Analyse: ${d.analyse.muster?.was_funktioniert||''}, fehlt: ${d.analyse.muster?.was_fehlt||''}`);
+    });
+    try { const perf = JSON.parse(localStorage.getItem('fem_post_performance')||'{}'); const top = Object.values(perf).filter(v=>v.impressions).slice(0,5); if(top.length) parts.push('Eigene Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch {}
+    try { const t = JSON.parse(localStorage.getItem('fem_research_themes')||'[]'); if(t.length) parts.push('Research-Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+
+    const kwNum = Math.ceil(((new Date() - new Date(new Date().getFullYear(),0,1))/86400000+1)/7);
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+        system:`Du bist der FemSurance Wettbewerbs-Analyst. Analysiere alle Wettbewerber-Daten und finde was NIEMAND macht.
+
+Antworte in diesem Format:
+
+🔍 GAP-ANALYSE KW ${kwNum}
+
+WAS ALLE MACHEN:
+→ [Gemeinsamkeit 1]
+→ [Gemeinsamkeit 2]
+
+WAS NIEMAND MACHT (deine Lücke!):
+→ [Lücke 1] — Potenzial: hoch/mittel/niedrig
+→ [Lücke 2] — Potenzial: hoch/mittel/niedrig
+
+FEMSURANCE POSITIONIERUNG:
+→ [Wie FemSurance die Lücke füllen kann]
+
+TOP 3 SOFORT-CHANCEN:
+1. [Konkrete Content-Idee]
+2. [Konkrete Content-Idee]
+3. [Konkrete Content-Idee]
+
+Basiere alles auf echten Daten.`,
+        messages:[{role:'user',content:parts.join('\n\n')}]
+      })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const result = await resp.json();
+    const text = result.content[0].text;
+    const gapKey = 'fem_gap_analyse_KW' + kwNum;
+    localStorage.setItem(gapKey, JSON.stringify({ text, savedAt: new Date().toISOString() }));
+    document.getElementById('gapOutput').innerHTML = `<div class="gap-output">${text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('gapActions').style.display = 'flex';
+    document.getElementById('gapTimestamp').textContent = 'Zuletzt: ' + new Date().toLocaleDateString('de-DE');
+  } catch (err) { alert('Fehler: ' + err.message); }
+  btn.disabled = false; btn.textContent = '🔍 Gap-Analyse starten';
+});
+
+document.getElementById('gapCopy').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.querySelector('.gap-output')?.textContent||'');
+  const b = document.getElementById('gapCopy'); b.textContent='Kopiert ✓'; b.classList.add('success');
+  setTimeout(()=>{b.textContent='📋 Kopieren';b.classList.remove('success');},2000);
+});
+document.getElementById('gapToResearch').addEventListener('click', () => {
+  const text = document.querySelector('.gap-output')?.textContent||'';
+  const chances = text.split('\n').filter(l=>l.match(/^\d\./)).map(l=>l.replace(/^\d\.\s*/,'').trim()).filter(Boolean);
+  const themes = JSON.parse(localStorage.getItem('fem_research_themes')||'[]');
+  chances.forEach(c => { if(!themes.find(t=>t.thema===c.slice(0,30))) themes.push({thema:c.slice(0,30),hook:c,format:'',potenzial:2,badge:'🔍 Gap-Chance'}); });
+  localStorage.setItem('fem_research_themes',JSON.stringify(themes));
+  const b=document.getElementById('gapToResearch');b.textContent='✓ '+chances.length+' Themen';b.classList.add('success');
+  setTimeout(()=>{b.textContent='→ Research übernehmen';b.classList.remove('success');},2000);
+});
+document.getElementById('gapToWP').addEventListener('click', () => {
+  const text = document.querySelector('.gap-output')?.textContent||'';
+  const b6 = JSON.parse(localStorage.getItem('fem_wp_block6')||'{}');
+  b6.text = (b6.text?b6.text+'\n\n':'') + '--- Gap-Analyse ---\n' + text;
+  localStorage.setItem('fem_wp_block6',JSON.stringify(b6));
+  const b=document.getElementById('gapToWP');b.textContent='Übernommen ✓';b.classList.add('success');
+  setTimeout(()=>{b.textContent='→ Wochenplan übernehmen';b.classList.remove('success');},2000);
+});
 </script>
 </body>
 </html>
