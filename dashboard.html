@@ -229,8 +229,10 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
   padding: 20px 22px;
 }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .card-title {
   font-size: 13px;
   font-weight: 600;
@@ -491,6 +493,9 @@ body {
 body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
 body.dark-mode .sidebar-right { background:var(--bg-card); }
+body.dark-mode .tag-pink { background: rgba(233,30,140,0.2); color: var(--fem-pink); }
+body.dark-mode .tag-purple { background: rgba(124,58,237,0.2); color: var(--fem-purple); }
+body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
 .dm-toggle { position:fixed; top:12px; right:284px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
 .dm-toggle:hover { border-color:var(--fem-pink); }
 
