@@ -1862,6 +1862,12 @@ COPYWRITING-CHECKLISTE:
 - Spezifische Zahlen statt vager Aussagen
 - Ein Gedanke pro Post — nicht überladen
 - Call-to-Action: Klar, spezifisch, niedrigschwellig
+- Copy-Editing: Prüfe jeden Text auf Klarheit, Tonalität, Spezifität und Emotion
+
+ANALYTICS-FOKUS:
+- Bewerte die vergangene Woche nach Metriken die Entscheidungen informieren, nicht nach Vanity Metrics
+- Engagement-Rate > Impressionen, Kommentare > Likes, Saves > Shares
+- Identifiziere klare Trends und leite daraus konkrete Handlungen für nächste Woche ab
 
 Erstelle auf Deutsch:
 1. Auswertung der vergangenen Woche (inkl. Screenshot-Analyse)
@@ -2044,7 +2050,7 @@ btnSave.addEventListener('click', () => {
     if (wpText && ANTHROPIC_API_KEY !== 'DEIN_API_KEY_HIER') {
       fetch('https://api.anthropic.com/v1/messages', {
         method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:getStrategieContext()+'Analysiere diese Wochendaten und extrahiere 1-2 neue Best Practices. Antworte NUR im JSON: {"was_funktioniert":["..."],"was_nicht":["..."]}',messages:[{role:'user',content:wpText.slice(0,2000)}]})
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:getStrategieContext()+'Analysiere diese Wochendaten und extrahiere 1-2 neue Best Practices. Fokus auf Metriken die Entscheidungen informieren: Welche KPIs zeigen einen klaren Trend? Welche Zahlen sind actionable vs. nur Vanity Metrics? Antworte NUR im JSON: {"was_funktioniert":["..."],"was_nicht":["..."]}',messages:[{role:'user',content:wpText.slice(0,2000)}]})
       }).then(r=>r.json()).then(data=>{
         let js=data.content[0].text.trim();
         if(js.startsWith('```'))js=js.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'');

@@ -645,7 +645,7 @@ function renderCompAnalyse(container, accName) {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
           body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-            system: getStrategieContext() +'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
+            system: getStrategieContext() +'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Nutze das Competitor-Alternatives-Framework: Welchen Job to Be Done erfüllen die Posts? Was versprechen sie vs. was braucht die Zielgruppe wirklich? Wo ist die Lücke für FemSurance? Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
             messages:[{role:'user',content:`Account: ${accName}\nPosts:\n${posts.map(p=>`${p.text||'–'} (Hook:${p.hook||'–'}, Format:${p.format||'–'}, Reak:${p.reaktionen||0})`).join('\n')}`}]
           })
         });
@@ -709,6 +709,12 @@ document.getElementById('gapBtn').addEventListener('click', async () => {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
         system: getStrategieContext() +`Du bist der FemSurance Wettbewerbs-Analyst. Analysiere alle Wettbewerber-Daten und finde was NIEMAND macht.
+
+COMPETITOR-ALTERNATIVES FRAMEWORK:
+- Analysiere nicht nur WAS Wettbewerber posten, sondern welche JOBS TO BE DONE sie für ihre Zielgruppe erfüllen
+- Finde die Lücke zwischen dem was Wettbewerber versprechen und was die Zielgruppe wirklich braucht
+- Identifiziere "Underserved Jobs": Bedürfnisse die keine Wettbewerberin adressiert
+- Bewerte jede Lücke nach: Wie groß ist die Nachfrage? Wie einfach kann FemSurance sie füllen?
 
 Antworte in diesem Format:
 
