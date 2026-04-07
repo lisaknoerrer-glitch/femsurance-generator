@@ -114,7 +114,7 @@ body {
   background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
 }
 .trend-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-md);
   font-size: 11px; font-weight: 600;
 }
 .trend-up   { background: #dcfce7; color: #16a34a; }
@@ -159,7 +159,7 @@ body {
   resize: vertical; transition: border-color 0.2s;
 }
 .gen-field select:focus, .gen-field textarea:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 .gen-field textarea { min-height: 80px; }
 .btn-generate {
@@ -205,7 +205,7 @@ body {
 .hook-item { position:relative; }
 .add-hook-form { display:flex; gap:8px; margin-top:10px; }
 .add-hook-form input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
-.add-hook-form input:focus { outline:none; border-color:var(--fem-pink); }
+.add-hook-form input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .add-hook-form select { padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
 /* Insights */
 .insight-item { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; position:relative; }
@@ -215,7 +215,7 @@ body {
 .ii-badge-thema { background:var(--fem-pink-light); color:var(--fem-pink); }
 .ii-badge-typ { background:var(--fem-purple-light); color:var(--fem-purple); }
 .insight-item .ii-actions { display:flex; gap:4px; margin-top:6px; }
-.insight-item .ii-btn { padding:3px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:10px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.insight-item .ii-btn { padding:3px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:10px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
 .insight-item .ii-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 /* Playbook */
 .pb-section { margin-bottom:12px; padding:10px 14px; border-radius:var(--radius-sm); }
@@ -229,7 +229,7 @@ body {
 .pb-item .pb-new { font-size:9px; background:var(--fem-purple-light); color:var(--fem-purple); padding:1px 5px; border-radius:8px; font-weight:600; }
 .pb-item button { border:none; background:none; cursor:pointer; font-size:12px; color:var(--text-secondary); opacity:0.5; }
 .pb-item button:hover { opacity:1; color:#dc2626; }
-.pb-add { padding:4px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-size:11px; color:var(--text-secondary); font-family:inherit; margin-top:4px; }
+.pb-add { padding:4px 12px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-size:11px; color:var(--text-secondary); font-family:inherit; margin-top:4px; }
 .pb-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .insight-item .ii-btn.copied { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
 
@@ -960,15 +960,15 @@ function renderHookPerf() {
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end;">
         <div style="flex:1; min-width:120px;">
           <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Hook-Typ</div>
-          <select id="hookManualTyp" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
+          <select id="hookManualTyp" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
             <option>Provokation</option><option>Story</option><option>Frage</option><option>Statistik</option><option>Zitat</option><option>Persönlich</option>
           </select>
         </div>
         <div style="min-width:80px;">
           <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Eng.-Rate %</div>
-          <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
+          <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
         </div>
-        <button id="hookManualSave" style="padding:7px 16px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;">Speichern</button>
+        <button id="hookManualSave" style="padding:7px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;">Speichern</button>
       </div>
     </div>
   </div>`;
@@ -1102,9 +1102,9 @@ function renderPlaybook() {
       }).join('')}
       <div class="pb-inline-add" data-pb-sec-add="${sec.key}" style="display:none;">
         <div style="display:flex; gap:6px; margin-top:6px;">
-          <input type="text" class="pb-inline-input" placeholder="Neuer Eintrag..." style="flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px;">
-          <button class="pb-inline-save" style="padding:4px 10px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; cursor:pointer; font-size:12px; font-weight:600;">✓</button>
-          <button class="pb-inline-cancel" style="padding:4px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); cursor:pointer; font-size:12px; color:var(--text-secondary);">×</button>
+          <input type="text" class="pb-inline-input" placeholder="Neuer Eintrag..." style="flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
+          <button class="pb-inline-save" style="padding:4px 10px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; cursor:pointer; font-size:12px; font-weight:600;">✓</button>
+          <button class="pb-inline-cancel" style="padding:4px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-size:12px; color:var(--text-secondary);">×</button>
         </div>
       </div>
       <button class="pb-add" data-pb-add="${sec.key}">+ Hinzufügen</button>

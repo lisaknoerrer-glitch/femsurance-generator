@@ -139,7 +139,7 @@ body {
   color: var(--text-primary); background: var(--bg-card);
   transition: border-color 0.2s;
 }
-.comp-table input:focus { outline: none; border-color: var(--fem-pink); }
+.comp-table input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .comp-table input[type="number"] { width: 100px; }
 .comp-bar-track {
   width: 100%; height: 6px; background: var(--bg-secondary);
@@ -182,18 +182,18 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 .comp-analyse { padding:14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin:8px 0; display:none; }
 .comp-analyse.open { display:block; }
 .ca-post { border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; margin-bottom:8px; background:var(--bg-card); }
-.ca-post textarea { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px; min-height:40px; resize:vertical; }
-.ca-post textarea:focus { outline:none; border-color:var(--fem-pink); }
-.ca-post select, .ca-post input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:11px; }
-.ca-post select:focus, .ca-post input:focus { outline:none; border-color:var(--fem-pink); }
+.ca-post textarea { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; min-height:40px; resize:vertical; }
+.ca-post textarea:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.ca-post select, .ca-post input { padding:4px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:11px; }
+.ca-post select:focus, .ca-post input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .ca-row { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; align-items:center; }
-.ca-btn { padding:5px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); }
+.ca-btn { padding:5px 12px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); }
 .ca-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .ca-btn-pink { padding:6px 14px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
 .ca-btn-pink:hover { opacity:0.9; }
 .ca-btn-pink:disabled { opacity:0.5; cursor:not-allowed; }
 .ca-profile { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
-.ca-profile-item { background:var(--bg-card); border-radius:4px; padding:8px; text-align:center; font-size:11px; }
+.ca-profile-item { background:var(--bg-card); border-radius:var(--radius-sm); padding:8px; text-align:center; font-size:11px; }
 .ca-profile-item strong { display:block; color:var(--fem-pink); font-size:13px; }
 .ca-result { margin-top:10px; padding:12px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:12px; line-height:1.6; }
 .gap-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; }
@@ -206,15 +206,15 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 .growth-account { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; }
 .growth-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
 .growth-name { font-weight:600; font-size:13px; }
-.growth-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.growth-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:11px; font-weight:600; }
 .growth-pos { background:#dcfce7; color:#16a34a; }
 .growth-neg { background:#fef2f2; color:#dc2626; }
 .growth-spark { width:120px; height:24px; }
 .growth-spark svg { width:100%; height:100%; }
 .growth-add { display:flex; gap:6px; margin-top:6px; }
-.growth-add input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
-.growth-add input:focus { outline:none; border-color:var(--fem-pink); }
-.growth-add button { padding:4px 12px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; font-size:11px; font-weight:600; cursor:pointer; }
+.growth-add input { padding:4px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; font-family:inherit; }
+.growth-add input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.growth-add button { padding:4px 12px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-size:11px; font-weight:600; cursor:pointer; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
@@ -529,8 +529,8 @@ function renderGrowth() {
     form.innerHTML = `
       <div style="padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-top:8px;">
         <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
-          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
+          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
+          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
         </div>
         <div style="display:flex; gap:8px;">
           <button class="ca-btn-pink" id="gaNewSave">Hinzufügen</button>
