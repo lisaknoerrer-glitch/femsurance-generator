@@ -131,7 +131,7 @@ input[type="text"], input[type="number"], input[type="url"], input[type="date"],
   transition: border-color 0.2s;
 }
 input:focus, select:focus, textarea:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 textarea { resize: vertical; line-height: 1.6; }
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -293,7 +293,7 @@ textarea { resize: vertical; line-height: 1.6; }
   background: var(--bg-secondary); resize: none;
   overflow-y: auto;
 }
-.output-textarea:focus { outline: none; border-color: var(--fem-pink); }
+.output-textarea:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .output-textarea::placeholder { color: var(--text-secondary); font-family: 'Inter', sans-serif; }
 
 /* Action buttons */
@@ -323,7 +323,7 @@ textarea { resize: vertical; line-height: 1.6; }
   font-family: inherit; font-size: 12px; color: var(--text-primary);
   background: var(--bg-card);
 }
-.archiv-section select:focus { outline: none; border-color: var(--fem-pink); }
+.archiv-section select:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 
 /* ── Multi-Screenshot Slots ── */
 .screenshot-slots {
@@ -346,7 +346,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .ss-slot .ss-hint { font-size: 10px; color: var(--text-secondary); opacity: 0.7; }
 .ss-slot .ss-preview {
-  max-width: 100%; max-height: 70px; border-radius: 4px; margin-top: 6px;
+  max-width: 100%; max-height: 70px; border-radius: var(--radius-sm); margin-top: 6px;
 }
 .ss-slot.drag-over { border-color: var(--fem-pink); background: var(--fem-pink-light); }
 
@@ -384,9 +384,9 @@ textarea { resize: vertical; line-height: 1.6; }
   width: 100%; padding: 4px 8px; border: 1px solid var(--border);
   border-radius: 3px; font-size: 12px; font-family: inherit;
 }
-.extract-results .er-field input:focus { outline: none; border-color: var(--fem-pink); }
+.extract-results .er-field input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .extract-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-md);
   font-size: 10px; font-weight: 600; background: #dcfce7; color: #16a34a;
   margin-left: 8px;
 }
@@ -404,8 +404,8 @@ textarea { resize: vertical; line-height: 1.6; }
 /* ── Block 2 KPI Fields ── */
 .b2-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px 10px; margin-bottom:10px; }
 .b2-kpi-field label { display:block; font-size:10px; color:var(--text-secondary); margin-bottom:2px; }
-.b2-kpi-field input { width:100%; padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
-.b2-kpi-field input:focus { outline:none; border-color:var(--fem-pink); }
+.b2-kpi-field input { width:100%; padding:5px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; font-family:inherit; }
+.b2-kpi-field input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .b2-section { font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; letter-spacing:0.03em; margin:10px 0 6px; padding-top:8px; border-top:1px solid var(--border); }
 .b2-section:first-of-type { border-top:none; padding-top:0; }
 .btn-load-last { padding:7px 16px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; margin-bottom:12px; }
@@ -433,7 +433,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .block-title.collapsed .block-chevron { transform:rotate(-90deg); }
 .block-title .block-content-badge {
-  display:none; margin-left:8px; padding:1px 8px; border-radius:10px;
+  display:none; margin-left:8px; padding:1px 8px; border-radius:var(--radius-md);
   font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a;
   text-transform:none; letter-spacing:0;
 }
@@ -448,7 +448,7 @@ textarea { resize: vertical; line-height: 1.6; }
 /* Export file list */
 .export-file-item {
   display:flex; align-items:center; gap:8px; padding:5px 8px;
-  background:var(--bg-secondary); border-radius:4px; margin-bottom:4px;
+  background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:4px;
   font-size:12px;
 }
 .export-file-item .efi-name { flex:1; font-weight:500; color:var(--text-primary); }
@@ -500,7 +500,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .info-tip[data-tip]::before { display: none; }
 
 /* ── Validation ── */
-.val-msg { font-size:11px; margin-top:3px; padding:3px 8px; border-radius:4px; display:none; }
+.val-msg { font-size:11px; margin-top:3px; padding:3px 8px; border-radius:var(--radius-sm); display:none; }
 .val-msg.error { display:block; background:#fef2f2; color:#dc2626; }
 .val-msg.warn { display:block; background:#fef9c3; color:#a16207; }
 

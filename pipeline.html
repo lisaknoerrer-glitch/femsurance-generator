@@ -105,7 +105,7 @@ body {
 }
 .kanban-count {
   font-size: 11px; font-weight: 600; background: var(--bg-card);
-  color: var(--text-secondary); border-radius: 10px; padding: 1px 8px;
+  color: var(--text-secondary); border-radius: var(--radius-md); padding: 1px 8px;
 }
 .kanban-drop-zone {
   min-height: 60px;
@@ -147,7 +147,7 @@ body {
 }
 .kanban-tag {
   display: inline-block; font-size: 10px; font-weight: 600;
-  padding: 2px 7px; border-radius: 4px;
+  padding: 2px 7px; border-radius: var(--radius-sm);
 }
 .tag-pink   { background: var(--fem-pink-light); color: var(--fem-pink); }
 .tag-purple { background: var(--fem-purple-light); color: var(--fem-purple); }
@@ -331,15 +331,15 @@ body {
 }
 .new-idea-form input, .new-idea-form select {
   width: 100%; padding: 7px 10px; border: 1px solid var(--border);
-  border-radius: 4px; font-family: inherit; font-size: 12px;
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 12px;
   color: var(--text-primary); margin-bottom: 8px;
 }
 .new-idea-form input:focus, .new-idea-form select:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 .new-idea-btns { display: flex; gap: 6px; }
 .new-idea-btns button {
-  flex: 1; padding: 7px 10px; border-radius: 4px;
+  flex: 1; padding: 7px 10px; border-radius: var(--radius-sm);
   font-family: inherit; font-size: 12px; font-weight: 600;
   cursor: pointer; border: none; transition: opacity 0.2s;
 }
@@ -389,13 +389,13 @@ body {
   color: var(--text-primary); background: var(--bg-card); transition: border-color 0.2s;
 }
 .card-modal input:focus, .card-modal select:focus, .card-modal textarea:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 .card-modal textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
 .card-modal .cm-row { display: flex; gap: 12px; }
 .card-modal .cm-row > * { flex: 1; }
 .card-modal .cm-badge {
-  display: inline-block; padding: 3px 10px; border-radius: 4px;
+  display: inline-block; padding: 3px 10px; border-radius: var(--radius-sm);
   font-size: 11px; font-weight: 600; margin-bottom: 14px;
 }
 .cm-actions {
@@ -447,7 +447,7 @@ body {
   color: var(--text-primary); transition: border-color 0.2s;
 }
 .gen-prep textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
-.gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); }
+.gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .gen-prep-btns { display: flex; gap: 8px; margin-top: 16px; }
 .gen-prep-btns .btn-gen-go {
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
@@ -471,7 +471,7 @@ body {
 }
 .grafik-thumb {
   width: 100%; max-height: 100px; object-fit: cover;
-  border-radius: 4px; margin-top: 8px; display: block;
+  border-radius: var(--radius-sm); margin-top: 8px; display: block;
 }
 /* ── Grafik Section in Modal ── */
 .cm-grafik-section {
@@ -537,7 +537,7 @@ body {
   padding: 4px 0; text-transform: uppercase;
 }
 .mini-cal-grid .day-cell {
-  padding: 6px 0; font-size: 12px; border-radius: 4px;
+  padding: 6px 0; font-size: 12px; border-radius: var(--radius-sm);
   cursor: pointer; transition: all 0.15s; color: var(--text-primary);
 }
 .mini-cal-grid .day-cell:hover { background: var(--fem-pink-light); }
@@ -559,7 +559,7 @@ body {
 }
 .plan-selected .plan-date { font-weight: 600; color: var(--fem-pink); }
 .plan-selected .btn-plan-save {
-  padding: 6px 16px; border: none; border-radius: 4px;
+  padding: 6px 16px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff; font-family: inherit;
   font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
 }
@@ -575,7 +575,7 @@ body {
 .pub-modal .pub-field { margin-bottom:12px; }
 .pub-modal .pub-field label { display:block; font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:4px; }
 .pub-modal .pub-field input { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
-.pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); }
+.pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .pub-modal-btns { display:flex; gap:8px; margin-top:16px; }
 .pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
 .pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:#fff; }
@@ -584,10 +584,10 @@ body {
 .pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
 .pub-meta a { color:var(--fem-pink); text-decoration:none; }
 .pub-meta a:hover { text-decoration:underline; }
-.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
+.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
 .perf-reminder:hover { background:#fde68a; }
 /* Score */
-.score-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; margin-top:6px; cursor:pointer; }
+.score-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:700; margin-top:6px; cursor:pointer; }
 .score-green { background:#dcfce7; color:#16a34a; }
 .score-yellow { background:#fef9c3; color:#a16207; }
 .score-red { background:#fef2f2; color:#dc2626; }
@@ -601,7 +601,7 @@ body {
 .score-detail .sd-label { color:var(--text-secondary); }
 .score-detail .sd-val { font-weight:600; }
 .score-detail .sd-reason { font-size:10px; color:var(--text-secondary); font-style:italic; }
-.score-detail .sd-rec { margin-top:4px; padding:4px 8px; background:var(--fem-pink-light); border-radius:4px; font-weight:600; color:var(--fem-pink); }
+.score-detail .sd-rec { margin-top:4px; padding:4px 8px; background:var(--fem-pink-light); border-radius:var(--radius-sm); font-weight:600; color:var(--fem-pink); }
 /* -- Dark Mode -- */
 body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
@@ -873,7 +873,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
         <button class="btn-save-modal" id="cmCanvaPromptBtn" style="width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple));">✨ Canva-Prompt generieren</button>
         <div id="cmCanvaPromptResult" style="display:none; margin-top:8px;">
           <textarea id="cmCanvaPromptText" rows="6" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;background:var(--bg-secondary);resize:vertical;"></textarea>
-          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:4px;background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
+          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:var(--radius-sm);background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
         </div>
       </div>
     </div>
@@ -1245,7 +1245,7 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
     }
     resultArea.innerHTML = `
       <div style="white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto;">${resultText}</div>
-      <button class="canva-prompt-copy" style="padding:5px 12px; border:1px solid var(--fem-pink); border-radius:4px; background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer;">📋 Kopieren</button>
+      <button class="canva-prompt-copy" style="padding:5px 12px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer;">📋 Kopieren</button>
     `;
     resultArea.querySelector('.canva-prompt-copy').addEventListener('click', e => {
       e.stopPropagation();
