@@ -5,31 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FemSurance Content-System</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared.css">
 <style>
-  :root {
-    --fem-pink: #E91E8C; --fem-pink-light: #fce4f0; --fem-pink-mid: #f4afd4;
-    --pink-dark: #b81160; --pink-deep: #8a0d48;
-    --fem-purple: #7C3AED; --fem-purple-light: #EEEDFE; --purple-dark: #4a2570;
-    --text-primary: #1a1a2e; --text-secondary: #6b7280; --text-tertiary: #9a9a9a;
-    --bg-page: #F8F9FA; --bg-card: #ffffff; --bg-secondary: #f1f3f5; --bg-surface: #f9f5f3;
-    --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.04);
-    --shadow: 0 1px 3px rgba(0,0,0,0.08);
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
-    --color-success: #16a34a; --color-success-bg: #dcfce7;
-    --color-warning: #a16207; --color-warning-bg: #fef9c3;
-    --color-danger: #dc2626; --color-danger-bg: #fef2f2;
-    --color-info: #06b6d4;
-    --text-xs: 10px;
-    --text-sm: 11px;
-    --text-base: 12px;
-    --text-md: 13px;
-    --text-lg: 14px;
-    --text-xl: 16px;
-    --text-2xl: 20px;
-    --text-3xl: 24px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
+  body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
   body::before { content: ''; position: fixed; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(233,30,140,0.09) 0%, rgba(124,58,237,0.05) 50%, transparent 70%); pointer-events: none; z-index: 0; }
   body::after { content: ''; position: fixed; bottom: -150px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%); pointer-events: none; z-index: 0; }
   .page { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 3rem 2rem 5rem; }
@@ -125,11 +103,6 @@
     .page { padding: 2rem 1.25rem 4rem; }
     .theme-grid { grid-template-columns: 1fr; }
   }
-/* ── Unified Loading State ── */
-.btn-loading { position: relative; color: transparent !important; pointer-events: none; }
-.btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: btn-spin 0.6s linear infinite; }
-@keyframes btn-spin { to { transform: rotate(360deg); } }
-.empty-state { text-align: center; padding: 24px 16px; color: var(--text-secondary); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -308,6 +281,7 @@
   </div>
  
 </div>
+<script src="shared.js"></script>
 <script>
   let selectedTheme = '', selectedCount = 5;
  

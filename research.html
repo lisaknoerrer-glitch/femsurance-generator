@@ -7,87 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
 <style>
-:root {
-  --fem-pink: #E91E8C;
-  --fem-pink-light: #fce4f0;
-  --fem-pink-mid: #f4afd4;
-  --fem-purple: #7C3AED;
-  --fem-purple-light: #EEEDFE;
-  --bg-page: #F8F9FA;
-  --bg-card: #ffffff;
-  --bg-secondary: #f1f3f5;
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b7280;
-  --border: rgba(0,0,0,0.08);
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --nav-bg: #1a1a2e;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --color-success: #16a34a;
-  --color-success-bg: #dcfce7;
-  --color-warning: #a16207;
-  --color-warning-bg: #fef9c3;
-  --color-danger: #dc2626;
-  --color-danger-bg: #fef2f2;
-  --color-info: #06b6d4;
-  --text-xs: 10px;
-  --text-sm: 11px;
-  --text-base: 12px;
-  --text-md: 13px;
-  --text-lg: 14px;
-  --text-xl: 16px;
-  --text-2xl: 20px;
-  --text-3xl: 24px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-page);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
-.fade-up:nth-child(1) { animation-delay: 0.04s; }
-.fade-up:nth-child(2) { animation-delay: 0.10s; }
-.fade-up:nth-child(3) { animation-delay: 0.16s; }
-.fade-up:nth-child(4) { animation-delay: 0.22s; }
-
-/* ── Left Navigation ── */
-.nav-left {
-  position: fixed; top: 0; left: 0;
-  width: 62px; height: 100vh;
-  background: var(--nav-bg);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 16px 0; z-index: 100;
-}
-.nav-logo {
-  width: 34px; height: 34px; background: var(--fem-pink);
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
-}
-.nav-links {
-  display: flex; flex-direction: column; gap: 4px;
-  width: 100%; list-style: none;
-}
-.nav-links a {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
-  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
-  transition: color 0.2s, background 0.2s;
-  border-radius: var(--radius-sm); margin: 0 6px;
-}
-.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
-.nav-links a.active { color: var(--fem-pink); }
-.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
-
 /* ── Main ── */
 .main { margin-left: 62px; padding: 28px 32px 40px; max-width: 1100px; }
 .page-header {
@@ -265,34 +186,20 @@ body {
 .ki-section.vermeiden .ki-section-title { color:var(--color-danger); }
 .ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
 .ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
-/* -- Dark Mode -- */
-body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
+/* -- Dark Mode (page-specific) -- */
 body.dark-mode .perf-suggest { background: rgba(233,30,140,0.15); }
 body.dark-mode .ki-learnings { background: rgba(124,58,237,0.15); }
 body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
-.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
-.dm-toggle:hover { border-color:var(--fem-pink); }
 
-/* ── Responsive ── */
+/* ── Responsive (page-specific) ── */
 @media (max-width: 768px) {
-  .nav-left { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 52px; flex-direction: row; justify-content: space-around; padding: 0 8px; z-index: 200; }
-  .nav-logo { margin-bottom: 0; width: 28px; height: 28px; font-size: 12px; }
-  .nav-left a { margin-bottom: 0; font-size: 16px; }
-  .main { margin-left: 0; padding: 16px 12px 68px; }
   .hook-grid { grid-template-columns: 1fr; }
-  .dm-toggle { top: 8px; right: 8px; }
 }
-/* ── Unified Loading State ── */
-.btn-loading { position: relative; color: transparent !important; pointer-events: none; }
-.btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: btn-spin 0.6s linear infinite; }
-@keyframes btn-spin { to { transform: rotate(360deg); } }
-.empty-state { text-align: center; padding: 24px 16px; color: var(--text-secondary); font-size: 12px; }
 </style>
 </head>
 <body>
 <button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
-<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
+<script src="shared.js"></script>
 
 <!-- ══════════ Left Navigation ══════════ -->
 <nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
@@ -460,25 +367,6 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 </main>
 
 <script>
-function getStrategieContext() {
-  try {
-    const s = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
-    const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]');
-    const parts = [];
-    if (s.fokusThemen?.length) parts.push('Fokus-Themen: ' + s.fokusThemen.map(f => f.thema || f).filter(Boolean).join(' / '));
-    if (s.positionierung?.wirken) parts.push('Positionierung: ' + s.positionierung.wirken);
-    if (s.positionierung?.nichtWirken) parts.push('Nicht wirken: ' + s.positionierung.nichtWirken);
-    if (s.positionierung?.einzigartig) parts.push('Was macht uns einzigartig: ' + s.positionierung.einzigartig);
-    if (s.contentPrinzip?.prinzip) parts.push('Content-Prinzip: ' + s.contentPrinzip.prinzip);
-    if (s.contentPrinzip?.erfolgsformel) parts.push('Erfolgsformel: ' + s.contentPrinzip.erfolgsformel);
-    if (s.zielgruppe?.length) parts.push('Zielgruppe: ' + s.zielgruppe.filter(Boolean).join(' / '));
-    if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
-    if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
-    if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
-  return '';
-}
-
 // ══════════ TRENDING-THEMEN (dynamic) ══════════
 const DEFAULT_THEMES = [
   { thema: 'Frauen in Führung', hook: 'Warum nur 25% der Führungskräfte weiblich sind', format: 'Karussell', potenzial: 3 },
@@ -728,9 +616,6 @@ document.getElementById('outlineResults').addEventListener('click', e => {
 });
 
 // ══════════ KI-EMPFEHLUNGEN ══════════
-const ANTHROPIC_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
-if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === 'DEIN_API_KEY_HIER') console.warn('API-Key fehlt. Bitte auf der Startseite (index.html) eingeben.');
-
 const KI_SYSTEM_PROMPT = `Du bist der FemSurance Research-Assistent. Du analysierst die Performance-Daten und den Lernstand und gibst konkrete Empfehlungen was als nächstes getestet werden sollte.
 
 ANALYSE-FRAMEWORK:
