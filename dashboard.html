@@ -1172,12 +1172,8 @@ function getStrategieContext() {
   buildFeed();
 
   // ══════════ INSIGHT ENGINE ══════════
-  function getApiKey() {
-    const k = localStorage.getItem('fs_api_key');
-    if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
-    return k;
-  }
   const INSIGHT_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
+  if (!INSIGHT_API_KEY || INSIGHT_API_KEY === 'DEIN_API_KEY_HIER') console.warn('API-Key fehlt. Bitte auf der Startseite (index.html) eingeben.');
   const currentKW = kw;
 
   // Collapse toggle

@@ -418,12 +418,8 @@ document.getElementById('voiceTon').addEventListener('input', e => { strat.brand
 renderVoiceBadges();
 
 // ══════════ CARD 8: STRATEGIE-CHECK ══════════
-function getApiKey() {
-  const k = localStorage.getItem('fs_api_key');
-  if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
-  return k;
-}
 const ANTHROPIC_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
+if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === 'DEIN_API_KEY_HIER') console.warn('API-Key fehlt. Bitte auf der Startseite (index.html) eingeben.');
 
 // Restore saved check
 const savedCheck = localStorage.getItem('fem_strategie_check');
