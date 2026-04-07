@@ -408,6 +408,18 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
 @media (max-width: 480px) {
   .pipeline-kanban { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Extracted utility classes ── */
+.stat-value-hero { font-size:28px; font-weight:700; color:var(--fem-pink); }
+.meta-text-sm { font-size:12px; color:var(--text-secondary); }
+.meta-text-inline { font-size:11px; color:var(--text-secondary); margin-left:10px; }
+.stat-baseline-row { display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+.mb-22 { margin-bottom:22px; }
+.mb-12 { margin-bottom:12px; }
+.mb-0 { margin-bottom:0; }
+.clickable { cursor:pointer; }
+.text-pink { color:var(--fem-pink); }
+.text-primary { color:var(--text-primary); }
 </style>
 </head>
 <body>
@@ -524,7 +536,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
           <path d="M0,38 L50,32 L100,35 L150,24 L200,18 L250,14 L300,8 L300,48 L0,48 Z" fill="url(#sparkGrad)"/>
         </svg>
       </div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:8px;">Posts/Woche: <strong style="color:var(--text-primary);" id="dashCompanyPpw">0</strong></div>
+      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:8px;">Posts/Woche: <strong class="text-primary" id="dashCompanyPpw">0</strong></div>
     </div>
 
     <!-- Reichweiten-Ziel -->
@@ -551,19 +563,19 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   <div class="stats-row">
     <div class="card fade-up">
       <div class="card-title">LinkedIn Gruppe</div>
-      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
-        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashGruppeCount">–</div>
-        <div style="font-size:12px; color:var(--text-secondary);">Mitglieder</div>
+      <div class="stat-baseline-row">
+        <div class="stat-value-hero" id="dashGruppeCount">–</div>
+        <div class="meta-text-sm">Mitglieder</div>
       </div>
       <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:4px;">Posting: Mi &amp; Fr 10:00</div>
-      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong style="color:var(--text-primary);" id="dashGruppePpw">–</strong></div>
+      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong class="text-primary" id="dashGruppePpw">–</strong></div>
     </div>
     <div class="card fade-up">
       <div class="card-title">Gruppe – Mitglieder-Ziel</div>
       <div class="goal-row">
         <div class="goal-current">
           <div class="goal-label">Mitglieder aktuell</div>
-          <div class="goal-value" style="color:var(--fem-pink);" id="dashGruppeCurrent">–</div>
+          <div class="goal-value text-pink" id="dashGruppeCurrent">–</div>
         </div>
         <div class="goal-target">
           <div class="goal-label">Ziel-Mitglieder</div>
@@ -581,19 +593,19 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   <div class="stats-row">
     <div class="card fade-up">
       <div class="card-title">WhatsApp Community</div>
-      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
-        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashWhatsappCount">–</div>
-        <div style="font-size:12px; color:var(--text-secondary);">Mitglieder</div>
+      <div class="stat-baseline-row">
+        <div class="stat-value-hero" id="dashWhatsappCount">–</div>
+        <div class="meta-text-sm">Mitglieder</div>
       </div>
       <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:4px;">Posting: Mi 08:00</div>
-      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong style="color:var(--text-primary);" id="dashWhatsappPpw">–</strong></div>
+      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong class="text-primary" id="dashWhatsappPpw">–</strong></div>
     </div>
     <div class="card fade-up">
       <div class="card-title">WhatsApp – Mitglieder-Ziel</div>
       <div class="goal-row">
         <div class="goal-current">
           <div class="goal-label">Mitglieder aktuell</div>
-          <div class="goal-value" style="color:var(--fem-pink);" id="dashWhatsappCurrent">–</div>
+          <div class="goal-value text-pink" id="dashWhatsappCurrent">–</div>
         </div>
         <div class="goal-target">
           <div class="goal-label">Ziel-Mitglieder</div>
@@ -611,9 +623,9 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   <div class="stats-row">
     <div class="card fade-up">
       <div class="card-title">Newsletter</div>
-      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
-        <div style="font-size:28px; font-weight:700; color:var(--fem-pink);" id="dashNewsletterCount">–</div>
-        <div style="font-size:12px; color:var(--text-secondary);">Abonnenten</div>
+      <div class="stat-baseline-row">
+        <div class="stat-value-hero" id="dashNewsletterCount">–</div>
+        <div class="meta-text-sm">Abonnenten</div>
       </div>
     </div>
     <div class="card fade-up">
@@ -621,7 +633,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
       <div class="goal-row">
         <div class="goal-current">
           <div class="goal-label">Abonnenten aktuell</div>
-          <div class="goal-value" style="color:var(--fem-pink);" id="dashNewsletterCurrent">–</div>
+          <div class="goal-value text-pink" id="dashNewsletterCurrent">–</div>
         </div>
         <div class="goal-target">
           <div class="goal-label">Ziel-Abonnenten</div>
@@ -667,16 +679,16 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   </div>
 
   <!-- ── Insight Engine ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
+  <div class="card fade-up mb-22">
     <div class="insight-header" id="insightHeader">
       <div class="card-title">🧠 Weekly Insights</div>
       <span class="insight-timestamp" id="insightTimestamp"></span>
       <span class="insight-chevron">▼</span>
     </div>
     <div class="insight-body" id="insightBody">
-      <div style="margin-bottom:12px;">
+      <div class="mb-12">
         <button class="insight-btn" id="insightGenBtn">Insights generieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert Performance, Konkurrenz &amp; Trends</span>
+        <span class="meta-text-inline">Analysiert Performance, Konkurrenz &amp; Trends</span>
       </div>
       <div id="insightOutput"></div>
       <div class="insight-actions" id="insightActions" style="display:none;">
@@ -687,16 +699,16 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   </div>
 
   <!-- ── Positionierungs-Check ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header" id="posHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🪞 Positionierungs-Check</div>
+  <div class="card fade-up mb-22">
+    <div class="insight-header clickable" id="posHeader">
+      <div class="card-title mb-0">🪞 Positionierungs-Check</div>
       <span class="insight-timestamp" id="posTimestamp"></span>
       <span class="insight-chevron">▼</span>
     </div>
     <div class="insight-body collapsed" id="posBody">
-      <div style="margin-bottom:12px;">
+      <div class="mb-12">
         <button class="insight-btn" id="posGenBtn">🪞 Check starten</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Analysiert wie FemSurance aktuell wirkt</span>
+        <span class="meta-text-inline">Analysiert wie FemSurance aktuell wirkt</span>
       </div>
       <div id="posOutput"></div>
       <div class="insight-actions" id="posActions" style="display:none;">
@@ -707,16 +719,16 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
   </div>
 
   <!-- ── Content-DNA ── -->
-  <div class="card fade-up" style="margin-bottom:22px;">
-    <div class="insight-header collapsed" id="dnaHeader" style="cursor:pointer;">
-      <div class="card-title" style="margin-bottom:0;">🧬 Content-DNA</div>
+  <div class="card fade-up mb-22">
+    <div class="insight-header collapsed clickable" id="dnaHeader">
+      <div class="card-title mb-0">🧬 Content-DNA</div>
       <span class="insight-timestamp" id="dnaTimestamp"></span>
       <span class="insight-chevron">▼</span>
     </div>
     <div class="insight-body collapsed" id="dnaBody">
-      <div style="margin-bottom:12px;">
+      <div class="mb-12">
         <button class="insight-btn" id="dnaGenBtn">🧬 DNA analysieren</button>
-        <span style="font-size:11px; color:var(--text-secondary); margin-left:10px;">Erkennt das Muster das FemSurance einzigartig macht</span>
+        <span class="meta-text-inline">Erkennt das Muster das FemSurance einzigartig macht</span>
       </div>
       <div id="dnaOutput"></div>
       <div class="insight-actions" id="dnaActions" style="display:none;">

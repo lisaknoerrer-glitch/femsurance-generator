@@ -191,6 +191,16 @@ body.dark-mode .perf-suggest { background: rgba(233,30,140,0.15); }
 body.dark-mode .ki-learnings { background: rgba(124,58,237,0.15); }
 body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 
+/* ── Extracted utility classes ── */
+.filter-btn-research { padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500; }
+.filter-btn-research.active { background:var(--fem-pink); color:#fff; }
+.meta-float-right { font-size:12px; color:var(--text-secondary); float:right; }
+.meta-text { font-size:12px; color:var(--text-secondary); }
+.form-input-sm { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
+.field-label-sm { font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px; }
+.mb-10 { margin-bottom:10px; }
+.clickable { cursor:pointer; }
+
 /* ── Responsive (page-specific) ── */
 @media (max-width: 768px) {
   .hook-grid { grid-template-columns: 1fr; }
@@ -257,11 +267,11 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
     <div class="card-title">Trending-Themen FemSurance</div>
     <div id="perfSuggestions"></div>
     <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;" id="twFilter">
-      <button class="filter-btn active" data-tw="all" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; cursor:pointer; font-family:inherit; font-weight:500;">Alle</button>
-      <button class="filter-btn" data-tw="Business & Vertrieb" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Business & Vertrieb</button>
-      <button class="filter-btn" data-tw="Marketing & Sichtbarkeit" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Marketing & Sichtbarkeit</button>
-      <button class="filter-btn" data-tw="Fachliche Weiterbildung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Fachliche Weiterbildung</button>
-      <button class="filter-btn" data-tw="Persönlichkeitsentwicklung" style="padding:4px 12px; font-size:11px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-family:inherit; font-weight:500;">Persönlichkeitsentwicklung</button>
+      <button class="filter-btn filter-btn-research active" data-tw="all">Alle</button>
+      <button class="filter-btn filter-btn-research" data-tw="Business & Vertrieb">Business & Vertrieb</button>
+      <button class="filter-btn filter-btn-research" data-tw="Marketing & Sichtbarkeit">Marketing & Sichtbarkeit</button>
+      <button class="filter-btn filter-btn-research" data-tw="Fachliche Weiterbildung">Fachliche Weiterbildung</button>
+      <button class="filter-btn filter-btn-research" data-tw="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</button>
     </div>
     <table class="trend-table">
       <thead>
@@ -297,7 +307,7 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 
   <!-- Wissenschaftliche Insights -->
   <div class="card fade-up">
-    <div class="card-title" style="cursor:pointer;" id="insightsToggle">📊 Wissenschaftliche Insights <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div class="card-title clickable" id="insightsToggle">📊 Wissenschaftliche Insights <span class="meta-float-right">▼</span></div>
     <div id="insightsBody">
       <div id="insightsList" style="margin-bottom:10px;"></div>
       <button class="btn-add-row" id="btnAddInsight">+ Eigenen Insight hinzufügen</button>
@@ -350,7 +360,7 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 
   <!-- Wissenschaftliche Insights -->
   <div class="card fade-up">
-    <div class="card-title" style="cursor:pointer;" id="playbookToggle">📖 FemSurance Playbook <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div class="card-title clickable" id="playbookToggle">📖 FemSurance Playbook <span class="meta-float-right">▼</span></div>
     <div id="playbookBody">
       <div id="playbookContent"></div>
     </div>
@@ -358,7 +368,7 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 
   <!-- Hook-Performance -->
   <div class="card fade-up">
-    <div class="card-title" style="cursor:pointer;" id="hookPerfToggle">🎣 Hook-Performance <span style="font-size:12px; color:var(--text-secondary); float:right;">▼</span></div>
+    <div class="card-title clickable" id="hookPerfToggle">🎣 Hook-Performance <span class="meta-float-right">▼</span></div>
     <div id="hookPerfBody">
       <div id="hookPerfContent"></div>
     </div>
@@ -867,14 +877,14 @@ function renderHookPerf() {
     <div id="hookManualForm" style="display:none; margin-top:8px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end;">
         <div style="flex:1; min-width:120px;">
-          <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Hook-Typ</div>
-          <select id="hookManualTyp" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
+          <div class="field-label-sm">Hook-Typ</div>
+          <select id="hookManualTyp" class="form-input-sm">
             <option>Provokation</option><option>Story</option><option>Frage</option><option>Statistik</option><option>Zitat</option><option>Persönlich</option>
           </select>
         </div>
         <div style="min-width:80px;">
-          <div style="font-size:10px; font-weight:600; color:var(--text-secondary); margin-bottom:3px;">Eng.-Rate %</div>
-          <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
+          <div class="field-label-sm">Eng.-Rate %</div>
+          <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" class="form-input-sm">
         </div>
         <button id="hookManualSave" style="padding:7px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;">Speichern</button>
       </div>

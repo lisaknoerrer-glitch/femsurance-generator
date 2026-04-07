@@ -151,6 +151,9 @@ body.dark-mode .ca-result { background: rgba(124,58,237,0.15); }
 .growth-add input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .growth-add button { padding:4px 12px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-size:var(--text-sm); font-weight:600; cursor:pointer; }
 
+/* ── Extracted utility classes ── */
+.mt-10 { margin-top:10px; }
+
 </style>
 </head>
 <body>
@@ -388,14 +391,14 @@ function renderGrowth() {
   }
 
   // Add account button
-  html += `<div id="growthAddForm" style="margin-top:10px;">
+  html += `<div id="growthAddForm" class="mt-10">
     <button class="btn-add" id="growthAddBtn" style="width:100%;">+ Account zum Wachstumsvergleich hinzufügen</button>
   </div>`;
 
   // Compare button
   if (growthData.accounts.length >= 2) {
     html += `<button class="ca-btn-pink" id="growthCompare" style="margin-top:12px; width:100%;">📊 Wachstum vergleichen</button>`;
-    html += `<div id="growthCompareChart" style="margin-top:10px;"></div>`;
+    html += `<div id="growthCompareChart" class="mt-10"></div>`;
   }
 
   container.innerHTML = html;
@@ -518,14 +521,14 @@ function renderCompAnalyse(container, accName) {
         <div class="ca-profile-item"><strong>${topFmt}</strong>Häufigstes Format</div>
         <div class="ca-profile-item"><strong>Ø ${Math.round(reakSum/posts.length)}</strong>Reaktionen</div>
       </div>`;
-      html += `<button class="ca-btn-pink" id="caScan_${accName}" style="margin-top:10px;">🔬 Posts analysieren</button>`;
+      html += `<button class="ca-btn-pink mt-10" id="caScan_${accName}">🔬 Posts analysieren</button>`;
       html += `<div id="caResult_${accName}"></div>`;
     }
 
     // Show saved analysis
     if (accData.analyse) {
       const a = accData.analyse;
-      html += `<div class="ca-result" style="margin-top:10px;">
+      html += `<div class="ca-result mt-10">
         <strong>Erfolgsrezept:</strong> ${a.muster?.was_funktioniert || '–'}<br>
         <strong>Top-Post:</strong> ${a.top_post?.titel || '–'} — ${a.top_post?.warum_erfolgreich || ''}<br>
         <strong>FemSurance-Chance:</strong> ${a.femsurance_chance || '–'}

@@ -389,7 +389,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <!-- KPI-Center -->
   <div class="card fade-up">
     <div class="kpi-toggle" id="kpiToggle">
-      <div class="card-title" style="margin-bottom:0;">📊 KPIs erfassen &amp; speichern</div>
+      <div class="card-title mb-0">📊 KPIs erfassen &amp; speichern</div>
       <span class="kpi-arrow">▼</span>
     </div>
     <div class="kpi-body" id="kpiBody">
@@ -399,7 +399,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
       <div class="kpi-upload-row">
         <button class="kpi-upload-btn" id="kpiExportBtn">📁 LinkedIn Export (CSV/XLSX)</button>
         <input type="file" id="kpiExportFile" accept=".csv,.xlsx,.xls" style="display:none;">
-        <span id="kpiExportName" style="font-size:11px; color:var(--text-secondary);"></span>
+        <span id="kpiExportName" class="meta-text"></span>
       </div>
       <button class="kpi-extract" id="kpiExtractBtn">📊 KPIs extrahieren</button>
 
@@ -462,109 +462,109 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <!-- Reichweiten-Ziele (3 Spalten) -->
   <div class="card fade-up">
     <div class="card-title">Reichweiten-Ziele</div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0;">
+    <div class="reichweite-grid">
 
       <!-- Company Page -->
-      <div style="padding:0 20px 0 0;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Company Page</div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+      <div class="reichweite-col-left">
+        <div class="section-label">LinkedIn Company Page</div>
+        <div class="stat-row">
           <div>
-            <div style="font-size:11px; color:var(--text-secondary);">Follower aktuell</div>
-            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfCurrent">1.847</div>
+            <div class="meta-text">Follower aktuell</div>
+            <div class="stat-value-lg" id="perfCurrent">1.847</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
-            <div style="font-size:18px; font-weight:700;" id="perfGoal">2.500</div>
+          <div class="text-right">
+            <div class="meta-text">Ziel</div>
+            <div class="stat-value-md" id="perfGoal">2.500</div>
           </div>
         </div>
         <div class="progress-track"><div class="progress-fill" id="perfFill" style="width:73.9%;"></div></div>
-        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfDiff">Noch <strong>653</strong> · 73,9 % erreicht</div>
+        <div class="meta-text-center" id="perfDiff">Noch <strong>653</strong> · 73,9 % erreicht</div>
       </div>
 
       <!-- Gruppe -->
-      <div style="padding:0 20px; border-left:1px solid var(--border); border-right:1px solid var(--border);">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">LinkedIn Gruppe</div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+      <div class="reichweite-col-mid">
+        <div class="section-label">LinkedIn Gruppe</div>
+        <div class="stat-row">
           <div>
-            <div style="font-size:11px; color:var(--text-secondary);">Mitglieder aktuell</div>
-            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfGruppeVal">–</div>
+            <div class="meta-text">Mitglieder aktuell</div>
+            <div class="stat-value-lg" id="perfGruppeVal">–</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
-            <div style="font-size:18px; font-weight:700;" id="perfGruppeGoalVal">–</div>
+          <div class="text-right">
+            <div class="meta-text">Ziel</div>
+            <div class="stat-value-md" id="perfGruppeGoalVal">–</div>
           </div>
         </div>
         <div class="progress-track"><div class="progress-fill" id="perfGruppeFill" style="width:0%;"></div></div>
-        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfGruppeDiff">–</div>
+        <div class="meta-text-center" id="perfGruppeDiff">–</div>
       </div>
 
       <!-- WhatsApp -->
-      <div style="padding:0 0 0 20px;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;">WhatsApp Community</div>
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+      <div class="reichweite-col-right">
+        <div class="section-label">WhatsApp Community</div>
+        <div class="stat-row">
           <div>
-            <div style="font-size:11px; color:var(--text-secondary);">Mitglieder aktuell</div>
-            <div style="font-size:24px; font-weight:700; color:var(--fem-pink);" id="perfWhatsappVal">–</div>
+            <div class="meta-text">Mitglieder aktuell</div>
+            <div class="stat-value-lg" id="perfWhatsappVal">–</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:11px; color:var(--text-secondary);">Ziel</div>
-            <div style="font-size:18px; font-weight:700;" id="perfWhatsappGoalVal">–</div>
+          <div class="text-right">
+            <div class="meta-text">Ziel</div>
+            <div class="stat-value-md" id="perfWhatsappGoalVal">–</div>
           </div>
         </div>
         <div class="progress-track"><div class="progress-fill" id="perfWhatsappFill" style="width:0%;"></div></div>
-        <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center;" id="perfWhatsappDiff">–</div>
+        <div class="meta-text-center" id="perfWhatsappDiff">–</div>
       </div>
 
     </div>
   </div>
 
   <!-- Entwicklungs-Charts (3 Spalten) -->
-  <div class="fade-up" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;">
+  <div class="fade-up stat-grid-4">
 
-    <div class="card" style="padding:16px 18px;">
-      <div class="card-title" style="font-size:10px;">Follower · Company Page</div>
-      <div class="filter-bar" id="chartFilter" style="margin-bottom:10px;">
+    <div class="card card-padded">
+      <div class="card-title card-title-xs">Follower · Company Page</div>
+      <div class="filter-bar mb-10" id="chartFilter">
         <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
         <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
         <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
-      <div class="chart-container" style="height:140px;">
+      <div class="chart-container chart-sm">
         <svg id="followerChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
       </div>
     </div>
 
-    <div class="card" style="padding:16px 18px;">
-      <div class="card-title" style="font-size:10px;">Mitglieder · LinkedIn Gruppe</div>
-      <div class="filter-bar" id="chartFilterGruppe" style="margin-bottom:10px;">
+    <div class="card card-padded">
+      <div class="card-title card-title-xs">Mitglieder · LinkedIn Gruppe</div>
+      <div class="filter-bar mb-10" id="chartFilterGruppe">
         <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
         <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
         <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
-      <div class="chart-container" style="height:140px;">
+      <div class="chart-container chart-sm">
         <svg id="gruppeChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
       </div>
     </div>
 
-    <div class="card" style="padding:16px 18px;">
-      <div class="card-title" style="font-size:10px;">Mitglieder · WhatsApp Community</div>
-      <div class="filter-bar" id="chartFilterWhatsapp" style="margin-bottom:10px;">
+    <div class="card card-padded">
+      <div class="card-title card-title-xs">Mitglieder · WhatsApp Community</div>
+      <div class="filter-bar mb-10" id="chartFilterWhatsapp">
         <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
         <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
         <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
-      <div class="chart-container" style="height:140px;">
+      <div class="chart-container chart-sm">
         <svg id="whatsappChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
       </div>
     </div>
 
-    <div class="card" style="padding:16px 18px;">
-      <div class="card-title" style="font-size:10px;">Abonnenten · Newsletter</div>
-      <div class="filter-bar" id="chartFilterNewsletter" style="margin-bottom:10px;">
+    <div class="card card-padded">
+      <div class="card-title card-title-xs">Abonnenten · Newsletter</div>
+      <div class="filter-bar mb-10" id="chartFilterNewsletter">
         <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
         <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
         <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
-      <div class="chart-container" style="height:140px;">
+      <div class="chart-container chart-sm">
         <svg id="newsletterChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
       </div>
     </div>
@@ -574,7 +574,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <!-- KPI-Tracking -->
   <div class="card fade-up">
     <div class="card-title">KPI-Tracking</div>
-    <div style="overflow-x:auto;">
+    <div class="overflow-x">
       <table class="kpi-track-table" id="kpiTrackTable">
         <thead>
           <tr>
@@ -606,7 +606,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <!-- Letzte 20 Posts (aus Pipeline) -->
   <div class="card fade-up">
     <div class="card-title">Letzte 20 Posts</div>
-    <div style="overflow-x:auto;">
+    <div class="overflow-x">
       <table class="pp-table" id="ppTable">
         <thead>
           <tr>
@@ -632,7 +632,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <div class="pp-modal-overlay" id="ppModal">
     <div class="pp-modal">
       <h3 id="ppModalTitle">Post-Performance</h3>
-      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:10px 0 6px;">Organisches Engagement</div>
+      <div class="section-label-pink-sm" style="margin-top:10px;">Organisches Engagement</div>
       <div class="pp-row">
         <div class="pp-field"><label>Reaktionen</label><input id="ppd_reaktionen"></div>
         <div class="pp-field"><label>Kommentare</label><input id="ppd_kommentare"></div>
@@ -646,12 +646,12 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
       <div class="pp-row">
         <div class="pp-field"><label>Click-Through-Rate %</label><input id="ppd_ctr" readonly style="background:var(--bg-secondary);"></div>
       </div>
-      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organische Aktivitäten auf der Seite</div>
+      <div class="section-label-pink-sm">Organische Aktivitäten auf der Seite</div>
       <div class="pp-row">
         <div class="pp-field"><label>Mit diesem Beitrag generierte Seitenbesucher:innen</label><input id="ppd_besucher"></div>
         <div class="pp-field"><label>Mit diesem Beitrag gewonnene Follower:innen</label><input id="ppd_follower"></div>
       </div>
-      <div style="font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px;">Organisches Auffinden</div>
+      <div class="section-label-pink-sm">Organisches Auffinden</div>
       <div class="pp-row">
         <div class="pp-field"><label>Impressions</label><input id="ppd_impressions"></div>
         <div class="pp-field"><label>Individuelle Impressions</label><input id="ppd_ind_impressions"></div>
@@ -667,18 +667,18 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
 
   <!-- ═══ MONAT TAB (hidden) ═══ -->
   <div class="tab-content" id="tab-monat" style="display:none">
-    <div class="card" style="margin-bottom:18px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-        <div class="card-title" style="margin-bottom:0;">Monatsübersicht</div>
-        <select id="monthSelect" style="padding:6px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;"></select>
+    <div class="card mb-18">
+      <div class="flex-row-center">
+        <div class="card-title mb-0">Monatsübersicht</div>
+        <select id="monthSelect" class="select-input"></select>
       </div>
       <div class="report-summary" id="monthSummary"></div>
     </div>
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card mb-18">
       <div class="card-title">Kanal-Vergleich</div>
       <div class="report-kanal" id="monthKanale"></div>
     </div>
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card mb-18">
       <div class="card-title">Top 3 Posts des Monats</div>
       <div id="monthTopPosts"></div>
     </div>
@@ -692,22 +692,22 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
 
   <!-- ═══ QUARTAL TAB (hidden) ═══ -->
   <div class="tab-content" id="tab-quartal" style="display:none">
-    <div class="card" style="margin-bottom:18px;">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-        <div class="card-title" style="margin-bottom:0;">Quartalsübersicht</div>
-        <select id="quarterSelect" style="padding:6px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;"></select>
+    <div class="card mb-18">
+      <div class="flex-row-center">
+        <div class="card-title mb-0">Quartalsübersicht</div>
+        <select id="quarterSelect" class="select-input"></select>
       </div>
       <div class="report-summary" id="quarterSummary"></div>
     </div>
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card mb-18">
       <div class="card-title">Kanal-Vergleich</div>
       <div class="report-kanal" id="quarterKanale"></div>
     </div>
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card mb-18">
       <div class="card-title">Wachstum gegen Ziel</div>
       <div id="quarterGoals"></div>
     </div>
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card mb-18">
       <div class="card-title">Top 3 Posts des Quartals</div>
       <div id="quarterTopPosts"></div>
     </div>
@@ -1146,7 +1146,7 @@ function renderAnalyse() {
     if (!k.best || d.imp > k.best.imp) k.best = d;
   });
 
-  let kanalHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin-bottom:8px;">Kanal-Vergleich</div><div class="analyse-grid">';
+  let kanalHtml = '<div class="section-label-pink" style="margin-bottom:8px;">Kanal-Vergleich</div><div class="analyse-grid">';
   ['Company Page', 'Gruppe', 'WhatsApp'].forEach(fmt => {
     const k = kanale[fmt];
     if (k) {
@@ -1158,7 +1158,7 @@ function renderAnalyse() {
   kanalHtml += '</div>';
 
   // ── Format-Performance Table ──
-  let formatHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Format-Performance</div>';
+  let formatHtml = '<div class="section-label-pink">Format-Performance</div>';
   formatHtml += '<table class="analyse-table"><thead><tr><th>Format</th><th>Posts</th><th>Ø Impressions</th><th>Ø Engagement</th><th>Bester Post</th></tr></thead><tbody>';
   Object.entries(kanale).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([fmt, k], i) => {
     const avgEng = k.engSum / k.posts;
@@ -1177,7 +1177,7 @@ function renderAnalyse() {
     themes[theme].posts++; themes[theme].impSum += d.imp; themes[theme].engSum += d.eng;
   });
 
-  let themenHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Themen-Performance</div>';
+  let themenHtml = '<div class="section-label-pink">Themen-Performance</div>';
   const sortedThemes = Object.entries(themes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts));
   themenHtml += '<table class="analyse-table"><thead><tr><th>Thema</th><th>Posts</th><th>Ø Impressions</th><th>Ø Engagement</th></tr></thead><tbody>';
   sortedThemes.slice(0, 8).forEach(([theme, t], i) => {
@@ -1201,7 +1201,7 @@ function renderAnalyse() {
   });
   let hookHtml = '';
   if (Object.keys(hookTypes).length > 1 || !hookTypes['Ohne Angabe']) {
-    hookHtml = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px;">Hook-Analyse</div>';
+    hookHtml = '<div class="section-label-pink">Hook-Analyse</div>';
     hookHtml += '<table class="analyse-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th><th>Bester Post</th></tr></thead><tbody>';
     Object.entries(hookTypes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([typ, h]) => {
       const avgEng = h.engSum / h.posts;
