@@ -167,7 +167,7 @@ body {
 .tag-pink   { background: var(--fem-pink-light); color: var(--fem-pink); }
 .tag-purple { background: var(--fem-purple-light); color: var(--fem-purple); }
 .tag-gray   { background: #e5e7eb; color: var(--text-secondary); }
-.tag-green  { background: #dcfce7; color: #16a34a; }
+.tag-green  { background: var(--color-success-bg); color: var(--color-success); }
 .kanban-assignee {
   font-size: 11px; color: var(--text-secondary);
 }
@@ -236,8 +236,8 @@ body {
   padding: 2px 6px;
   border-radius: 3px;
 }
-.char-counter.in-range { color: #16a34a; background: #dcfce7; }
-.char-counter.out-range { color: #dc2626; background: #fee2e2; }
+.char-counter.in-range { color: var(--color-success); background: var(--color-success-bg); }
+.char-counter.out-range { color: var(--color-danger); background: #fee2e2; }
 
 .platform-counters {
   display: flex;
@@ -432,12 +432,12 @@ body {
 .cm-actions .btn-close-modal:hover { background: var(--bg-secondary); }
 .cm-actions .btn-delete-modal {
   margin-left: auto;
-  padding: 9px 18px; border: 1px solid #dc2626;
+  padding: 9px 18px; border: 1px solid var(--color-danger);
   border-radius: var(--radius-sm); background: #fff;
   font-family: inherit; font-size: 12px; font-weight: 600;
-  color: #dc2626; cursor: pointer; transition: all 0.2s;
+  color: var(--color-danger); cursor: pointer; transition: all 0.2s;
 }
-.cm-actions .btn-delete-modal:hover { background: #fef2f2; }
+.cm-actions .btn-delete-modal:hover { background: var(--color-danger-bg); }
 
 /* ── Generate Prep Modal ── */
 .gen-prep-overlay {
@@ -580,7 +580,7 @@ body {
 }
 .plan-selected .btn-plan-save:hover { opacity: 0.9; }
 .plan-selected .btn-plan-save.saved {
-  background: #dcfce7; color: #16a34a;
+  background: var(--color-success-bg); color: var(--color-success);
 }
 /* Publish Modal */
 .pub-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
@@ -599,13 +599,13 @@ body {
 .pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
 .pub-meta a { color:var(--fem-pink); text-decoration:none; }
 .pub-meta a:hover { text-decoration:underline; }
-.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
+.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; background:var(--color-warning-bg); color:var(--color-warning); cursor:pointer; }
 .perf-reminder:hover { background:#fde68a; }
 /* Score */
 .score-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:700; margin-top:6px; cursor:pointer; }
-.score-green { background:#dcfce7; color:#16a34a; }
-.score-yellow { background:#fef9c3; color:#a16207; }
-.score-red { background:#fef2f2; color:#dc2626; }
+.score-green { background:var(--color-success-bg); color:var(--color-success); }
+.score-yellow { background:var(--color-warning-bg); color:var(--color-warning); }
+.score-red { background:var(--color-danger-bg); color:var(--color-danger); }
 .score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
 .score-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .score-btn:disabled { opacity:0.5; cursor:not-allowed; }
@@ -1267,9 +1267,9 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
       navigator.clipboard.writeText(resultText).then(() => {
         const btn2 = resultArea.querySelector('.canva-prompt-copy');
         btn2.textContent = 'Kopiert ✓';
-        btn2.style.background = '#dcfce7';
-        btn2.style.color = '#16a34a';
-        btn2.style.borderColor = '#16a34a';
+        btn2.style.background = 'var(--color-success-bg)';
+        btn2.style.color = 'var(--color-success)';
+        btn2.style.borderColor = 'var(--color-success)';
         setTimeout(() => { btn2.textContent = '📋 Kopieren'; btn2.style.background = ''; btn2.style.color = ''; btn2.style.borderColor = ''; }, 2000);
       });
     });
@@ -1510,7 +1510,7 @@ function renderBoard() {
         });
         form.querySelector('.btn-create').addEventListener('click', () => {
           const title = form.querySelector('#newIdeaTitle').value.trim();
-          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = '#dc2626'; return; }
+          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = 'var(--color-danger)'; return; }
           const format = form.querySelector('#newIdeaFormat').value;
           const dateVal = form.querySelector('#newIdeaDate').value;
           const due = dateVal ? dateVal.split('-').reverse().join('.').slice(0,6) : '';
@@ -1920,7 +1920,7 @@ document.getElementById('cmCanvaPromptCopy').addEventListener('click', () => {
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('cmCanvaPromptCopy');
     btn.textContent = 'Kopiert ✓';
-    btn.style.background = '#dcfce7'; btn.style.color = '#16a34a'; btn.style.borderColor = '#16a34a';
+    btn.style.background = 'var(--color-success-bg)'; btn.style.color = 'var(--color-success)'; btn.style.borderColor = 'var(--color-success)';
     setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
   });
 });
@@ -2104,7 +2104,7 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
     btn.textContent = 'Post generieren';
     btn.disabled = false;
     status.textContent = 'Fehler: ' + err.message;
-    status.style.color = '#dc2626';
+    status.style.color = 'var(--color-danger)';
   }
 });
 

@@ -186,7 +186,7 @@ textarea { resize: vertical; line-height: 1.6; }
   font-size: 18px; display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
 }
-.btn-remove-row:hover { background: #fef2f2; color: #dc2626; }
+.btn-remove-row:hover { background: var(--color-danger-bg); color: var(--color-danger); }
 .btn-add-url {
   padding: 6px 14px; border: 1px dashed var(--border);
   border-radius: var(--radius-sm); background: none;
@@ -275,7 +275,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .status-dot.ready { background: var(--text-secondary); }
 .status-dot.loading { background: var(--fem-pink); animation: pulse 1s ease infinite; }
-.status-dot.done { background: #16a34a; }
+.status-dot.done { background: var(--color-success); }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 .status-text { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
 
@@ -323,7 +323,7 @@ textarea { resize: vertical; line-height: 1.6; }
   transition: all 0.2s; white-space: nowrap;
 }
 .btn-action:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
-.btn-action.success { background: #dcfce7; color: #16a34a; border-color: #16a34a; }
+.btn-action.success { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); }
 .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Archiv */
@@ -402,7 +402,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .extract-results .er-field input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .extract-badge {
   display: inline-block; padding: 2px 8px; border-radius: var(--radius-md);
-  font-size: 10px; font-weight: 600; background: #dcfce7; color: #16a34a;
+  font-size: 10px; font-weight: 600; background: var(--color-success-bg); color: var(--color-success);
   margin-left: 8px;
 }
 /* Export preview table */
@@ -434,7 +434,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-post-header.open .b2p-arrow { transform:rotate(180deg); }
 .b2-post-header .b2p-title { flex:1; font-size:12.5px; font-weight:600; }
 .b2-post-header .b2p-remove { width:22px; height:22px; border:none; background:none; color:var(--text-secondary); cursor:pointer; font-size:14px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.b2-post-header .b2p-remove:hover { background:#fef2f2; color:#dc2626; }
+.b2-post-header .b2p-remove:hover { background:var(--color-danger-bg); color:var(--color-danger); }
 .b2-post-body { display:none; padding:8px 0; }
 .b2-post-body.open { display:block; }
 .btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:12px; font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
@@ -449,7 +449,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .block-title.collapsed .block-chevron { transform:rotate(-90deg); }
 .block-title .block-content-badge {
   display:none; margin-left:8px; padding:1px 8px; border-radius:var(--radius-md);
-  font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a;
+  font-size:10px; font-weight:600; background:var(--color-success-bg); color:var(--color-success);
   text-transform:none; letter-spacing:0;
 }
 .block-title.collapsed .block-content-badge { display:inline-block; }
@@ -473,7 +473,7 @@ textarea { resize: vertical; line-height: 1.6; }
   background:none; color:var(--text-secondary); cursor:pointer;
   font-size:14px; display:flex; align-items:center; justify-content:center;
 }
-.export-file-item .efi-remove:hover { background:#fef2f2; color:#dc2626; }
+.export-file-item .efi-remove:hover { background:var(--color-danger-bg); color:var(--color-danger); }
 
 /* ── Tooltip ── */
 .info-tip {
@@ -516,8 +516,8 @@ textarea { resize: vertical; line-height: 1.6; }
 
 /* ── Validation ── */
 .val-msg { font-size:11px; margin-top:3px; padding:3px 8px; border-radius:var(--radius-sm); display:none; }
-.val-msg.error { display:block; background:#fef2f2; color:#dc2626; }
-.val-msg.warn { display:block; background:#fef9c3; color:#a16207; }
+.val-msg.error { display:block; background:var(--color-danger-bg); color:var(--color-danger); }
+.val-msg.warn { display:block; background:var(--color-warning-bg); color:var(--color-warning); }
 
 .col-left::-webkit-scrollbar { width: 5px; }
 .col-left::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -1401,9 +1401,9 @@ function validateB2Field(inp) {
   const val = parseFloat(inp.value);
   const key = inp.dataset.b2;
   if (key.includes('eng_rate') || key === 'post_ctr') {
-    if (val > 100) { existingMsg.className = 'val-msg error'; existingMsg.textContent = 'Wert kann nicht über 100% sein'; inp.style.borderColor = '#dc2626'; return; }
+    if (val > 100) { existingMsg.className = 'val-msg error'; existingMsg.textContent = 'Wert kann nicht über 100% sein'; inp.style.borderColor = 'var(--color-danger)'; return; }
   }
-  if (key.includes('impressions') && val > 1000000) { existingMsg.className = 'val-msg warn'; existingMsg.textContent = 'Ungewöhnlich hoher Wert — bitte prüfen'; inp.style.borderColor = '#a16207'; return; }
+  if (key.includes('impressions') && val > 1000000) { existingMsg.className = 'val-msg warn'; existingMsg.textContent = 'Ungewöhnlich hoher Wert — bitte prüfen'; inp.style.borderColor = 'var(--color-warning)'; return; }
   existingMsg.className = 'val-msg'; inp.style.borderColor = '';
 }
 function saveBlock2() {
@@ -1461,7 +1461,7 @@ document.getElementById('b2LoadLast').addEventListener('click', () => {
 
   const btn = document.getElementById('b2LoadLast');
   btn.textContent = `KW ${last.kw || '?'} geladen ✓`;
-  btn.style.background = '#dcfce7'; btn.style.color = '#16a34a'; btn.style.borderColor = '#16a34a';
+  btn.style.background = 'var(--color-success-bg)'; btn.style.color = 'var(--color-success)'; btn.style.borderColor = 'var(--color-success)';
   setTimeout(() => { btn.textContent = '📥 Letzte Woche übernehmen'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
 });
 
@@ -1954,7 +1954,7 @@ btnSave.addEventListener('click', () => {
   const kw = document.getElementById('b1Kw').value;
   if (!kw || kw === '') {
     alert('Bitte KW eintragen bevor du speicherst.');
-    document.getElementById('b1Kw').style.borderColor = '#dc2626';
+    document.getElementById('b1Kw').style.borderColor = 'var(--color-danger)';
     document.getElementById('b1Kw').focus();
     return;
   }

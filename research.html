@@ -132,8 +132,8 @@ body {
   display: inline-block; padding: 2px 8px; border-radius: var(--radius-md);
   font-size: 11px; font-weight: 600;
 }
-.trend-up   { background: #dcfce7; color: #16a34a; }
-.trend-stable { background: #fef9c3; color: #a16207; }
+.trend-up   { background: var(--color-success-bg); color: var(--color-success); }
+.trend-stable { background: var(--color-warning-bg); color: var(--color-warning); }
 .trend-new  { background: var(--fem-pink-light); color: var(--fem-pink); }
 
 /* ── Hook Library ── */
@@ -205,7 +205,7 @@ body {
   font-weight: 600; color: var(--fem-pink); transition: all 0.2s;
 }
 .btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
-.btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
+.btn-to-pipeline.sent { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); pointer-events: none; }
 /* ── Dynamic Research ── */
 .perf-suggest { padding:10px 14px; background:var(--fem-pink-light); border-radius:var(--radius-sm); margin-bottom:12px; font-size:12.5px; }
 .perf-suggest strong { color:var(--fem-pink); }
@@ -234,19 +234,19 @@ body {
 .insight-item .ii-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 /* Playbook */
 .pb-section { margin-bottom:12px; padding:10px 14px; border-radius:var(--radius-sm); }
-.pb-section.pb-green { background:#dcfce7; }
-.pb-section.pb-red { background:#fef2f2; }
+.pb-section.pb-green { background:var(--color-success-bg); }
+.pb-section.pb-red { background:var(--color-danger-bg); }
 .pb-section.pb-pink { background:var(--fem-pink-light); }
-.pb-section.pb-yellow { background:#fef9c3; }
+.pb-section.pb-yellow { background:var(--color-warning-bg); }
 .pb-title { font-size:11px; font-weight:600; text-transform:uppercase; margin-bottom:6px; }
 .pb-item { display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12.5px; }
 .pb-item span { flex:1; }
 .pb-item .pb-new { font-size:9px; background:var(--fem-purple-light); color:var(--fem-purple); padding:1px 5px; border-radius:8px; font-weight:600; }
 .pb-item button { border:none; background:none; cursor:pointer; font-size:12px; color:var(--text-secondary); opacity:0.5; }
-.pb-item button:hover { opacity:1; color:#dc2626; }
+.pb-item button:hover { opacity:1; color:var(--color-danger); }
 .pb-add { padding:4px 12px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-size:11px; color:var(--text-secondary); font-family:inherit; margin-top:4px; }
 .pb-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
-.insight-item .ii-btn.copied { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.insight-item .ii-btn.copied { background:var(--color-success-bg); color:var(--color-success); border-color:var(--color-success); }
 
 .add-hook-form button { padding:8px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
 /* KI Empfehlungen */
@@ -259,10 +259,10 @@ body {
 .ki-learnings strong { color:var(--fem-purple); }
 .ki-section { margin-bottom:14px; border-radius:var(--radius-sm); padding:12px 16px; }
 .ki-section.testen { background:var(--fem-pink-light); }
-.ki-section.vermeiden { background:#fef2f2; }
+.ki-section.vermeiden { background:var(--color-danger-bg); }
 .ki-section-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
 .ki-section.testen .ki-section-title { color:var(--fem-pink); }
-.ki-section.vermeiden .ki-section-title { color:#dc2626; }
+.ki-section.vermeiden .ki-section-title { color:var(--color-danger); }
 .ki-section ul { list-style:none; padding:0; margin:0; font-size:12.5px; line-height:1.6; }
 .ki-section ul li::before { content:'→ '; color:var(--text-secondary); }
 /* -- Dark Mode -- */
@@ -1075,7 +1075,7 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
     });
     localStorage.setItem('fem_pipeline_board', JSON.stringify(pipeCards));
 
-    status.innerHTML = `<span style="color:#16a34a; font-weight:600;">✓ ${selected.length} Outlines zur Pipeline hinzugefügt</span> (Scores: ${selected.map(s=>s.score+'/10').join(', ')})`;
+    status.innerHTML = `<span style="color:var(--color-success); font-weight:600;">✓ ${selected.length} Outlines zur Pipeline hinzugefügt</span> (Scores: ${selected.map(s=>s.score+'/10').join(', ')})`;
   } catch (err) {
     status.textContent = 'Fehler: ' + err.message;
   }

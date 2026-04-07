@@ -15,6 +15,10 @@
   --text-primary: #1a1a2e; --text-secondary: #6b7280;
   --border: rgba(0,0,0,0.08); --shadow: 0 1px 3px rgba(0,0,0,0.08);
   --nav-bg: #1a1a2e; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  --color-success: #16a34a; --color-success-bg: #dcfce7;
+  --color-warning: #a16207; --color-warning-bg: #fef9c3;
+  --color-danger: #dc2626; --color-danger-bg: #fef2f2;
+  --color-info: #06b6d4;
   --text-xs: 10px;
   --text-sm: 11px;
   --text-base: 12px;
@@ -64,7 +68,7 @@ textarea { resize:vertical; line-height:1.6; }
 .btn-add:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .btn-add:disabled { opacity:0.5; cursor:not-allowed; }
 .btn-remove { width:24px; height:24px; border:none; background:none; cursor:pointer; font-size:14px; color:var(--text-secondary); border-radius:50%; }
-.btn-remove:hover { background:#fef2f2; color:#dc2626; }
+.btn-remove:hover { background:var(--color-danger-bg); color:var(--color-danger); }
 
 .goal-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; padding:8px; background:var(--bg-secondary); border-radius:var(--radius-sm); }
 .goal-row input { flex:1; }
@@ -90,7 +94,7 @@ textarea { resize:vertical; line-height:1.6; }
 .check-actions { display:flex; gap:8px; margin-top:10px; }
 .check-btn { padding:8px 18px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
 .check-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
-.check-btn.ok { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.check-btn.ok { background:var(--color-success-bg); color:var(--color-success); border-color:var(--color-success); }
 .btn-check { padding:10px 24px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
 .btn-check:hover { opacity:0.9; }
 .btn-check:disabled { opacity:0.5; cursor:not-allowed; }

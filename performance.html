@@ -176,8 +176,8 @@ body {
   display: inline-block; padding: 2px 8px; border-radius: var(--radius-md);
   font-size: 11px; font-weight: 600;
 }
-.engagement-high { background: #dcfce7; color: #16a34a; }
-.engagement-mid  { background: #fef9c3; color: #a16207; }
+.engagement-high { background: var(--color-success-bg); color: var(--color-success); }
+.engagement-mid  { background: var(--color-warning-bg); color: var(--color-warning); }
 .engagement-low  { background: var(--bg-secondary); color: var(--text-secondary); }
 .btn-to-pipeline {
   padding: 4px 10px; border: 1px solid var(--fem-pink);
@@ -187,7 +187,7 @@ body {
   white-space: nowrap;
 }
 .btn-to-pipeline:hover { background: var(--fem-pink); color: #fff; }
-.btn-to-pipeline.sent { background: #dcfce7; color: #16a34a; border-color: #16a34a; pointer-events: none; }
+.btn-to-pipeline.sent { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); pointer-events: none; }
 
 /* ── KPI Center ── */
 .kpi-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
@@ -224,7 +224,7 @@ body {
 .kpi-history-card .kpi-hw { font-weight:700; color:var(--text-primary); margin-bottom:4px; font-size:12px; }
 .kpi-history-card .kpi-hv { color:var(--text-secondary); line-height:1.5; }
 .kpi-history-card .kpi-hv strong { color:var(--fem-pink); }
-.extract-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; background:#dcfce7; color:#16a34a; margin-left:6px; }
+.extract-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; background:var(--color-success-bg); color:var(--color-success); margin-left:6px; }
 
 /* ── KPI Tracking Table ── */
 .kpi-track-table { width:100%; border-collapse:collapse; font-size:12px; }
@@ -239,11 +239,11 @@ body {
 .kpi-track-table tbody tr:hover { background:var(--bg-secondary); }
 .kpi-track-table .kpi-name { font-weight:600; color:var(--text-primary); }
 .kpi-track-table .kpi-val { font-weight:700; font-size:13px; }
-.kpi-track-table .kpi-val.green { color:#16a34a; }
-.kpi-track-table .kpi-val.yellow { color:#a16207; }
-.kpi-track-table .kpi-val.red { color:#dc2626; }
-.kpi-track-table .kpi-best { color:#16a34a; font-size:11px; }
-.kpi-track-table .kpi-worst { color:#dc2626; font-size:11px; }
+.kpi-track-table .kpi-val.green { color:var(--color-success); }
+.kpi-track-table .kpi-val.yellow { color:var(--color-warning); }
+.kpi-track-table .kpi-val.red { color:var(--color-danger); }
+.kpi-track-table .kpi-best { color:var(--color-success); font-size:11px; }
+.kpi-track-table .kpi-worst { color:var(--color-danger); font-size:11px; }
 .kpi-track-table .kpi-trend { font-size:14px; }
 .kpi-track-table input {
   width:70px; padding:3px 6px; border:1px solid var(--border);
@@ -271,7 +271,7 @@ body {
 .pp-badge-gr { background:var(--fem-purple-light); color:var(--fem-purple); }
 .pp-badge-wa { background:var(--bg-secondary); color:var(--text-secondary); }
 .pp-eng { font-weight:600; font-size:11px; }
-.pp-eng.green { color:#16a34a; } .pp-eng.yellow { color:#a16207; } .pp-eng.red { color:#dc2626; }
+.pp-eng.green { color:var(--color-success); } .pp-eng.yellow { color:var(--color-warning); } .pp-eng.red { color:var(--color-danger); }
 .pp-spark { width:50px; height:16px; }
 .pp-spark svg { width:100%; height:100%; }
 .pp-empty { padding:30px; text-align:center; color:var(--text-secondary); font-size:13px; }
@@ -327,9 +327,9 @@ body {
 .analyse-table .at-name { font-weight:600; }
 .analyse-table .at-val { font-weight:700; }
 .analyse-table .at-badge { display:inline-block; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:600; }
-.at-green { background:#dcfce7; color:#16a34a; }
-.at-yellow { background:#fef9c3; color:#a16207; }
-.at-red { background:#fef2f2; color:#dc2626; }
+.at-green { background:var(--color-success-bg); color:var(--color-success); }
+.at-yellow { background:var(--color-warning-bg); color:var(--color-warning); }
+.at-red { background:var(--color-danger-bg); color:var(--color-danger); }
 /* Themenwelten */
 .tw-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; box-shadow:var(--shadow); }
 .tw-card .tw-title { font-size:12px; font-weight:600; margin-bottom:8px; }
@@ -337,9 +337,9 @@ body {
 .tw-card .tw-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
 .tw-card .tw-best { font-size:11px; color:var(--text-secondary); margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
 .tw-card .tw-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:10px; font-weight:600; margin-top:6px; }
-.tw-badge-star { background:#dcfce7; color:#16a34a; }
-.tw-badge-ok { background:#dcfce7; color:#16a34a; }
-.tw-badge-warn { background:#fef9c3; color:#a16207; }
+.tw-badge-star { background:var(--color-success-bg); color:var(--color-success); }
+.tw-badge-ok { background:var(--color-success-bg); color:var(--color-success); }
+.tw-badge-warn { background:var(--color-warning-bg); color:var(--color-warning); }
 .tw-badge-data { background:var(--bg-secondary); color:var(--text-secondary); }
 
 .analyse-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:13px; }
@@ -350,8 +350,8 @@ body {
 .analyse-card .ac-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
 /* Toast */
 .fem-toast { position:fixed; bottom:20px; right:20px; padding:12px 20px; border-radius:var(--radius-sm); background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.15); font-size:13px; z-index:999; animation:fadeUp 0.3s ease; }
-.fem-toast.success { border-left:4px solid #16a34a; }
-.fem-toast.warn { border-left:4px solid #a16207; }
+.fem-toast.success { border-left:4px solid var(--color-success); }
+.fem-toast.warn { border-left:4px solid var(--color-warning); }
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
 .analyse-result { margin-top:12px; padding:14px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:13px; line-height:1.6; white-space:pre-wrap; }
@@ -999,7 +999,7 @@ function renderPostTable() {
     const linkIcon = postUrl ? ` <a href="${postUrl}" target="_blank" style="color:var(--fem-pink); text-decoration:none;" title="Post öffnen">🔗</a>` : '';
     const perfBadge = hasKPIs
       ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>'
-      : `<span class="extract-badge" style="margin-left:4px; background:#fef9c3; color:#a16207; cursor:pointer;" data-perf-open="${cardId}">📊 Performance</span>`;
+      : `<span class="extract-badge" style="margin-left:4px; background:var(--color-warning-bg); color:var(--color-warning); cursor:pointer;" data-perf-open="${cardId}">📊 Performance</span>`;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1304,7 +1304,7 @@ function renderThemenwelten() {
   grid.innerHTML = WELTEN.map((w, i) => {
     const d = data[w];
     const avgEng = d.engCount ? d.engSum/d.engCount : 0;
-    const engCls = avgEng >= 5 ? '#16a34a' : avgEng >= 3 ? '#a16207' : d.posts ? '#dc2626' : 'var(--text-secondary)';
+    const engCls = avgEng >= 5 ? 'var(--color-success)' : avgEng >= 3 ? 'var(--color-warning)' : d.posts ? 'var(--color-danger)' : 'var(--text-secondary)';
     let badge, badgeCls;
     if (d.posts >= 3 && avgEng >= 5) { badge='⭐ Mehr davon!'; badgeCls='tw-badge-star'; }
     else if (d.posts >= 2 && avgEng >= 3) { badge='✅ Gut'; badgeCls='tw-badge-ok'; }
@@ -1587,7 +1587,7 @@ document.getElementById('kpiSaveBtn').addEventListener('click', () => {
 
   const btn = document.getElementById('kpiSaveBtn');
   btn.textContent = 'Gespeichert ✓';
-  btn.style.background = '#16a34a';
+  btn.style.background = 'var(--color-success)';
   setTimeout(() => { btn.textContent = '💾 Woche speichern'; btn.style.background = ''; }, 2000);
   renderKpiHistory();
 });
@@ -1693,8 +1693,8 @@ function renderKpiTrackingTable() {
 
     // Trend
     let trend = '–';
-    if (previous > 0 && current > previous) trend = '<span style="color:#16a34a">↑</span>';
-    else if (previous > 0 && current < previous) trend = '<span style="color:#dc2626">↓</span>';
+    if (previous > 0 && current > previous) trend = '<span style="color:var(--color-success)">↑</span>';
+    else if (previous > 0 && current < previous) trend = '<span style="color:var(--color-danger)">↓</span>';
     else if (previous > 0) trend = '<span style="color:var(--text-secondary)">→</span>';
 
     const suffix = def.pct ? '%' : '';
