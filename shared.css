@@ -38,6 +38,15 @@
   --text-xl: 16px;
   --text-2xl: 20px;
   --text-3xl: 24px;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
 }
 
 /* ── Base ── */
