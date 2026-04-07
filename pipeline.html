@@ -367,6 +367,14 @@ body {
   padding: 28px 30px;
   width: 520px; max-width: 92vw; max-height: 85vh;
   overflow-y: auto;
+  overflow-x: visible;
+}
+.card-modal select {
+  position: relative;
+  z-index: 10;
+  -webkit-appearance: menulist;
+  appearance: menulist;
+  pointer-events: auto;
 }
 .card-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
 .card-modal .cm-field { margin-bottom: 14px; }
@@ -918,6 +926,24 @@ Themenwelten:
 3. Fachliche Weiterbildung - ruhig, vertrauensvoll, sachlich
 4. Persönlichkeitsentwicklung - reflektiert, warm, emotional
 
+CONTENT-STRATEGIE:
+- Unterscheide zwischen "Searchable Content" (löst ein konkretes Problem, wird gesucht) und "Shareable Content" (überrascht, inspiriert, wird geteilt). Jede Outline sollte klar einem Typ zugeordnet sein.
+- Nutze das "Jobs to Be Done"-Framework: Welchen konkreten Job erledigt dieser Content für die Leserin? (z.B. "Hilft mir, mich im Meeting sichtbar zu machen")
+- Denke in Content-Serien: Kann dieses Thema in eine wiederkehrende Rubrik passen?
+
+COPYWRITING-PRINZIPIEN:
+- Klarheit schlägt Cleverness. Jeder Satz muss sofort verstanden werden.
+- Benefits vor Features: Was hat die Leserin davon? Nicht was das Thema ist.
+- Ein Gedanke pro Post. Nicht alles in einen Post packen.
+- Spezifisch statt generisch: "25% mehr Abschlüsse" schlägt "mehr Erfolg".
+- Schreibe wie du sprichst — professionell aber menschlich.
+
+PSYCHOLOGIE-HOOKS:
+- Loss Aversion: Was verliert die Leserin, wenn sie nicht handelt?
+- Social Proof: Wie machen es andere erfolgreiche Frauen in der Branche?
+- Curiosity Gap: Welche Wissenslücke wird aufgemacht?
+- Pattern Interrupt: Was bricht die Scroll-Gewohnheit?
+
 Für jede Outline:
 - Kernparadox
 - Reformuliert (Lang / Mittel / Kurz)
@@ -956,6 +982,27 @@ KANAL-REGELN:
 Company Page (Di oder Do · 10:00): 1.000-1.500 Zeichen, starker Hook, 3-5 Punkte mit →, Zitat, Reflexionsfrage, 5-7 Hashtags, professionell empowernd
 LinkedIn Gruppe (Mi oder Fr · 10:00): 600-800 Zeichen, bezieht sich auf Company Page, zeigt tiefere Wahrheit, endet IMMER mit offener Frage, persönlich ehrlich
 WhatsApp (Mi · 08:00): max. 250 Zeichen, kurz warm wie von einer Freundin, endet mit 🩷
+
+SOCIAL-CONTENT-REGELN:
+- LinkedIn-Algorithmus bevorzugt: Verweildauer (lange Texte die fesseln), Kommentare in den ersten 60 Min., Saves und Shares
+- Erste 2 Zeilen = Hook. Wenn der Hook nicht sitzt, wird der Rest nie gelesen.
+- Nutze Zeilenumbrüche großzügig — Textwände werden überscrollt
+- Vermeide externe Links im Post-Text (senkt Reichweite). Link in Kommentar oder gar nicht.
+- Company Page: Thought Leadership + Daten. Gruppe: Persönliche Geschichten + Diskussion. WhatsApp: Schnelle Impulse.
+- Carousel-Posts (Document Posts) performen auf LinkedIn 2-3x besser für Engagement
+
+COMMUNITY-MARKETING:
+- Jeder Gruppen-Post sollte eine echte Diskussion anstoßen, nicht nur informieren
+- Stelle offene Fragen die leicht zu beantworten sind ("Was war dein...?" statt "Was denkst du über...?")
+- Beziehe dich auf vorherige Diskussionen wenn möglich — das schafft Zusammengehörigkeit
+- WhatsApp-Nachrichten sollen sich anfühlen wie von einer Mentorin, nicht wie Marketing
+
+COPYWRITING-STIL:
+- Ein Satz, ein Gedanke. Kurze Sätze gewinnen.
+- Starte mit dem stärksten Argument, nicht mit Kontext.
+- Nutze konkrete Zahlen statt vager Aussagen.
+- Vermeide Passiv — schreibe aktiv und direkt.
+- Call-to-Action: Klar, spezifisch, niedrigschwellig.
 
 ENTSCHEIDUNGSLOGIK:
 - Ist der Inhalt faktenreich? → Company Page
@@ -1345,8 +1392,13 @@ const SCORE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Scorer. Bewerte dies
 Analysiere:
 1. Trend-Stärke (0-2.5 Punkte): Ist das Thema aktuell trending?
 2. Eigene Performance (0-2.5 Punkte): Hat FemSurance mit ähnlichen Themen gut performt?
-3. Konkurrenz-Lücke (0-2.5 Punkte): Machen Wettbewerber das noch nicht?
+3. Konkurrenz-Lücke (0-2.5 Punkte): Machen Wettbewerber das noch nicht? Nutze das "Competitor Alternatives"-Framework: Was bieten Wettbewerber NICHT? Wo ist die Lücke zwischen dem was Wettbewerber sagen und was die Zielgruppe wirklich braucht?
 4. Ziel-Relevanz (0-2.5 Punkte): Passt es zu den FemSurance Fokus-Themen?
+
+Zusätzlich bewerte:
+- Ist der Content "Searchable" (löst konkretes Problem) oder "Shareable" (überrascht/inspiriert)?
+- Welchen "Job to Be Done" erfüllt er für die Zielgruppe?
+- Gibt es ein psychologisches Muster (Loss Aversion, Social Proof, Curiosity Gap) das den Inhalt verstärkt?
 
 Antworte NUR im JSON-Format:
 {
