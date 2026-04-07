@@ -7,33 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
 <style>
-:root {
-  --fem-pink: #E91E8C;
-  --fem-pink-light: #fce4f0;
-  --fem-pink-mid: #f4afd4;
-  --fem-purple: #7C3AED;
-  --fem-purple-light: #EEEDFE;
-  --bg-page: #F8F9FA;
-  --bg-card: #ffffff;
-  --bg-secondary: #f1f3f5;
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b7280;
-  --border: rgba(0,0,0,0.08);
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --nav-bg: #1a1a2e;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-page);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -42,44 +17,15 @@ body {
 .fade-up:nth-child(1) { animation-delay: 0.04s; }
 .fade-up:nth-child(2) { animation-delay: 0.10s; }
 
-/* ── Left Navigation ── */
-.nav-left {
-  position: fixed; top: 0; left: 0;
-  width: 62px; height: 100vh;
-  background: var(--nav-bg);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 16px 0; z-index: 100;
-}
-.nav-logo {
-  width: 34px; height: 34px; background: var(--fem-pink);
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
-}
-.nav-links {
-  display: flex; flex-direction: column; gap: 4px;
-  width: 100%; list-style: none;
-}
-.nav-links a {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
-  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
-  transition: color 0.2s, background 0.2s;
-  border-radius: var(--radius-sm); margin: 0 6px;
-}
-.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
-.nav-links a.active { color: var(--fem-pink); }
-.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
-
 /* ── Main ── */
 .main { margin-left: 62px; padding: 28px 32px 40px; }
 .page-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: var(--space-2xl);
 }
 .page-header h1 { font-size: 22px; font-weight: 700; }
 .page-header h1 em { font-style: normal; color: var(--fem-pink); }
-.header-meta { font-size: 13px; color: var(--text-secondary); }
+.header-meta { font-size: var(--text-md); color: var(--text-secondary); }
 
 /* ── Kanban ── */
 .kanban-board {
@@ -96,16 +42,16 @@ body {
 }
 .kanban-col-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px; padding-bottom: 10px;
+  margin-bottom: var(--space-md); padding-bottom: 10px;
   border-bottom: 2px solid var(--border);
 }
 .kanban-col-title {
-  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  font-size: var(--text-base); font-weight: 600; color: var(--text-secondary);
   text-transform: uppercase; letter-spacing: 0.03em;
 }
 .kanban-count {
-  font-size: 11px; font-weight: 600; background: var(--bg-card);
-  color: var(--text-secondary); border-radius: 10px; padding: 1px 8px;
+  font-size: var(--text-sm); font-weight: 600; background: var(--bg-card);
+  color: var(--text-secondary); border-radius: var(--radius-md); padding: 1px 8px;
 }
 .kanban-drop-zone {
   min-height: 60px;
@@ -142,29 +88,29 @@ body {
   line-height: 1.35;
 }
 .kanban-card-meta {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: var(--space-sm);
   flex-wrap: wrap; margin-top: 8px;
 }
 .kanban-tag {
-  display: inline-block; font-size: 10px; font-weight: 600;
-  padding: 2px 7px; border-radius: 4px;
+  display: inline-block; font-size: var(--text-xs); font-weight: 600;
+  padding: 2px 7px; border-radius: var(--radius-sm);
 }
 .tag-pink   { background: var(--fem-pink-light); color: var(--fem-pink); }
 .tag-purple { background: var(--fem-purple-light); color: var(--fem-purple); }
-.tag-gray   { background: #e5e7eb; color: var(--text-secondary); }
-.tag-green  { background: #dcfce7; color: #16a34a; }
+.tag-gray   { background: var(--bg-secondary); color: var(--text-secondary); }
+.tag-green  { background: var(--color-success-bg); color: var(--color-success); }
 .kanban-assignee {
-  font-size: 11px; color: var(--text-secondary);
+  font-size: var(--text-sm); color: var(--text-secondary);
 }
 .kanban-due {
-  font-size: 11px; color: var(--text-secondary);
+  font-size: var(--text-sm); color: var(--text-secondary);
   margin-left: auto;
 }
 .kanban-card-body {
   display: none;
   margin-top: 10px; padding-top: 10px;
   border-top: 1px solid var(--border);
-  font-size: 12px; color: var(--text-secondary);
+  font-size: var(--text-base); color: var(--text-secondary);
   line-height: 1.6; white-space: pre-wrap;
 }
 .kanban-card-body.open { display: block; }
@@ -180,7 +126,7 @@ body {
   background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
   color: #fff;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.15s;
@@ -221,17 +167,17 @@ body {
   padding: 2px 6px;
   border-radius: 3px;
 }
-.char-counter.in-range { color: #16a34a; background: #dcfce7; }
-.char-counter.out-range { color: #dc2626; background: #fee2e2; }
+.char-counter.in-range { color: var(--color-success); background: var(--color-success-bg); }
+.char-counter.out-range { color: var(--color-danger); background: #fee2e2; }
 
 .platform-counters {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   flex-wrap: wrap;
   margin-top: 8px;
 }
 .platform-counters .platform-label {
-  font-size: 10px;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -247,7 +193,7 @@ body {
   background: var(--fem-pink-light);
   color: var(--fem-pink);
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -260,9 +206,9 @@ body {
 /* ── Format Badges ── */
 .format-badges {
   display: inline-flex;
-  gap: 4px;
+  gap: var(--space-xs);
   margin-left: 6px;
-  font-size: 13px;
+  font-size: var(--text-md);
   vertical-align: middle;
 }
 .format-badges span {
@@ -284,19 +230,19 @@ body {
   width: 380px; max-width: 90vw;
 }
 .modal h3 {
-  font-size: 16px; font-weight: 700; margin-bottom: 6px;
+  font-size: var(--text-xl); font-weight: 700; margin-bottom: 6px;
 }
 .modal p {
-  font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;
+  font-size: var(--text-md); color: var(--text-secondary); margin-bottom: 18px;
 }
 .slot-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);
   margin-bottom: 18px;
 }
 .slot-btn {
   padding: 10px 14px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
-  cursor: pointer; font-family: inherit; font-size: 13px;
+  cursor: pointer; font-family: inherit; font-size: var(--text-md);
   font-weight: 500; color: var(--text-primary);
   transition: all 0.2s; text-align: left;
 }
@@ -304,14 +250,14 @@ body {
   border-color: var(--fem-pink); background: var(--fem-pink-light);
 }
 .slot-btn .slot-day { font-weight: 600; }
-.slot-btn .slot-ch { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.slot-btn .slot-ch { font-size: var(--text-sm); color: var(--text-secondary); margin-top: 1px; }
 .modal-actions {
-  display: flex; justify-content: flex-end; gap: 8px;
+  display: flex; justify-content: flex-end; gap: var(--space-sm);
 }
 .btn-cancel {
   padding: 8px 18px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
-  cursor: pointer; font-family: inherit; font-size: 13px;
+  cursor: pointer; font-family: inherit; font-size: var(--text-md);
   color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
@@ -320,7 +266,7 @@ body {
   display: block; width: 100%; margin-top: 8px;
   padding: 8px 12px; border: 1px dashed var(--border);
   border-radius: var(--radius-sm); background: none;
-  cursor: pointer; font-family: inherit; font-size: 12px;
+  cursor: pointer; font-family: inherit; font-size: var(--text-base);
   font-weight: 600; color: var(--text-secondary);
   transition: all 0.2s;
 }
@@ -331,16 +277,16 @@ body {
 }
 .new-idea-form input, .new-idea-form select {
   width: 100%; padding: 7px 10px; border: 1px solid var(--border);
-  border-radius: 4px; font-family: inherit; font-size: 12px;
-  color: var(--text-primary); margin-bottom: 8px;
+  border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-base);
+  color: var(--text-primary); margin-bottom: var(--space-sm);
 }
 .new-idea-form input:focus, .new-idea-form select:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 .new-idea-btns { display: flex; gap: 6px; }
 .new-idea-btns button {
-  flex: 1; padding: 7px 10px; border-radius: 4px;
-  font-family: inherit; font-size: 12px; font-weight: 600;
+  flex: 1; padding: 7px 10px; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: var(--text-base); font-weight: 600;
   cursor: pointer; border: none; transition: opacity 0.2s;
 }
 .new-idea-btns .btn-create {
@@ -367,54 +313,62 @@ body {
   padding: 28px 30px;
   width: 520px; max-width: 92vw; max-height: 85vh;
   overflow-y: auto;
+  overflow-x: visible;
 }
-.card-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
+.card-modal select {
+  position: relative;
+  z-index: 10;
+  -webkit-appearance: menulist;
+  appearance: menulist;
+  pointer-events: auto;
+}
+.card-modal h3 { font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-lg); color: var(--text-primary); }
 .card-modal .cm-field { margin-bottom: 14px; }
 .card-modal .cm-label {
-  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary);
   text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px;
 }
 .card-modal input[type="text"], .card-modal input[type="date"],
 .card-modal select, .card-modal textarea {
   width: 100%; padding: 8px 12px; border: 1px solid var(--border);
-  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
   color: var(--text-primary); background: var(--bg-card); transition: border-color 0.2s;
 }
 .card-modal input:focus, .card-modal select:focus, .card-modal textarea:focus {
-  outline: none; border-color: var(--fem-pink);
+  outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
 }
 .card-modal textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
-.card-modal .cm-row { display: flex; gap: 12px; }
+.card-modal .cm-row { display: flex; gap: var(--space-md); }
 .card-modal .cm-row > * { flex: 1; }
 .card-modal .cm-badge {
-  display: inline-block; padding: 3px 10px; border-radius: 4px;
-  font-size: 11px; font-weight: 600; margin-bottom: 14px;
+  display: inline-block; padding: 3px 10px; border-radius: var(--radius-sm);
+  font-size: var(--text-sm); font-weight: 600; margin-bottom: 14px;
 }
 .cm-actions {
-  display: flex; gap: 8px; margin-top: 18px; align-items: center;
+  display: flex; gap: var(--space-sm); margin-top: 18px; align-items: center;
 }
 .cm-actions .btn-save-modal {
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff;
-  font-family: inherit; font-size: 13px; font-weight: 600;
+  font-family: inherit; font-size: var(--text-md); font-weight: 600;
   cursor: pointer; transition: opacity 0.2s;
 }
 .cm-actions .btn-save-modal:hover { opacity: 0.9; }
 .cm-actions .btn-close-modal {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
-  font-family: inherit; font-size: 13px; font-weight: 500;
+  font-family: inherit; font-size: var(--text-md); font-weight: 500;
   color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
 }
 .cm-actions .btn-close-modal:hover { background: var(--bg-secondary); }
 .cm-actions .btn-delete-modal {
   margin-left: auto;
-  padding: 9px 18px; border: 1px solid #dc2626;
+  padding: 9px 18px; border: 1px solid var(--color-danger);
   border-radius: var(--radius-sm); background: #fff;
-  font-family: inherit; font-size: 12px; font-weight: 600;
-  color: #dc2626; cursor: pointer; transition: all 0.2s;
+  font-family: inherit; font-size: var(--text-base); font-weight: 600;
+  color: var(--color-danger); cursor: pointer; transition: all 0.2s;
 }
-.cm-actions .btn-delete-modal:hover { background: #fef2f2; }
+.cm-actions .btn-delete-modal:hover { background: var(--color-danger-bg); }
 
 /* ── Generate Prep Modal ── */
 .gen-prep-overlay {
@@ -430,28 +384,28 @@ body {
   padding: 24px 28px; width: 440px; max-width: 92vw;
 }
 .gen-prep h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-.gen-prep .gen-prep-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px; }
-.gen-prep .gp-field { margin-bottom: 12px; }
-.gen-prep .gp-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
+.gen-prep .gen-prep-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: var(--space-lg); }
+.gen-prep .gp-field { margin-bottom: var(--space-md); }
+.gen-prep .gp-label { font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 4px; }
 .gen-prep textarea, .gen-prep input[type="url"] {
   width: 100%; padding: 8px 12px; border: 1px solid var(--border);
-  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
   color: var(--text-primary); transition: border-color 0.2s;
 }
 .gen-prep textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
-.gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); }
-.gen-prep-btns { display: flex; gap: 8px; margin-top: 16px; }
+.gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.gen-prep-btns { display: flex; gap: var(--space-sm); margin-top: 16px; }
 .gen-prep-btns .btn-gen-go {
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff;
-  font-family: inherit; font-size: 13px; font-weight: 600;
+  font-family: inherit; font-size: var(--text-md); font-weight: 600;
   cursor: pointer; transition: opacity 0.2s;
 }
 .gen-prep-btns .btn-gen-go:hover { opacity: 0.9; }
 .gen-prep-btns .btn-gen-cancel {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
-  font-family: inherit; font-size: 13px; color: var(--text-secondary);
+  font-family: inherit; font-size: var(--text-md); color: var(--text-secondary);
   cursor: pointer; transition: all 0.2s;
 }
 .gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
@@ -463,7 +417,7 @@ body {
 }
 .grafik-thumb {
   width: 100%; max-height: 100px; object-fit: cover;
-  border-radius: 4px; margin-top: 8px; display: block;
+  border-radius: var(--radius-sm); margin-top: 8px; display: block;
 }
 /* ── Grafik Section in Modal ── */
 .cm-grafik-section {
@@ -472,20 +426,20 @@ body {
 }
 .cm-grafik-section.open { display: block; }
 .cm-canva-row {
-  display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;
+  display: flex; gap: var(--space-sm); align-items: flex-end; margin-bottom: var(--space-md);
 }
 .cm-canva-row input { flex: 1; }
 .cm-canva-row .btn-canva-open {
   padding: 8px 14px; border: 1px solid var(--fem-pink); border-radius: var(--radius-sm);
   background: var(--bg-card); color: var(--fem-pink); font-family: inherit;
-  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  font-size: var(--text-base); font-weight: 600; cursor: pointer; white-space: nowrap;
   transition: all 0.2s;
 }
 .cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: #fff; }
 .cm-drop-zone {
   border: 2px dashed var(--border); border-radius: var(--radius-sm);
   padding: 16px; text-align: center; color: var(--text-secondary);
-  font-size: 12px; cursor: pointer; transition: all 0.2s;
+  font-size: var(--text-base); cursor: pointer; transition: all 0.2s;
 }
 .cm-drop-zone:hover, .cm-drop-zone.drag-over {
   border-color: var(--fem-pink); background: var(--fem-pink-light); color: var(--fem-pink);
@@ -497,10 +451,10 @@ body {
 }
 
 /* ── Plan Modal Tabs + Calendar ── */
-.plan-tabs { display: flex; gap: 0; margin-bottom: 16px; }
+.plan-tabs { display: flex; gap: 0; margin-bottom: var(--space-lg); }
 .plan-tab {
   flex: 1; padding: 10px 8px; border: none; border-bottom: 2px solid var(--border);
-  background: none; font-family: inherit; font-size: 12px; font-weight: 600;
+  background: none; font-family: inherit; font-size: var(--text-base); font-weight: 600;
   color: var(--text-secondary); cursor: pointer; text-align: center;
   transition: all 0.2s;
 }
@@ -510,26 +464,26 @@ body {
 .plan-panel.active { display: block; }
 .mini-cal-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-sm);
 }
-.mini-cal-header span { font-size: 13px; font-weight: 600; }
+.mini-cal-header span { font-size: var(--text-md); font-weight: 600; }
 .mini-cal-header button {
   width: 28px; height: 28px; border: none; border-radius: 50%;
-  background: var(--bg-secondary); cursor: pointer; font-size: 14px;
+  background: var(--bg-secondary); cursor: pointer; font-size: var(--text-lg);
   color: var(--text-secondary); display: flex; align-items: center;
   justify-content: center; transition: all 0.15s;
 }
 .mini-cal-header button:hover { background: var(--fem-pink-light); color: var(--fem-pink); }
 .mini-cal-grid {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
-  text-align: center; margin-bottom: 12px;
+  text-align: center; margin-bottom: var(--space-md);
 }
 .mini-cal-grid .day-label {
-  font-size: 10px; font-weight: 600; color: var(--text-secondary);
+  font-size: var(--text-xs); font-weight: 600; color: var(--text-secondary);
   padding: 4px 0; text-transform: uppercase;
 }
 .mini-cal-grid .day-cell {
-  padding: 6px 0; font-size: 12px; border-radius: 4px;
+  padding: 6px 0; font-size: var(--text-base); border-radius: var(--radius-sm);
   cursor: pointer; transition: all 0.15s; color: var(--text-primary);
 }
 .mini-cal-grid .day-cell:hover { background: var(--fem-pink-light); }
@@ -551,62 +505,81 @@ body {
 }
 .plan-selected .plan-date { font-weight: 600; color: var(--fem-pink); }
 .plan-selected .btn-plan-save {
-  padding: 6px 16px; border: none; border-radius: 4px;
+  padding: 6px 16px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff; font-family: inherit;
-  font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  font-size: var(--text-base); font-weight: 600; cursor: pointer; transition: opacity 0.2s;
 }
 .plan-selected .btn-plan-save:hover { opacity: 0.9; }
 .plan-selected .btn-plan-save.saved {
-  background: #dcfce7; color: #16a34a;
+  background: var(--color-success-bg); color: var(--color-success);
 }
 /* Publish Modal */
 .pub-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
 .pub-modal-overlay.open { display:flex; }
 .pub-modal { background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 20px 60px rgba(0,0,0,0.2); padding:24px 28px; width:400px; max-width:92vw; }
 .pub-modal h3 { font-size:15px; font-weight:700; margin-bottom:14px; }
-.pub-modal .pub-field { margin-bottom:12px; }
-.pub-modal .pub-field label { display:block; font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:4px; }
-.pub-modal .pub-field input { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
-.pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); }
-.pub-modal-btns { display:flex; gap:8px; margin-top:16px; }
-.pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.pub-modal .pub-field { margin-bottom: var(--space-md); }
+.pub-modal .pub-field label { display:block; font-size:var(--text-sm); font-weight:600; color:var(--text-secondary); text-transform:uppercase; margin-bottom:4px; }
+.pub-modal .pub-field input { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); }
+.pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.pub-modal-btns { display:flex; gap: var(--space-sm); margin-top:16px; }
+.pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; }
 .pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:#fff; }
 .pub-modal-btns .pub-cancel { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
 /* Published card extras */
 .pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
 .pub-meta a { color:var(--fem-pink); text-decoration:none; }
 .pub-meta a:hover { text-decoration:underline; }
-.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#fef9c3; color:#a16207; cursor:pointer; }
+.perf-reminder { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:var(--radius-md); font-size:var(--text-xs); font-weight:600; background:var(--color-warning-bg); color:var(--color-warning); cursor:pointer; }
 .perf-reminder:hover { background:#fde68a; }
 /* Score */
-.score-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; margin-top:6px; cursor:pointer; }
-.score-green { background:#dcfce7; color:#16a34a; }
-.score-yellow { background:#fef9c3; color:#a16207; }
-.score-red { background:#fef2f2; color:#dc2626; }
-.score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:11px; font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.score-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:var(--text-xs); font-weight:700; margin-top:6px; cursor:pointer; }
+.score-green { background:var(--color-success-bg); color:var(--color-success); }
+.score-yellow { background:var(--color-warning-bg); color:var(--color-warning); }
+.score-red { background:var(--color-danger-bg); color:var(--color-danger); }
+.score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-sm); font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
 .score-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .score-btn:disabled { opacity:0.5; cursor:not-allowed; }
-.score-detail { margin-top:6px; padding:8px 10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:11px; line-height:1.5; display:none; }
+.score-detail { margin-top:6px; padding:8px 10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:var(--text-sm); line-height:1.5; display:none; }
 .score-detail.open { display:block; }
 .score-detail .sd-row { display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px solid var(--border); }
 .score-detail .sd-row:last-child { border-bottom:none; }
 .score-detail .sd-label { color:var(--text-secondary); }
 .score-detail .sd-val { font-weight:600; }
-.score-detail .sd-reason { font-size:10px; color:var(--text-secondary); font-style:italic; }
-.score-detail .sd-rec { margin-top:4px; padding:4px 8px; background:var(--fem-pink-light); border-radius:4px; font-weight:600; color:var(--fem-pink); }
-/* -- Dark Mode -- */
-body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
-.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
-.dm-toggle:hover { border-color:var(--fem-pink); }
+.score-detail .sd-reason { font-size:var(--text-xs); color:var(--text-secondary); font-style:italic; }
+.score-detail .sd-rec { margin-top:4px; padding:4px 8px; background:var(--fem-pink-light); border-radius:var(--radius-sm); font-weight:600; color:var(--fem-pink); }
+/* -- Dark Mode (page-specific) -- */
+body.dark-mode .tag-pink { background: rgba(233,30,140,0.2); color: var(--fem-pink); }
+body.dark-mode .tag-purple { background: rgba(124,58,237,0.2); color: var(--fem-purple); }
+body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
+body.dark-mode .tag-green { background: rgba(22,163,74,0.2); color: var(--color-success); }
+body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .kanban-board { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .kanban-board { grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+  .card-modal { width: 95vw; max-height: 90vh; padding: 18px 16px; }
+}
+@media (max-width: 480px) {
+  .kanban-board { grid-template-columns: 1fr; }
+}
+
+/* ── Extracted utility classes ── */
+.btn-full { width:100%; }
+.btn-full-secondary { width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border); }
+.mb-10-pink { margin-bottom:10px; color:var(--fem-pink); }
+.mb-12 { margin-bottom:12px; }
+.canva-copy-btn { padding:5px 12px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
-<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
 
 <!-- ══════════ Left Navigation ══════════ -->
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html">
@@ -800,7 +773,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
       <textarea id="cmOutline" rows="8"></textarea>
     </div>
     <div id="cmPlanSection" style="display:none; margin-top:4px; padding:16px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
-      <div class="cm-label" style="margin-bottom:10px; color:var(--fem-pink);">Post planen</div>
+      <div class="cm-label mb-10-pink">Post planen</div>
       <div class="cm-field">
         <div class="cm-label">Posting-Woche</div>
         <input type="text" id="cmPostingWeek" placeholder="z. B. KW 15 · Di 8. Apr – Fr 11. Apr">
@@ -829,7 +802,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
       <div id="cmGenStatus" style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px;"></div>
     </div>
     <div class="cm-grafik-section" id="cmGrafikSection">
-      <div class="cm-label" style="margin-bottom:10px; color:var(--fem-pink);">Grafik</div>
+      <div class="cm-label mb-10-pink">Grafik</div>
       <div class="cm-canva-row">
         <div style="flex:1;">
           <div class="cm-label">Canva-Link</div>
@@ -847,7 +820,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
         <button class="btn-save-modal" id="cmCanvaPromptBtn" style="width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple));">✨ Canva-Prompt generieren</button>
         <div id="cmCanvaPromptResult" style="display:none; margin-top:8px;">
           <textarea id="cmCanvaPromptText" rows="6" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;background:var(--bg-secondary);resize:vertical;"></textarea>
-          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:4px;background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
+          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:var(--radius-sm);background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
         </div>
       </div>
     </div>
@@ -896,9 +869,9 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 
 </main>
 
+<script src="shared.js"></script>
 <script>
 // ── Config ──
-const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
 function friendlyError(err) {
   const msg = err.message || String(err);
   if (msg.includes('401')) return 'API-Schlüssel ungültig. Bitte in pipeline.html prüfen.';
@@ -910,70 +883,35 @@ function friendlyError(err) {
   return msg;
 }
 
-const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
+const OUTLINE_SYSTEM_PROMPT = `FemSurance Content-Ideen-Generator. Zielgruppe: Frauen in der Versicherungs-/Finanzbranche.
 
-Themenwelten:
-1. Business & Vertrieb - klar, lösungsorientiert, strategisch
-2. Marketing & Sichtbarkeit - inspirierend, mutig, menschlich
-3. Fachliche Weiterbildung - ruhig, vertrauensvoll, sachlich
-4. Persönlichkeitsentwicklung - reflektiert, warm, emotional
+Themenwelten: 1.Business&Vertrieb (klar,strategisch) 2.Marketing&Sichtbarkeit (inspirierend,mutig) 3.Fachliche Weiterbildung (sachlich,vertrauensvoll) 4.Persönlichkeitsentwicklung (warm,emotional)
 
-Für jede Outline:
-- Kernparadox
-- Reformuliert (Lang / Mittel / Kurz)
-- Schlüsselzitate
-- Transformation (Zweifel → Erkenntnis → Selbstbestimmung)
-- Alltagsprobleme (3)
-- Beispiele (2)
-- Einwände / Zweifel
-- Aspirationsaussage
-- Handlungsschritte (3)
-- Große Idee
-- Abschließende Erkenntnis
+STRATEGIE: Jede Outline als Searchable (löst Problem) oder Shareable (überrascht) kennzeichnen. JTBD: Welchen Job erledigt der Content? Content-Serien denken.
+COPYWRITING: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Spezifisch ("25% mehr" statt "mehr Erfolg").
+HOOKS: Loss Aversion | Social Proof | Curiosity Gap | Pattern Interrupt
 
-Am Ende: Analyse-Notizen mit Themen, Sprachmuster, Empfehlung.
-Direkte Du-Ansprache. Warm, klar, empowernd. Keine Floskeln.`;
+Pro Outline: Kernparadox, Reformuliert (Lang/Mittel/Kurz), Schlüsselzitate, Transformation (Zweifel→Erkenntnis→Selbstbestimmung), 3 Alltagsprobleme, 2 Beispiele, Einwände, Aspirationsaussage, 3 Handlungsschritte, Große Idee, Abschließende Erkenntnis.
 
-const POST_JSON_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Du bekommst eine Content-Outline und entscheidest selbst wie viele Posts du daraus machst und auf welchem Kanal sie am besten funktionieren. Es können 2, 3, 4 oder mehr Posts sein — je nachdem was der Inhalt hergibt.
+Am Ende: Analyse-Notizen. Du-Ansprache, warm, klar, empowernd. Keine Floskeln.`;
 
-Antworte NUR im JSON-Format ohne weitere Erklärungen:
-{
-  "posts": [
-    {
-      "kanal": "Company Page" oder "LinkedIn Gruppe" oder "WhatsApp",
-      "tag": "Dienstag" oder "Mittwoch" oder "Donnerstag" oder "Freitag",
-      "uhrzeit": "10:00" oder "08:00",
-      "begruendung": "[1 Satz warum dieser Kanal für diesen Inhalt]",
-      "text": "[fertiger Post im richtigen Format für den Kanal]",
-      "grafikBriefing": "[kurze visuelle Beschreibung auf Deutsch]",
-      "canvaPrompt": "[detaillierter Bildprompt auf Englisch für Canva Magic Media: style, subject, mood, colors FemSurance Pink #E91E8C and purple, elements, text overlay max 8 words, format 1:1 square LinkedIn]"
-    }
-  ],
-  "geschichteDerWoche": "[2-3 Sätze wie die Posts zusammenhängen]"
-}
+const POST_JSON_PROMPT = `FemSurance Post-Generator. Erstelle aus der Outline 2-5 Posts auf passenden Kanälen.
 
-KANAL-REGELN:
-Company Page (Di oder Do · 10:00): 1.000-1.500 Zeichen, starker Hook, 3-5 Punkte mit →, Zitat, Reflexionsfrage, 5-7 Hashtags, professionell empowernd
-LinkedIn Gruppe (Mi oder Fr · 10:00): 600-800 Zeichen, bezieht sich auf Company Page, zeigt tiefere Wahrheit, endet IMMER mit offener Frage, persönlich ehrlich
-WhatsApp (Mi · 08:00): max. 250 Zeichen, kurz warm wie von einer Freundin, endet mit 🩷
+Antworte NUR als JSON:
+{"posts":[{"kanal":"Company Page|LinkedIn Gruppe|WhatsApp","tag":"Dienstag|Mittwoch|Donnerstag|Freitag","uhrzeit":"10:00|08:00","begruendung":"1 Satz","text":"fertiger Post","grafikBriefing":"visuell auf Deutsch","canvaPrompt":"Englisch, FemSurance Pink #E91E8C + Lila, 1:1 LinkedIn, max 8 Wörter Text-Overlay"}],"geschichteDerWoche":"2-3 Sätze"}
 
-ENTSCHEIDUNGSLOGIK:
-- Ist der Inhalt faktenreich? → Company Page
-- Gibt es eine kontroverse Perspektive? → LinkedIn Gruppe
-- Ist es ein kurzer Impuls oder eine Frage? → WhatsApp
-- Hat der Inhalt mehrere Aspekte? → mehrere Posts auf verschiedenen Kanälen
-- Nutze jeden Kanal max. 2x pro Outline
-- Minimum 2 Posts, Maximum 5 Posts
+KANÄLE:
+- Company Page (Di/Do 10:00): 1000-1500 Zeichen. Hook → 3-5 Punkte mit → → Zitat → Reflexionsfrage → 5-7 Hashtags. Thought Leadership + Daten.
+- Gruppe (Mi/Fr 10:00): 600-800 Zeichen. Persönlich, endet IMMER mit offener leicht beantwortbarer Frage ("Was war dein...?"). Diskussion anstoßen.
+- WhatsApp (Mi 08:00): Max 250 Zeichen. Warm wie Mentorin, endet mit 🩷
 
-CANVA PROMPT REGELN:
-- Immer auf Englisch
-- FemSurance Pink (#E91E8C) und Lila als Hauptfarben
-- Professionell, clean, modern, B2B
-- 1:1 Format für LinkedIn
-- Passend zum Post-Inhalt und Tonfall
-- Konkrete visuelle Elemente beschreiben
+LINKEDIN: Hook in Zeile 1-2 entscheidet. Zeilenumbrüche großzügig. Keine externen Links. Carousel 2-3x mehr Engagement.
 
-Direkte Du-Ansprache. Warm, klar, empowernd. Zitate nur aus dem Quellmaterial.`;
+FORMELN: Text=Hook→Problem→Punkte→Frage→CTA→Hashtags | Carousel=Hook-Slide→5 Punkte→CTA | Story=Situation→Konflikt→Wendepunkt→Erkenntnis | Listicle=Zahl→Punkte→Bonus | Meinung=These→Begründung→Gegenargument | Daten=Statistik→Kontext→Handlung
+
+REPURPOSING: Company Page=volle Story → Gruppe=persönliche Perspektive → WhatsApp=Kernsatz. Top-Posts nach 8-12 Wochen recyceln. Max 2x pro Kanal.
+
+QUALITÄT: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Konkrete Zahlen. Klar, spezifisch, emotional, barrierefrei? CTA niedrigschwellig. Du-Ansprache, warm, empowernd. Zitate nur aus Quellmaterial.`;
 
 
 
@@ -1015,6 +953,11 @@ function loadCards() {
 function saveCards() {
   localStorage.setItem('fem_pipeline_board', JSON.stringify(cards));
 }
+let _saveDebounce;
+function saveCardsDebounced() {
+  clearTimeout(_saveDebounce);
+  _saveDebounce = setTimeout(saveCards, 300);
+}
 
 let cards = loadCards();
 // Migrate old "review" column to "post"
@@ -1042,7 +985,7 @@ function importPipelineIdeas() {
     });
     localStorage.removeItem('fem_pipeline_ideas');
     saveCards();
-  } catch (e) {}
+  } catch (e) { console.warn('Daten-Ladefehler:', e.message); }
 }
 importPipelineIdeas();
 
@@ -1085,30 +1028,11 @@ async function fetchArticleText(url) {
       tmp.innerHTML = html;
       return (tmp.textContent || tmp.innerText || '').substring(0, 3000).trim();
     }
-  } catch {}
+  } catch(e) { console.error('Fehler:', e); }
   return null;
 }
 
 // ── Call Anthropic API ──
-function getStrategieContext() {
-  try {
-    const s = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
-    const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]');
-    const parts = [];
-    if (s.fokusThemen?.length) parts.push('Fokus-Themen: ' + s.fokusThemen.map(f => f.thema || f).filter(Boolean).join(' / '));
-    if (s.positionierung?.wirken) parts.push('Positionierung: ' + s.positionierung.wirken);
-    if (s.positionierung?.nichtWirken) parts.push('Nicht wirken: ' + s.positionierung.nichtWirken);
-    if (s.positionierung?.einzigartig) parts.push('Was macht uns einzigartig: ' + s.positionierung.einzigartig);
-    if (s.contentPrinzip?.prinzip) parts.push('Content-Prinzip: ' + s.contentPrinzip.prinzip);
-    if (s.contentPrinzip?.erfolgsformel) parts.push('Erfolgsformel: ' + s.contentPrinzip.erfolgsformel);
-    if (s.zielgruppe?.length) parts.push('Zielgruppe: ' + s.zielgruppe.filter(Boolean).join(' / '));
-    if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' · '));
-    if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
-    if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch {}
-  return '';
-}
-
 async function callAnthropic(systemPrompt, userPrompt, maxTokens) {
   const stratContext = getStrategieContext();
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1155,10 +1079,10 @@ async function generateOutline(cardId, btnEl) {
     }
     if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
     // Nicht posten
-    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
-    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text : x).join(', '); userPrompt += s; } } catch {}
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); userPrompt += s; } } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     // Strategie
-    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.positionierung?.nichtWirken) sp.push('Nicht wirken: ' + strat.positionierung.nichtWirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) userPrompt += '\n\n## FemSurance Strategie\n' + sp.join('\n'); } catch {}
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.positionierung?.nichtWirken) sp.push('Nicht wirken: ' + strat.positionierung.nichtWirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) userPrompt += '\n\n## FemSurance Strategie\n' + sp.join('\n'); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // Fetch article if URL provided
     if (card.url) {
@@ -1185,7 +1109,7 @@ async function generateOutline(cardId, btnEl) {
     const ta = document.createElement('textarea');
     ta.className = 'gen-textarea';
     ta.value = resultText;
-    ta.addEventListener('input', () => { card.outline = ta.value; saveCards(); });
+    ta.addEventListener('input', () => { card.outline = ta.value; saveCardsDebounced(); });
     genArea.appendChild(ta);
 
     // Save outline + move to Entwurf
@@ -1248,16 +1172,16 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
     }
     resultArea.innerHTML = `
       <div style="white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto;">${resultText}</div>
-      <button class="canva-prompt-copy" style="padding:5px 12px; border:1px solid var(--fem-pink); border-radius:4px; background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer;">📋 Kopieren</button>
+      <button class="canva-prompt-copy canva-copy-btn">📋 Kopieren</button>
     `;
     resultArea.querySelector('.canva-prompt-copy').addEventListener('click', e => {
       e.stopPropagation();
       navigator.clipboard.writeText(resultText).then(() => {
         const btn2 = resultArea.querySelector('.canva-prompt-copy');
         btn2.textContent = 'Kopiert ✓';
-        btn2.style.background = '#dcfce7';
-        btn2.style.color = '#16a34a';
-        btn2.style.borderColor = '#16a34a';
+        btn2.style.background = 'var(--color-success-bg)';
+        btn2.style.color = 'var(--color-success)';
+        btn2.style.borderColor = 'var(--color-success)';
         setTimeout(() => { btn2.textContent = '📋 Kopieren'; btn2.style.background = ''; btn2.style.color = ''; btn2.style.borderColor = ''; }, 2000);
       });
     });
@@ -1286,7 +1210,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
 
   try {
     let userPrompt = `Outline-Titel: ${card.title}\n\nOutline:\n${outlineText}`;
-    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     const resultText = await callAnthropic(POST_JSON_PROMPT, userPrompt, 4096);
 
     // Parse JSON — strip markdown fences if present
@@ -1340,24 +1264,10 @@ async function generatePostsFromOutline(cardId, btnEl) {
 }
 
 // ── Score Calculator ──
-const SCORE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Scorer. Bewerte diese Content-Idee auf einer Skala von 1-10.
+const SCORE_SYSTEM_PROMPT = `FemSurance Content-Scorer. Bewerte 1-10. Kriterien (je 0-2.5): 1.Trend-Stärke 2.Eigene Performance 3.Konkurrenz-Lücke (was bieten Wettbewerber NICHT?) 4.Ziel-Relevanz. Zusätzlich: Searchable/Shareable? JTBD? Psychologie-Hook? Qualität (Hook/Copywriting/CTA/Format-Fit je 1-10, Verbesserung wenn <6)?
 
-Analysiere:
-1. Trend-Stärke (0-2.5 Punkte): Ist das Thema aktuell trending?
-2. Eigene Performance (0-2.5 Punkte): Hat FemSurance mit ähnlichen Themen gut performt?
-3. Konkurrenz-Lücke (0-2.5 Punkte): Machen Wettbewerber das noch nicht?
-4. Ziel-Relevanz (0-2.5 Punkte): Passt es zu den FemSurance Fokus-Themen?
-
-Antworte NUR im JSON-Format:
-{
-  "score": 8,
-  "trend": { "punkte": 2, "begruendung": "Thema trending" },
-  "performance": { "punkte": 2.5, "begruendung": "Ähnliche Posts hatten gute Engagement" },
-  "luecke": { "punkte": 2, "begruendung": "Wettbewerber kaum aktiv" },
-  "relevanz": { "punkte": 1.5, "begruendung": "Passt zu Fokusthema" },
-  "empfehlung": "Diese Woche posten!",
-  "beste_plattform": "Company Page"
-}`;
+Antworte NUR als JSON:
+{"score":8,"trend":{"punkte":2,"begruendung":"..."},"performance":{"punkte":2.5,"begruendung":"..."},"luecke":{"punkte":2,"begruendung":"..."},"relevanz":{"punkte":1.5,"begruendung":"..."},"qualitaet":{"hook":8,"copywriting":7,"cta":9,"format_fit":8,"verbesserungen":["..."]},"empfehlung":"...","beste_plattform":"Company Page"}`;
 
 async function calculateScore(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
@@ -1374,20 +1284,20 @@ async function calculateScore(cardId, btnEl) {
     try {
       const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
       if (themes.length) context += `\nTrending-Themen: ${themes.slice(0, 5).map(t => t.thema).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
       const topPosts = Object.entries(perf).filter(([,v]) => v.impressions).slice(0, 5);
       if (topPosts.length) context += `\nBisherige Top-Posts: ${topPosts.map(([,v]) => `${v.impressions} Imp.`).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
       if (kd.accounts) context += `\nKonkurrenz: ${kd.accounts.filter(a => a.name).map(a => a.name).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
       if (strat.fokusThemen) context += `\nFokus-Themen: ${strat.fokusThemen.filter(Boolean).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     const result = await callAnthropic(SCORE_SYSTEM_PROMPT, context, 512);
     let jsonStr = result.trim();
@@ -1479,41 +1389,7 @@ function renderBoard() {
         ${cardStatus}
       `;
 
-      // Click card → open modal (all actions are inside the modal now)
-      el.addEventListener('click', e => {
-        if (e.target.closest('.pub-meta a')) return; // Allow link clicks
-        openCardModal(card.id);
-      });
-
-      // Drag events
-      el.addEventListener('dragstart', e => {
-        el.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', card.id);
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      el.addEventListener('dragend', () => el.classList.remove('dragging'));
       zone.appendChild(el);
-    });
-
-    // Drop zone events
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const cardId = parseInt(e.dataTransfer.getData('text/plain'));
-      const card = cards.find(c => c.id === cardId);
-      if (!card || card.col === col.id) return;
-      if (col.id === 'geplant') {
-        pendingCard = card;
-        pendingTargetCol = col.id;
-        document.getElementById('modalCardName').textContent = `„${card.title}" wird nach „Geplant" verschoben.`;
-        document.getElementById('scheduleModal').classList.add('open');
-      } else {
-        card.col = col.id;
-        saveCards();
-        renderBoard();
-      }
     });
 
     // "+ Neue Idee" button for Ideen column
@@ -1546,7 +1422,7 @@ function renderBoard() {
         });
         form.querySelector('.btn-create').addEventListener('click', () => {
           const title = form.querySelector('#newIdeaTitle').value.trim();
-          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = '#dc2626'; return; }
+          if (!title) { form.querySelector('#newIdeaTitle').style.borderColor = 'var(--color-danger)'; return; }
           const format = form.querySelector('#newIdeaFormat').value;
           const dateVal = form.querySelector('#newIdeaDate').value;
           const due = dateVal ? dateVal.split('-').reverse().join('.').slice(0,6) : '';
@@ -1571,6 +1447,72 @@ function renderBoard() {
     board.appendChild(colEl);
   });
 }
+
+// ── Delegated Board Events (set up once) ──
+(function setupBoardDelegation() {
+  const board = document.getElementById('kanbanBoard');
+  if (!board) return;
+
+  // Card click → open modal
+  board.addEventListener('click', e => {
+    if (e.target.closest('.pub-meta a')) return; // Allow link clicks
+    const cardEl = e.target.closest('.kanban-card');
+    if (!cardEl) return;
+    const cardId = parseInt(cardEl.dataset.id);
+    if (cardId) openCardModal(cardId);
+  });
+
+  // Drag start
+  board.addEventListener('dragstart', e => {
+    const cardEl = e.target.closest('.kanban-card');
+    if (!cardEl) return;
+    cardEl.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', cardEl.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  // Drag end
+  board.addEventListener('dragend', e => {
+    const cardEl = e.target.closest('.kanban-card');
+    if (cardEl) cardEl.classList.remove('dragging');
+  });
+
+  // Drop zone: dragover
+  board.addEventListener('dragover', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+
+  // Drop zone: dragleave
+  board.addEventListener('dragleave', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (zone) zone.classList.remove('drag-over');
+  });
+
+  // Drop zone: drop
+  board.addEventListener('drop', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const colId = zone.dataset.col;
+    const cardId = parseInt(e.dataTransfer.getData('text/plain'));
+    const card = cards.find(c => c.id === cardId);
+    if (!card || card.col === colId) return;
+    if (colId === 'geplant') {
+      pendingCard = card;
+      pendingTargetCol = colId;
+      document.getElementById('modalCardName').textContent = `„${card.title}" wird nach „Geplant" verschoben.`;
+      document.getElementById('scheduleModal').classList.add('open');
+    } else {
+      card.col = colId;
+      saveCards();
+      renderBoard();
+    }
+  });
+})();
 
 // ── Schedule Modal ──
 let pendingCard = null;
@@ -1699,7 +1641,7 @@ function openCardModal(cardId) {
   actionsDiv.innerHTML = '';
   if (card.col === 'ideen') {
     actionsDiv.innerHTML = `
-      <button class="btn-save-modal" id="cmScoreBtn" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">🎯 Score berechnen</button>
+      <button class="btn-save-modal btn-full-secondary" id="cmScoreBtn">🎯 Score berechnen</button>
       <button class="btn-save-modal" id="cmOutlineBtn" style="width:100%;">Entwurf generieren</button>
     `;
     document.getElementById('cmScoreBtn').addEventListener('click', () => {
@@ -1723,8 +1665,8 @@ function openCardModal(cardId) {
     });
   } else if (card.col === 'post') {
     let btns = '';
-    if (card.canvaPrompt) btns += `<button class="btn-save-modal" id="cmCopyCanva" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">📋 Canva-Prompt kopieren</button>`;
-    btns += `<button class="btn-save-modal" id="cmOpenCanva" style="width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border);">🎨 In Canva öffnen</button>`;
+    if (card.canvaPrompt) btns += `<button class="btn-save-modal btn-full-secondary" id="cmCopyCanva">📋 Canva-Prompt kopieren</button>`;
+    btns += `<button class="btn-save-modal btn-full-secondary" id="cmOpenCanva">🎨 In Canva öffnen</button>`;
     actionsDiv.innerHTML = btns;
     document.getElementById('cmCopyCanva')?.addEventListener('click', () => {
       navigator.clipboard.writeText(card.canvaPrompt);
@@ -1758,6 +1700,7 @@ function openCardModal(cardId) {
   }
 
   document.getElementById('cardModal').classList.add('open');
+  document.getElementById('cardModal').querySelector('input,textarea,select,button')?.focus();
 }
 
 document.getElementById('cmSave').addEventListener('click', () => {
@@ -1889,7 +1832,7 @@ document.getElementById('cmCanvaPromptCopy').addEventListener('click', () => {
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('cmCanvaPromptCopy');
     btn.textContent = 'Kopiert ✓';
-    btn.style.background = '#dcfce7'; btn.style.color = '#16a34a'; btn.style.borderColor = '#16a34a';
+    btn.style.background = 'var(--color-success-bg)'; btn.style.color = 'var(--color-success)'; btn.style.borderColor = 'var(--color-success)';
     setTimeout(() => { btn.textContent = '📋 Kopieren'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
   });
 });
@@ -2073,7 +2016,7 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
     btn.textContent = 'Post generieren';
     btn.disabled = false;
     status.textContent = 'Fehler: ' + err.message;
-    status.style.color = '#dc2626';
+    status.style.color = 'var(--color-danger)';
   }
 });
 

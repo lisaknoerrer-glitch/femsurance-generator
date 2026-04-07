@@ -7,89 +7,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
 <style>
-:root {
-  --fem-pink: #E91E8C;
-  --fem-pink-light: #fce4f0;
-  --fem-pink-mid: #f4afd4;
-  --fem-purple: #7C3AED;
-  --fem-purple-light: #EEEDFE;
-  --bg-page: #F8F9FA;
-  --bg-card: #ffffff;
-  --bg-secondary: #f1f3f5;
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b7280;
-  --border: rgba(0,0,0,0.08);
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --nav-bg: #1a1a2e;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-page);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
-.fade-up:nth-child(1) { animation-delay: 0.04s; }
-.fade-up:nth-child(2) { animation-delay: 0.10s; }
-.fade-up:nth-child(3) { animation-delay: 0.16s; }
-.fade-up:nth-child(4) { animation-delay: 0.22s; }
-
-/* ── Left Navigation ── */
-.nav-left {
-  position: fixed; top: 0; left: 0;
-  width: 62px; height: 100vh;
-  background: var(--nav-bg);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 16px 0; z-index: 100;
-}
-.nav-logo {
-  width: 34px; height: 34px; background: var(--fem-pink);
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 28px; font-weight: 700; font-size: 15px; color: #fff;
-}
-.nav-links {
-  display: flex; flex-direction: column; gap: 4px;
-  width: 100%; list-style: none;
-}
-.nav-links a {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 10px 0; color: rgba(255,255,255,0.5); text-decoration: none;
-  font-size: 9px; font-weight: 500; letter-spacing: 0.02em;
-  transition: color 0.2s, background 0.2s;
-  border-radius: var(--radius-sm); margin: 0 6px;
-}
-.nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
-.nav-links a.active { color: var(--fem-pink); }
-.nav-links svg { width: 20px; height: 20px; stroke-width: 1.8; fill: none; stroke: currentColor; }
-
 /* ── Main ── */
 .main { margin-left: 62px; padding: 28px 32px 40px; max-width: 1000px; }
 .page-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: var(--space-2xl);
 }
 .page-header h1 { font-size: 22px; font-weight: 700; }
 .page-header h1 em { font-style: normal; color: var(--fem-pink); }
-.header-meta { font-size: 13px; color: var(--text-secondary); }
+.header-meta { font-size: var(--text-md); color: var(--text-secondary); }
 
 .card {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); box-shadow: var(--shadow);
-  padding: 20px 22px; margin-bottom: 22px;
+  padding: 20px 22px; margin-bottom: 22px; transition: box-shadow 0.2s;
 }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .card-title {
-  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  font-size: var(--text-md); font-weight: 600; color: var(--text-secondary);
   text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px;
 }
 
@@ -101,10 +38,10 @@ body {
   color: #fff;
   margin-bottom: 22px;
 }
-.hero-label { font-size: 13px; font-weight: 500; opacity: 0.85; margin-bottom: 8px; }
+.hero-label { font-size: var(--text-md); font-weight: 500; opacity: 0.85; margin-bottom: var(--space-sm); }
 .hero-row {
   display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-lg);
 }
 .hero-value { font-size: 36px; font-weight: 700; line-height: 1; }
 .hero-target { font-size: 18px; font-weight: 600; opacity: 0.8; }
@@ -117,14 +54,14 @@ body {
   transition: width 1s ease;
 }
 .hero-diff {
-  font-size: 13px; opacity: 0.85; text-align: center;
+  font-size: var(--text-md); opacity: 0.85; text-align: center;
 }
 .hero-diff strong { font-weight: 700; }
 
 /* ── Competitor Table ── */
-.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.comp-table { width: 100%; border-collapse: collapse; font-size: var(--text-md); }
 .comp-table thead th {
-  text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600;
+  text-align: left; padding: 10px 12px; font-size: var(--text-sm); font-weight: 600;
   color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em;
   border-bottom: 2px solid var(--border);
 }
@@ -135,11 +72,11 @@ body {
 .comp-table tbody tr:hover { background: var(--bg-secondary); }
 .comp-table input {
   width: 100%; padding: 7px 10px; border: 1px solid var(--border);
-  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
   color: var(--text-primary); background: var(--bg-card);
   transition: border-color 0.2s;
 }
-.comp-table input:focus { outline: none; border-color: var(--fem-pink); }
+.comp-table input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .comp-table input[type="number"] { width: 100px; }
 .comp-bar-track {
   width: 100%; height: 6px; background: var(--bg-secondary);
@@ -155,74 +92,76 @@ body {
 .btn-add {
   padding: 8px 20px; border: 1px dashed var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
-  cursor: pointer; font-family: inherit; font-size: 13px;
+  cursor: pointer; font-family: inherit; font-size: var(--text-md);
   font-weight: 500; color: var(--text-secondary); transition: all 0.2s;
 }
 .btn-add:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
 .btn-remove {
   padding: 4px 10px; border: none; background: none;
-  cursor: pointer; font-size: 16px; color: var(--text-secondary);
+  cursor: pointer; font-size: var(--text-xl); color: var(--text-secondary);
   transition: color 0.2s; border-radius: var(--radius-sm);
 }
-.btn-remove:hover { color: #dc2626; background: #fef2f2; }
+.btn-remove:hover { color: var(--color-danger); background: var(--color-danger-bg); }
 
 /* Save indicator */
 .save-indicator {
-  font-size: 12px; color: #16a34a; font-weight: 500;
+  font-size: var(--text-base); color: var(--color-success); font-weight: 500;
   opacity: 0; transition: opacity 0.3s;
   margin-left: auto;
 }
 .save-indicator.show { opacity: 1; }
-/* -- Dark Mode -- */
-body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; --text-primary:#ffffff; --text-secondary:#a0a0c0; --border:rgba(255,255,255,0.08); --shadow:0 1px 3px rgba(0,0,0,0.3); --nav-bg:#0a0a15; }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
-.dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
-.dm-toggle:hover { border-color:var(--fem-pink); }
+/* -- Dark Mode (page-specific) -- */
+body.dark-mode .comp-highlight { background: rgba(233,30,140,0.15); }
+body.dark-mode .ca-result { background: rgba(124,58,237,0.15); }
 /* Content-Analyse */
 .comp-analyse { padding:14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin:8px 0; display:none; }
 .comp-analyse.open { display:block; }
-.ca-post { border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; margin-bottom:8px; background:var(--bg-card); }
-.ca-post textarea { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:12px; min-height:40px; resize:vertical; }
-.ca-post textarea:focus { outline:none; border-color:var(--fem-pink); }
-.ca-post select, .ca-post input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:11px; }
-.ca-post select:focus, .ca-post input:focus { outline:none; border-color:var(--fem-pink); }
+.ca-post { border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px; margin-bottom: var(--space-sm); background:var(--bg-card); }
+.ca-post textarea { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-base); min-height:40px; resize:vertical; }
+.ca-post textarea:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.ca-post select, .ca-post input { padding:4px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-sm); }
+.ca-post select:focus, .ca-post input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .ca-row { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; align-items:center; }
-.ca-btn { padding:5px 12px; border:1px dashed var(--border); border-radius:4px; background:none; cursor:pointer; font-family:inherit; font-size:11px; color:var(--text-secondary); }
+.ca-btn { padding:5px 12px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-sm); color:var(--text-secondary); }
 .ca-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
-.ca-btn-pink { padding:6px 14px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+.ca-btn-pink { padding:6px 14px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:var(--text-base); font-weight:600; cursor:pointer; }
 .ca-btn-pink:hover { opacity:0.9; }
 .ca-btn-pink:disabled { opacity:0.5; cursor:not-allowed; }
-.ca-profile { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
-.ca-profile-item { background:var(--bg-card); border-radius:4px; padding:8px; text-align:center; font-size:11px; }
-.ca-profile-item strong { display:block; color:var(--fem-pink); font-size:13px; }
-.ca-result { margin-top:10px; padding:12px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:12px; line-height:1.6; }
-.gap-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:13px; line-height:1.7; white-space:pre-wrap; }
-.gap-actions { display:flex; gap:8px; margin-top:12px; }
-.gap-btn { padding:8px 16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
+.ca-profile { display:grid; grid-template-columns:repeat(3,1fr); gap: var(--space-sm); margin-top:10px; }
+.ca-profile-item { background:var(--bg-card); border-radius:var(--radius-sm); padding:8px; text-align:center; font-size:var(--text-sm); }
+.ca-profile-item strong { display:block; color:var(--fem-pink); font-size:var(--text-md); }
+.ca-result { margin-top:10px; padding:12px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:var(--text-base); line-height:1.6; }
+.gap-output { margin-top:14px; padding:18px; background:var(--bg-secondary); border-radius:var(--radius-md); font-size:var(--text-md); line-height:1.7; white-space:pre-wrap; }
+.gap-actions { display:flex; gap: var(--space-sm); margin-top:12px; }
+.gap-btn { padding:8px 16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-family:inherit; font-size:var(--text-base); font-weight:600; color:var(--text-secondary); transition:all 0.2s; }
 .gap-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
-.gap-btn.success { background:#dcfce7; color:#16a34a; border-color:#16a34a; }
+.gap-btn.success { background:var(--color-success-bg); color:var(--color-success); border-color:var(--color-success); }
 
 /* Growth */
-.growth-account { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:8px; }
+.growth-account { padding:12px 14px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom: var(--space-sm); }
 .growth-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-.growth-name { font-weight:600; font-size:13px; }
-.growth-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
-.growth-pos { background:#dcfce7; color:#16a34a; }
-.growth-neg { background:#fef2f2; color:#dc2626; }
+.growth-name { font-weight:600; font-size:var(--text-md); }
+.growth-badge { display:inline-block; padding:2px 8px; border-radius:var(--radius-md); font-size:var(--text-sm); font-weight:600; }
+.growth-pos { background:var(--color-success-bg); color:var(--color-success); }
+.growth-neg { background:var(--color-danger-bg); color:var(--color-danger); }
 .growth-spark { width:120px; height:24px; }
 .growth-spark svg { width:100%; height:100%; }
 .growth-add { display:flex; gap:6px; margin-top:6px; }
-.growth-add input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; font-family:inherit; }
-.growth-add input:focus { outline:none; border-color:var(--fem-pink); }
-.growth-add button { padding:4px 12px; border:none; border-radius:4px; background:var(--fem-pink); color:#fff; font-size:11px; font-weight:600; cursor:pointer; }
+.growth-add input { padding:4px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:var(--text-base); font-family:inherit; }
+.growth-add input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
+.growth-add button { padding:4px 12px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-size:var(--text-sm); font-weight:600; cursor:pointer; }
+
+/* ── Extracted utility classes ── */
+.mt-10 { margin-top:10px; }
+
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
-<script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
+<script src="shared.js"></script>
 
 <!-- ══════════ Left Navigation ══════════ -->
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html">
@@ -288,25 +227,6 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </main>
 
 <script>
-function getStrategieContext() {
-  try {
-    const s = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
-    const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]');
-    const parts = [];
-    if (s.fokusThemen?.length) parts.push('Fokus-Themen: ' + s.fokusThemen.map(f => f.thema || f).filter(Boolean).join(' / '));
-    if (s.positionierung?.wirken) parts.push('Positionierung: ' + s.positionierung.wirken);
-    if (s.positionierung?.nichtWirken) parts.push('Nicht wirken: ' + s.positionierung.nichtWirken);
-    if (s.positionierung?.einzigartig) parts.push('Was macht uns einzigartig: ' + s.positionierung.einzigartig);
-    if (s.contentPrinzip?.prinzip) parts.push('Content-Prinzip: ' + s.contentPrinzip.prinzip);
-    if (s.contentPrinzip?.erfolgsformel) parts.push('Erfolgsformel: ' + s.contentPrinzip.erfolgsformel);
-    if (s.zielgruppe?.length) parts.push('Zielgruppe: ' + s.zielgruppe.filter(Boolean).join(' / '));
-    if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
-    if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
-    if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch {}
-  return '';
-}
-
 // ══════════ Shared data: { femFollower, goal, accounts } ══════════
 const STORAGE_KEY = 'fem_konkurrenz_data';
 const DEFAULTS = { femFollower: 1847, goal: 2500, gruppeMembers: 0, gruppePostsPerWeek: 0, whatsappMembers: 0, whatsappPostsPerWeek: 0, newsletterSubscribers: 0, newsletterGoal: 0 };
@@ -342,7 +262,7 @@ function loadData() {
         accounts: d.accounts || JSON.parse(JSON.stringify(defaultAccounts))
       };
     }
-  } catch (e) {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   return { ...DEFAULTS, accounts: JSON.parse(JSON.stringify(defaultAccounts)) };
 }
 
@@ -364,7 +284,7 @@ try {
     if (strat.ziele.newsletterGoal && parseInt(strat.ziele.newsletterGoal) > 0) { data.newsletterGoal = parseInt(strat.ziele.newsletterGoal); changed = true; }
     if (changed) saveData(data);
   }
-} catch {}
+} catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
 // ══════════ WACHSTUMS-VERGLEICH ══════════
 let growthData = JSON.parse(localStorage.getItem('fem_growth_history') || '{"accounts":[]}');
@@ -471,14 +391,14 @@ function renderGrowth() {
   }
 
   // Add account button
-  html += `<div id="growthAddForm" style="margin-top:10px;">
+  html += `<div id="growthAddForm" class="mt-10">
     <button class="btn-add" id="growthAddBtn" style="width:100%;">+ Account zum Wachstumsvergleich hinzufügen</button>
   </div>`;
 
   // Compare button
   if (growthData.accounts.length >= 2) {
     html += `<button class="ca-btn-pink" id="growthCompare" style="margin-top:12px; width:100%;">📊 Wachstum vergleichen</button>`;
-    html += `<div id="growthCompareChart" style="margin-top:10px;"></div>`;
+    html += `<div id="growthCompareChart" class="mt-10"></div>`;
   }
 
   container.innerHTML = html;
@@ -520,8 +440,8 @@ function renderGrowth() {
     form.innerHTML = `
       <div style="padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-top:8px;">
         <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
-          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:13px;">
+          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
+          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
         </div>
         <div style="display:flex; gap:8px;">
           <button class="ca-btn-pink" id="gaNewSave">Hinzufügen</button>
@@ -543,7 +463,7 @@ function renderGrowth() {
   // Compare chart
   document.getElementById('growthCompare')?.addEventListener('click', () => {
     const chart = document.getElementById('growthCompareChart');
-    const colors = ['#E91E8C', '#f4afd4', '#7C3AED', '#EEEDFE', '#06b6d4', '#f59e0b', '#16a34a', '#dc2626'];
+    const colors = ['#E91E8C', '#f4afd4', '#7C3AED', '#EEEDFE', 'var(--color-info)', '#f59e0b', 'var(--color-success)', 'var(--color-danger)'];
     let allVals = [];
     growthData.accounts.forEach(a => a.entries.forEach(e => allVals.push(e.followers)));
     if (!allVals.length) { chart.innerHTML = '<div style="color:var(--text-secondary); font-size:12px;">Noch keine Daten.</div>'; return; }
@@ -562,9 +482,7 @@ function renderGrowth() {
 }
 renderGrowth();
 
-// ═══════���══ CONTENT-ANALYSE PRO WETTBEWERBER ══════════
-const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
-
+// ═══════════ CONTENT-ANALYSE PRO WETTBEWERBER ══════════
 // Content-Analyse is now accessible via growth accounts
 
 function renderCompAnalyse(container, accName) {
@@ -603,14 +521,14 @@ function renderCompAnalyse(container, accName) {
         <div class="ca-profile-item"><strong>${topFmt}</strong>Häufigstes Format</div>
         <div class="ca-profile-item"><strong>Ø ${Math.round(reakSum/posts.length)}</strong>Reaktionen</div>
       </div>`;
-      html += `<button class="ca-btn-pink" id="caScan_${accName}" style="margin-top:10px;">🔬 Posts analysieren</button>`;
+      html += `<button class="ca-btn-pink mt-10" id="caScan_${accName}">🔬 Posts analysieren</button>`;
       html += `<div id="caResult_${accName}"></div>`;
     }
 
     // Show saved analysis
     if (accData.analyse) {
       const a = accData.analyse;
-      html += `<div class="ca-result" style="margin-top:10px;">
+      html += `<div class="ca-result mt-10">
         <strong>Erfolgsrezept:</strong> ${a.muster?.was_funktioniert || '–'}<br>
         <strong>Top-Post:</strong> ${a.top_post?.titel || '–'} — ${a.top_post?.warum_erfolgreich || ''}<br>
         <strong>FemSurance-Chance:</strong> ${a.femsurance_chance || '–'}
@@ -645,7 +563,7 @@ function renderCompAnalyse(container, accName) {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
           body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-            system: getStrategieContext() +'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
+            system: getStrategieContext() +'Analysiere diese Wettbewerber-Posts und extrahiere das Erfolgsrezept. Nutze das Competitor-Alternatives-Framework: Welchen Job to Be Done erfüllen die Posts? Was versprechen sie vs. was braucht die Zielgruppe wirklich? Wo ist die Lücke für FemSurance? Antworte NUR im JSON: {"account":"","muster":{"staerkster_hook":"","bestes_format":"","hauptthemen":[],"tonalitaet":"","was_funktioniert":"","was_fehlt":""},"top_post":{"titel":"","warum_erfolgreich":"","hook_typ":"","lerneffekt":""},"femsurance_chance":""}',
             messages:[{role:'user',content:`Account: ${accName}\nPosts:\n${posts.map(p=>`${p.text||'–'} (Hook:${p.hook||'–'}, Format:${p.format||'–'}, Reak:${p.reaktionen||0})`).join('\n')}`}]
           })
         });
@@ -684,7 +602,7 @@ function renderCompAnalyse(container, accName) {
 
 // ══════════ GAP-ANALYSE ══════════
 const gapSaved = localStorage.getItem('fem_gap_analyse_KW' + (Math.ceil(((new Date() - new Date(new Date().getFullYear(),0,1))/86400000+1)/7)));
-if (gapSaved) { try { const d = JSON.parse(gapSaved); document.getElementById('gapOutput').innerHTML = `<div class="gap-output">${d.text.replace(/\n/g,'<br>')}</div>`; document.getElementById('gapActions').style.display = 'flex'; if (d.savedAt) document.getElementById('gapTimestamp').textContent = 'Zuletzt: ' + new Date(d.savedAt).toLocaleDateString('de-DE'); } catch {} }
+if (gapSaved) { try { const d = JSON.parse(gapSaved); document.getElementById('gapOutput').innerHTML = `<div class="gap-output">${d.text.replace(/\n/g,'<br>')}</div>`; document.getElementById('gapActions').style.display = 'flex'; if (d.savedAt) document.getElementById('gapTimestamp').textContent = 'Zuletzt: ' + new Date(d.savedAt).toLocaleDateString('de-DE'); } catch(e) { console.warn('Daten-Ladefehler:', e.message); } }
 
 document.getElementById('gapBtn').addEventListener('click', async () => {
   const btn = document.getElementById('gapBtn');
@@ -699,16 +617,22 @@ document.getElementById('gapBtn').addEventListener('click', async () => {
       if (d.posts?.length) parts.push(`${name} Posts:\n` + d.posts.map(p=>p.text||'').filter(Boolean).join('\n'));
       if (d.analyse) parts.push(`${name} Analyse: ${d.analyse.muster?.was_funktioniert||''}, fehlt: ${d.analyse.muster?.was_fehlt||''}`);
     });
-    try { const perf = JSON.parse(localStorage.getItem('fem_post_performance')||'{}'); const top = Object.values(perf).filter(v=>v.impressions).slice(0,5); if(top.length) parts.push('Eigene Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch {}
-    try { const t = JSON.parse(localStorage.getItem('fem_research_themes')||'[]'); if(t.length) parts.push('Research-Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+    try { const perf = JSON.parse(localStorage.getItem('fem_post_performance')||'{}'); const top = Object.values(perf).filter(v=>v.impressions).slice(0,5); if(top.length) parts.push('Eigene Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const t = JSON.parse(localStorage.getItem('fem_research_themes')||'[]'); if(t.length) parts.push('Research-Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
-    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     const kwNum = Math.ceil(((new Date() - new Date(new Date().getFullYear(),0,1))/86400000+1)/7);
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
         system: getStrategieContext() +`Du bist der FemSurance Wettbewerbs-Analyst. Analysiere alle Wettbewerber-Daten und finde was NIEMAND macht.
+
+COMPETITOR-ALTERNATIVES FRAMEWORK:
+- Analysiere nicht nur WAS Wettbewerber posten, sondern welche JOBS TO BE DONE sie für ihre Zielgruppe erfüllen
+- Finde die Lücke zwischen dem was Wettbewerber versprechen und was die Zielgruppe wirklich braucht
+- Identifiziere "Underserved Jobs": Bedürfnisse die keine Wettbewerberin adressiert
+- Bewerte jede Lücke nach: Wie groß ist die Nachfrage? Wie einfach kann FemSurance sie füllen?
 
 Antworte in diesem Format:
 
