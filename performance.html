@@ -298,6 +298,32 @@ body.dark-mode .pp-badge-cp { background: rgba(233,30,140,0.2); }
 body.dark-mode .pp-badge-gr { background: rgba(124,58,237,0.2); }
 body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
 
+/* ── Extracted utility classes ── */
+.filter-btn-sm { padding:4px 10px; font-size:11px; }
+.mb-18 { margin-bottom:18px; }
+.mb-10 { margin-bottom:10px; }
+.mb-0 { margin-bottom:0; }
+.card-padded { padding:16px 18px; }
+.chart-sm { height:140px; }
+.meta-text { font-size:11px; color:var(--text-secondary); }
+.meta-text-center { font-size:11px; color:var(--text-secondary); margin-top:6px; text-align:center; }
+.stat-value-lg { font-size:24px; font-weight:700; color:var(--fem-pink); }
+.stat-value-md { font-size:18px; font-weight:700; }
+.section-label { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+.section-label-pink { font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:16px 0 8px; }
+.section-label-pink-sm { font-size:10px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin:12px 0 6px; }
+.stat-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px; }
+.text-right { text-align:right; }
+.card-title-xs { font-size:10px; }
+.flex-row-center { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.select-input { padding:6px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.overflow-x { overflow-x:auto; }
+.reichweite-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+.reichweite-col-left { padding:0 20px 0 0; }
+.reichweite-col-mid { padding:0 20px; border-left:1px solid var(--border); border-right:1px solid var(--border); }
+.reichweite-col-right { padding:0 0 0 20px; }
+.stat-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .schedule-grid, .kpi-grid, .report-summary { grid-template-columns: 1fr 1fr; }
@@ -498,9 +524,9 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
     <div class="card" style="padding:16px 18px;">
       <div class="card-title" style="font-size:10px;">Follower · Company Page</div>
       <div class="filter-bar" id="chartFilter" style="margin-bottom:10px;">
-        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
-        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
-        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+        <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
+        <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
+        <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
       <div class="chart-container" style="height:140px;">
         <svg id="followerChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
@@ -510,9 +536,9 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
     <div class="card" style="padding:16px 18px;">
       <div class="card-title" style="font-size:10px;">Mitglieder · LinkedIn Gruppe</div>
       <div class="filter-bar" id="chartFilterGruppe" style="margin-bottom:10px;">
-        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
-        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
-        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+        <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
+        <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
+        <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
       <div class="chart-container" style="height:140px;">
         <svg id="gruppeChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
@@ -522,9 +548,9 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
     <div class="card" style="padding:16px 18px;">
       <div class="card-title" style="font-size:10px;">Mitglieder · WhatsApp Community</div>
       <div class="filter-bar" id="chartFilterWhatsapp" style="margin-bottom:10px;">
-        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
-        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
-        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+        <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
+        <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
+        <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
       <div class="chart-container" style="height:140px;">
         <svg id="whatsappChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
@@ -534,9 +560,9 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
     <div class="card" style="padding:16px 18px;">
       <div class="card-title" style="font-size:10px;">Abonnenten · Newsletter</div>
       <div class="filter-bar" id="chartFilterNewsletter" style="margin-bottom:10px;">
-        <button class="filter-btn" data-days="7" style="padding:4px 10px; font-size:11px;">7T</button>
-        <button class="filter-btn" data-days="30" style="padding:4px 10px; font-size:11px;">30T</button>
-        <button class="filter-btn active" data-days="90" style="padding:4px 10px; font-size:11px;">90T</button>
+        <button class="filter-btn filter-btn-sm" data-days="7">7T</button>
+        <button class="filter-btn filter-btn-sm" data-days="30">30T</button>
+        <button class="filter-btn filter-btn-sm active" data-days="90">90T</button>
       </div>
       <div class="chart-container" style="height:140px;">
         <svg id="newsletterChart" viewBox="0 0 300 140" preserveAspectRatio="none"></svg>
