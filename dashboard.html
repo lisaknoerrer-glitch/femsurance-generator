@@ -478,6 +478,26 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 body.dark-mode .sidebar-right { background:var(--bg-card); }
 .dm-toggle { position:fixed; top:12px; right:284px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
 .dm-toggle:hover { border-color:var(--fem-pink); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .main { margin-right: 0; }
+  .sidebar-right { display: none; }
+  .stats-row, .kanal-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-left { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 52px; flex-direction: row; justify-content: space-around; padding: 0 8px; z-index: 200; }
+  .nav-logo { margin-bottom: 0; width: 28px; height: 28px; font-size: 12px; }
+  .nav-left a { margin-bottom: 0; font-size: 16px; }
+  .main { margin-left: 0; padding: 16px 12px 68px; }
+  .stats-row, .kanal-row { grid-template-columns: 1fr; }
+  .pipeline-kanban { grid-template-columns: repeat(3, 1fr); }
+  .dm-toggle { top: 8px; right: 8px; }
+}
+@media (max-width: 480px) {
+  .pipeline-kanban { grid-template-columns: 1fr 1fr; }
+  .main { padding: 12px 8px 68px; }
+}
 </style>
 </head>
 <body>
@@ -918,7 +938,7 @@ function getStrategieContext() {
     if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
     if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
     if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   return '';
 }
 
@@ -997,7 +1017,7 @@ function getStrategieContext() {
       document.getElementById('dashGruppePpw').textContent = grCount;
       document.getElementById('dashWhatsappPpw').textContent = waCount;
     }
-  } catch (e) {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
   // Konkurrenz data
   try {
@@ -1043,7 +1063,7 @@ function getStrategieContext() {
     const ns = parseInt(kd.newsletterSubscribers) || 0;
     const ng = parseInt(kd.newsletterGoal) || 0;
     updateGoalBlock(ns, ng, 'dashNewsletterCount', 'dashNewsletterCurrent', 'dashNewsletterGoalVal', 'dashNewsletterBar', 'dashNewsletterDiff', 'Abonnenten');
-  } catch (e) {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   // ══════════ AKTIVITÄTS-FEED ══════════
   function relTime(dateStr) {
     if (!dateStr) return '';
@@ -1084,7 +1104,7 @@ function getStrategieContext() {
           sort: Date.now() - 200 - Math.random() * 100000
         });
       });
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // 2. Saved weekly plans
     try {
@@ -1102,7 +1122,7 @@ function getStrategieContext() {
           }
         }
       }
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // 3. Follower update
     try {
@@ -1116,7 +1136,7 @@ function getStrategieContext() {
           sort: Date.now() - 500000
         });
       }
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // 4. Performance history
     try {
@@ -1130,7 +1150,7 @@ function getStrategieContext() {
           sort: h.savedAt ? new Date(h.savedAt).getTime() : Date.now() - 600000
         });
       });
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // Sort newest first, limit 15
     events.sort((a, b) => b.sort - a.sort);
@@ -1154,7 +1174,12 @@ function getStrategieContext() {
   buildFeed();
 
   // ══════════ INSIGHT ENGINE ══════════
-  const INSIGHT_API_KEY = 'DEIN_API_KEY_HIER';
+  function getApiKey() {
+    const k = localStorage.getItem('fs_api_key');
+    if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
+    return k;
+  }
+  const INSIGHT_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
   const currentKW = kw;
 
   // Collapse toggle
@@ -1230,7 +1255,7 @@ function getStrategieContext() {
           parts.push(`## Kanäle\nFollower: ${kdRaw.femFollower || '–'}, Ziel: ${kdRaw.goal || '–'}, Gruppe: ${kdRaw.gruppeMembers || '–'}, WhatsApp: ${kdRaw.whatsappMembers || '–'}, Newsletter: ${kdRaw.newsletterSubscribers || '–'}`);
           if (kdRaw.accounts) parts.push('Konkurrenz: ' + kdRaw.accounts.filter(a => a.name).map(a => `${a.name}: ${a.followers || '–'} Follower`).join(', '));
         }
-      } catch {}
+      } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
       const lernstand = localStorage.getItem('fem_lernstand');
       if (lernstand) parts.push('## Lernstand\n' + lernstand.slice(0, 500));
@@ -1238,7 +1263,7 @@ function getStrategieContext() {
       try {
         const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
         if (themes.length) parts.push('## Aktuelle Themen\n' + themes.slice(0, 5).map(t => t.thema).join(', '));
-      } catch {}
+      } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -1351,10 +1376,10 @@ Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt
           return `${c.title} (${c.format || '–'}) · Imp: ${p.impressions||'–'}, Eng: ${p.reaktionen||0}+${p.kommentare||0}`;
         }).join('\n'));
       }
-      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
-      try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+      try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
-      try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+      try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST', headers:{'Content-Type':'application/json','x-api-key':INSIGHT_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -1414,7 +1439,7 @@ Sei ehrlich und direkt. Keine generischen Aussagen.`,
     document.getElementById('dnaBody').classList.toggle('collapsed');
   });
   const savedDNA = localStorage.getItem('fem_content_dna');
-  if (savedDNA) { try { const d = JSON.parse(savedDNA); showDNA(d.text, d.savedAt); } catch {} }
+  if (savedDNA) { try { const d = JSON.parse(savedDNA); showDNA(d.text, d.savedAt); } catch(e) { console.warn('Daten-Ladefehler:', e.message); } }
 
   function showDNA(text, savedAt) {
     document.getElementById('dnaOutput').innerHTML = `<div class="insight-output">${text.replace(/\n/g, '<br>')}</div>`;
@@ -1436,7 +1461,7 @@ Sei ehrlich und direkt. Keine generischen Aussagen.`,
         return engB - engA;
       }).slice(0, 10);
       if (topPosts.length) parts.push('## Top 10 Posts\n' + topPosts.map(([,v]) => `Imp: ${v.impressions}, Reak: ${v.reaktionen||0}, Komm: ${v.kommentare||0}`).join('\n'));
-      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch {}
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
       const ls = localStorage.getItem('fem_lernstand'); if (ls) parts.push('Lernstand: ' + ls.slice(0, 300));
       const hp = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
       if (Object.keys(hp).length) parts.push('Hook-Performance: ' + Object.entries(hp).map(([t,d]) => `${t}: Ø ${(d.total/d.count).toFixed(1)}% (${d.count}x)`).join(', '));

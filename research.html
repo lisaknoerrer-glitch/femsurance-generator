@@ -255,6 +255,16 @@ body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; -
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
 .dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
 .dm-toggle:hover { border-color:var(--fem-pink); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .nav-left { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 52px; flex-direction: row; justify-content: space-around; padding: 0 8px; z-index: 200; }
+  .nav-logo { margin-bottom: 0; width: 28px; height: 28px; font-size: 12px; }
+  .nav-left a { margin-bottom: 0; font-size: 16px; }
+  .main { margin-left: 0; padding: 16px 12px 68px; }
+  .hook-grid { grid-template-columns: 1fr; }
+  .dm-toggle { top: 8px; right: 8px; }
+}
 </style>
 </head>
 <body>
@@ -442,7 +452,7 @@ function getStrategieContext() {
     if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' \u00b7 '));
     if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
     if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   return '';
 }
 
@@ -553,7 +563,7 @@ function renderPerfSuggestions() {
     if (topPosts.length) {
       container.innerHTML = `<div class="perf-suggest"><strong>Basierend auf deiner Performance:</strong><br>${topPosts.slice(0, 3).map(p => `📈 „${p.titel}" — ${p.eng.toFixed(1)}% Engagement`).join('<br>')}</div>`;
     }
-  } catch {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 }
 renderPerfSuggestions();
 renderThemes();
@@ -695,7 +705,12 @@ document.getElementById('outlineResults').addEventListener('click', e => {
 });
 
 // ══════════ KI-EMPFEHLUNGEN ══════════
-const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+function getApiKey() {
+  const k = localStorage.getItem('fs_api_key');
+  if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
+  return k;
+}
+const ANTHROPIC_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
 
 const KI_SYSTEM_PROMPT = `Du bist der FemSurance Research-Assistent. Du analysierst die Performance-Daten und den Lernstand und gibst konkrete Empfehlungen was als nächstes getestet werden sollte.
 
@@ -801,8 +816,8 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     if (topPosts.length) {
       parts.push('## Top-Post Performance\n' + topPosts.map(([,v]) => `Impressions: ${v.impressions}, Eng: ${v.reaktionen || 0}+${v.kommentare || 0}, Klicks: ${v.klicks || 0}`).join('\n'));
     }
-    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch {}
-    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch {}
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1009,8 +1024,8 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
 
     // Score via API
     const context = [];
-    try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) context.push('Trending: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch {}
-    try { const p = JSON.parse(localStorage.getItem('fem_post_performance') || '{}'); const top = Object.values(p).filter(v=>v.impressions).slice(0,3); if (top.length) context.push('Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch {}
+    try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) context.push('Trending: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const p = JSON.parse(localStorage.getItem('fem_post_performance') || '{}'); const top = Object.values(p).filter(v=>v.impressions).slice(0,3); if (top.length) context.push('Top-Posts: ' + top.map(v=>v.impressions+' Imp.').join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},

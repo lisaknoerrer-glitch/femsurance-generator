@@ -607,6 +607,24 @@ body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; -
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
 .dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
 .dm-toggle:hover { border-color:var(--fem-pink); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .kanban-board { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .nav-left { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 52px; flex-direction: row; justify-content: space-around; padding: 0 8px; z-index: 200; }
+  .nav-logo { margin-bottom: 0; width: 28px; height: 28px; font-size: 12px; }
+  .nav-left a { margin-bottom: 0; font-size: 16px; }
+  .main { margin-left: 0; padding: 16px 12px 68px; }
+  .kanban-board { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card-modal { width: 95vw; max-height: 90vh; padding: 18px 16px; }
+  .dm-toggle { top: 8px; right: 8px; }
+}
+@media (max-width: 480px) {
+  .kanban-board { grid-template-columns: 1fr; }
+  .main { padding: 12px 8px 68px; }
+}
 </style>
 </head>
 <body>
@@ -906,7 +924,12 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 
 <script>
 // ── Config ──
-const ANTHROPIC_API_KEY = 'DEIN_API_KEY_HIER';
+function getApiKey() {
+  const k = localStorage.getItem('fs_api_key');
+  if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
+  return k;
+}
+const ANTHROPIC_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
 function friendlyError(err) {
   const msg = err.message || String(err);
   if (msg.includes('401')) return 'API-Schlüssel ungültig. Bitte in pipeline.html prüfen.';
@@ -1087,6 +1110,11 @@ function loadCards() {
 function saveCards() {
   localStorage.setItem('fem_pipeline_board', JSON.stringify(cards));
 }
+let _saveDebounce;
+function saveCardsDebounced() {
+  clearTimeout(_saveDebounce);
+  _saveDebounce = setTimeout(saveCards, 300);
+}
 
 let cards = loadCards();
 // Migrate old "review" column to "post"
@@ -1114,7 +1142,7 @@ function importPipelineIdeas() {
     });
     localStorage.removeItem('fem_pipeline_ideas');
     saveCards();
-  } catch (e) {}
+  } catch (e) { console.warn('Daten-Ladefehler:', e.message); }
 }
 importPipelineIdeas();
 
@@ -1157,7 +1185,7 @@ async function fetchArticleText(url) {
       tmp.innerHTML = html;
       return (tmp.textContent || tmp.innerText || '').substring(0, 3000).trim();
     }
-  } catch {}
+  } catch(e) { console.error('Fehler:', e); }
   return null;
 }
 
@@ -1177,7 +1205,7 @@ function getStrategieContext() {
     if (s.brandVoice?.badges?.length) parts.push('Brand Voice: ' + s.brandVoice.badges.join(' · '));
     if (np.filter(Boolean).length) parts.push('Diese Woche nicht posten: ' + np.filter(Boolean).join(' / '));
     if (parts.length) return '## FemSurance Strategie\n' + parts.join('\n') + '\n\nHalte dich strikt an diese Strategie bei allen generierten Inhalten.\n\n';
-  } catch {}
+  } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   return '';
 }
 
@@ -1227,10 +1255,10 @@ async function generateOutline(cardId, btnEl) {
     }
     if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
     // Nicht posten
-    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
-    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text : x).join(', '); userPrompt += s; } } catch {}
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text : x).join(', '); userPrompt += s; } } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     // Strategie
-    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.positionierung?.nichtWirken) sp.push('Nicht wirken: ' + strat.positionierung.nichtWirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) userPrompt += '\n\n## FemSurance Strategie\n' + sp.join('\n'); } catch {}
+    try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.positionierung?.nichtWirken) sp.push('Nicht wirken: ' + strat.positionierung.nichtWirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) userPrompt += '\n\n## FemSurance Strategie\n' + sp.join('\n'); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     // Fetch article if URL provided
     if (card.url) {
@@ -1257,7 +1285,7 @@ async function generateOutline(cardId, btnEl) {
     const ta = document.createElement('textarea');
     ta.className = 'gen-textarea';
     ta.value = resultText;
-    ta.addEventListener('input', () => { card.outline = ta.value; saveCards(); });
+    ta.addEventListener('input', () => { card.outline = ta.value; saveCardsDebounced(); });
     genArea.appendChild(ta);
 
     // Save outline + move to Entwurf
@@ -1358,7 +1386,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
 
   try {
     let userPrompt = `Outline-Titel: ${card.title}\n\nOutline:\n${outlineText}`;
-    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch {}
+    try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     const resultText = await callAnthropic(POST_JSON_PROMPT, userPrompt, 4096);
 
     // Parse JSON — strip markdown fences if present
@@ -1460,20 +1488,20 @@ async function calculateScore(cardId, btnEl) {
     try {
       const themes = JSON.parse(localStorage.getItem('fem_research_themes') || '[]');
       if (themes.length) context += `\nTrending-Themen: ${themes.slice(0, 5).map(t => t.thema).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
       const topPosts = Object.entries(perf).filter(([,v]) => v.impressions).slice(0, 5);
       if (topPosts.length) context += `\nBisherige Top-Posts: ${topPosts.map(([,v]) => `${v.impressions} Imp.`).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const kd = JSON.parse(localStorage.getItem('fem_konkurrenz_data') || '{}');
       if (kd.accounts) context += `\nKonkurrenz: ${kd.accounts.filter(a => a.name).map(a => a.name).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     try {
       const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}');
       if (strat.fokusThemen) context += `\nFokus-Themen: ${strat.fokusThemen.filter(Boolean).join(', ')}`;
-    } catch {}
+    } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
     const result = await callAnthropic(SCORE_SYSTEM_PROMPT, context, 512);
     let jsonStr = result.trim();

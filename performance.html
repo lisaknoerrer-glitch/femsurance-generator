@@ -351,6 +351,23 @@ body.dark-mode { --bg-page:#0f0f1a; --bg-card:#1a1a2e; --bg-secondary:#252540; -
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background:var(--bg-secondary); color:var(--text-primary); border-color:var(--border); }
 .dm-toggle { position:fixed; top:12px; right:12px; z-index:110; width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:var(--bg-card); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:all 0.2s; }
 .dm-toggle:hover { border-color:var(--fem-pink); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .schedule-grid, .kpi-grid, .report-summary { grid-template-columns: 1fr 1fr; }
+  .kpi-ss-grid, .kpi-history { grid-template-columns: repeat(3, 1fr); }
+  .analyse-grid, .report-kanal { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-left { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 52px; flex-direction: row; justify-content: space-around; padding: 0 8px; z-index: 200; }
+  .nav-logo { margin-bottom: 0; width: 28px; height: 28px; font-size: 12px; }
+  .nav-left a { margin-bottom: 0; font-size: 16px; }
+  .main { margin-left: 0; padding: 16px 12px 68px; }
+  .schedule-grid, .kpi-grid, .report-summary, .report-kanal, .analyse-grid { grid-template-columns: 1fr; }
+  .kpi-ss-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-history { grid-template-columns: 1fr 1fr; }
+  .dm-toggle { top: 8px; right: 8px; }
+}
 </style>
 </head>
 <body>
@@ -1253,7 +1270,7 @@ function renderThemenwelten() {
   const cards = JSON.parse(localStorage.getItem('fem_pipeline_board') || '[]');
   const published = cards.filter(c => c.col === 'publish' && !c.archivedOutline);
   const perf = JSON.parse(localStorage.getItem('fem_post_performance') || '{}');
-  const clusters = JSON.parse(localStorage.getItem('fem_post_clusters') || '{}');
+  // clusters removed — data comes from card.themenwelt directly
   const WELTEN = ['Business & Vertrieb', 'Marketing & Sichtbarkeit', 'Fachliche Weiterbildung', 'Persönlichkeitsentwicklung'];
   const ICONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
   const data = {};
@@ -1263,7 +1280,7 @@ function renderThemenwelten() {
     const imp = parseFloat(p.impressions) || 0;
     const r = parseFloat(p.reaktionen)||0, k = parseFloat(p.kommentare)||0, s = parseFloat(p.shares)||0;
     const eng = imp > 0 ? (r+k+s)/imp*100 : 0;
-    let tw = c.themenwelt || clusters[c.id] || '';
+    let tw = c.themenwelt || '';
     if (tw === 'Alle 4' || !WELTEN.includes(tw)) return;
     const d = data[tw]; d.posts++;
     if (eng > 0) { d.engSum += eng; d.engCount++; }
@@ -1324,10 +1341,15 @@ try {
   }
   updateBlock(gm, gg, 'perfGruppeVal', 'perfGruppeGoalVal', 'perfGruppeFill', 'perfGruppeDiff', 'Mitglieder');
   updateBlock(wm, wg, 'perfWhatsappVal', 'perfWhatsappGoalVal', 'perfWhatsappFill', 'perfWhatsappDiff', 'Mitglieder');
-} catch (e) {}
+} catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
 // ══════════ KPI CENTER ══════════
-const PERF_API_KEY = typeof ANTHROPIC_API_KEY !== 'undefined' ? ANTHROPIC_API_KEY : 'DEIN_API_KEY_HIER';
+function getApiKey() {
+  const k = localStorage.getItem('fs_api_key');
+  if (!k || k === 'DEIN_API_KEY_HIER') { alert('Bitte zuerst den API-Key auf der Startseite (index.html) eingeben.'); return null; }
+  return k;
+}
+const PERF_API_KEY = localStorage.getItem('fs_api_key') || 'DEIN_API_KEY_HIER';
 
 // Toggle
 document.getElementById('kpiToggle').addEventListener('click', () => {
