@@ -7,12 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --pink: #E8197A; --pink-light: #fde8f3; --pink-mid: #f5a0cc;
+    --fem-pink: #E91E8C; --fem-pink-light: #fce4f0; --fem-pink-mid: #f4afd4;
     --pink-dark: #b81160; --pink-deep: #8a0d48;
-    --purple: #6B3FA0; --purple-dark: #4a2570;
-    --text: #1a1a1a; --text-secondary: #6b6b6b; --text-tertiary: #9a9a9a;
-    --bg: #fdfcfb; --bg-surface: #f9f5f3;
-    --border: rgba(0,0,0,0.1); --border-light: rgba(0,0,0,0.06);
+    --fem-purple: #7C3AED; --fem-purple-light: #EEEDFE; --purple-dark: #4a2570;
+    --text-primary: #1a1a2e; --text-secondary: #6b7280; --text-tertiary: #9a9a9a;
+    --bg-page: #F8F9FA; --bg-card: #ffffff; --bg-secondary: #f1f3f5; --bg-surface: #f9f5f3;
+    --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
@@ -72,7 +74,7 @@
   .primary-btn { width: 100%; padding: 15px; font-family: 'DM Serif Display', serif; font-size: 18px; background: linear-gradient(135deg, var(--pink), var(--purple)); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-top: 1.5rem; }
   .primary-btn:hover { background: linear-gradient(135deg, var(--pink-dark), var(--purple-dark)); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,25,122,0.28); }
   .primary-btn:active { transform: translateY(0); }
-  .primary-btn:disabled { background: #ddd; color: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+  .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
  
   .loading-bar { height: 2px; background: var(--border-light); border-radius: 2px; margin-bottom: 1rem; overflow: hidden; display: none; }
   .loading-bar.active { display: block; }
