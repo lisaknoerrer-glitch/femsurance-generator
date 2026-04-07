@@ -991,6 +991,22 @@ SOCIAL-CONTENT-REGELN:
 - Company Page: Thought Leadership + Daten. Gruppe: Persönliche Geschichten + Diskussion. WhatsApp: Schnelle Impulse.
 - Carousel-Posts (Document Posts) performen auf LinkedIn 2-3x besser für Engagement
 
+POST-FORMELN JE FORMAT:
+- Text-Post (Standard): Hook → Problem → Perspektivwechsel → 3-5 Punkte → Reflexionsfrage → CTA → Hashtags
+- Carousel/Document: Slide 1 = Hook-Frage, Slide 2-6 = je 1 Punkt mit Beispiel, letzte Slide = CTA + Zusammenfassung. Max 8 Slides.
+- Story-Post: Situation → Konflikt → Wendepunkt → Erkenntnis → Lesson learned → Frage an Community
+- Listicle: Zahl im Hook → durchnummerierte Punkte (je 1-2 Sätze) → Bonus-Tipp → "Welcher Punkt war für dich neu?"
+- Meinungs-Post: Kontroverse These → Begründung mit Erfahrung → Gegenargument entkräften → "Sehe ich das falsch?"
+- Daten-Post: Überraschende Statistik → Kontext → Was das für die Branche bedeutet → Handlungsempfehlung
+
+REPURPOSING-STRATEGIE:
+- Jeder Inhalt sollte über mehrere Kanäle adaptiert werden — nicht kopiert, sondern neu gedacht:
+  → Company Page: Die komplette Analyse/Story mit allen Details
+  → LinkedIn Gruppe: Die persönliche Perspektive oder kontroverse Frage daraus
+  → WhatsApp: Der eine Kernsatz der hängen bleibt
+- Aus einem starken Company Page Post können werden: 1 Gruppen-Diskussion + 1 WhatsApp-Impuls + 1 Carousel mit den Kernpunkten
+- Aus Performance-Daten: Top-Posts recyceln nach 8-12 Wochen mit neuem Hook
+
 COMMUNITY-MARKETING:
 - Jeder Gruppen-Post sollte eine echte Diskussion anstoßen, nicht nur informieren
 - Stelle offene Fragen die leicht zu beantworten sind ("Was war dein...?" statt "Was denkst du über...?")
@@ -1410,6 +1426,13 @@ Zusätzlich bewerte:
 - Gibt es ein psychologisches Muster (Loss Aversion, Social Proof, Curiosity Gap) das den Inhalt verstärkt?
 - Copy-Editing Quick-Check: Ist der Text klar, spezifisch, emotional und barrierefrei?
 
+POST-QUALITÄTSPRÜFUNG (bei fertigen Posts zusätzlich bewerten):
+- Hook-Stärke (1-10): Stoppt der erste Satz den Scroll?
+- Copywriting-Score (1-10): Klarheit, Spezifität, aktive Sprache, ein Gedanke?
+- CTA-Qualität (1-10): Gibt es eine klare, niedrigschwellige Handlungsaufforderung?
+- Format-Fit (1-10): Passt die Post-Formel zum Inhalt? (Text/Carousel/Story/Listicle/Meinung/Daten)
+- Wenn ein Post unter 6 bei einem Check liegt, schlage eine konkrete Verbesserung vor.
+
 Antworte NUR im JSON-Format:
 {
   "score": 8,
@@ -1417,6 +1440,7 @@ Antworte NUR im JSON-Format:
   "performance": { "punkte": 2.5, "begruendung": "Ähnliche Posts hatten gute Engagement" },
   "luecke": { "punkte": 2, "begruendung": "Wettbewerber kaum aktiv" },
   "relevanz": { "punkte": 1.5, "begruendung": "Passt zu Fokusthema" },
+  "qualitaet": { "hook": 8, "copywriting": 7, "cta": 9, "format_fit": 8, "verbesserungen": ["Konkreter Vorschlag falls nötig"] },
   "empfehlung": "Diese Woche posten!",
   "beste_plattform": "Company Page"
 }`;
