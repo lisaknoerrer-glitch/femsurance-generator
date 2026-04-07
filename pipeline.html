@@ -628,11 +628,11 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
 <script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html">
@@ -941,134 +941,35 @@ function friendlyError(err) {
   return msg;
 }
 
-const OUTLINE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Ideen-Generator. Erstelle aus dem Referenzmaterial strukturierte Social-Media-Post-Outlines im FemSurance-Stil. Zielgruppe: Frauen in der Versicherungs- und Finanzbranche.
+const OUTLINE_SYSTEM_PROMPT = `FemSurance Content-Ideen-Generator. Zielgruppe: Frauen in der Versicherungs-/Finanzbranche.
 
-Themenwelten:
-1. Business & Vertrieb - klar, lösungsorientiert, strategisch
-2. Marketing & Sichtbarkeit - inspirierend, mutig, menschlich
-3. Fachliche Weiterbildung - ruhig, vertrauensvoll, sachlich
-4. Persönlichkeitsentwicklung - reflektiert, warm, emotional
+Themenwelten: 1.Business&Vertrieb (klar,strategisch) 2.Marketing&Sichtbarkeit (inspirierend,mutig) 3.Fachliche Weiterbildung (sachlich,vertrauensvoll) 4.Persönlichkeitsentwicklung (warm,emotional)
 
-CONTENT-STRATEGIE:
-- Unterscheide zwischen "Searchable Content" (löst ein konkretes Problem, wird gesucht) und "Shareable Content" (überrascht, inspiriert, wird geteilt). Jede Outline sollte klar einem Typ zugeordnet sein.
-- Nutze das "Jobs to Be Done"-Framework: Welchen konkreten Job erledigt dieser Content für die Leserin? (z.B. "Hilft mir, mich im Meeting sichtbar zu machen")
-- Denke in Content-Serien: Kann dieses Thema in eine wiederkehrende Rubrik passen?
+STRATEGIE: Jede Outline als Searchable (löst Problem) oder Shareable (überrascht) kennzeichnen. JTBD: Welchen Job erledigt der Content? Content-Serien denken.
+COPYWRITING: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Spezifisch ("25% mehr" statt "mehr Erfolg").
+HOOKS: Loss Aversion | Social Proof | Curiosity Gap | Pattern Interrupt
 
-COPYWRITING-PRINZIPIEN:
-- Klarheit schlägt Cleverness. Jeder Satz muss sofort verstanden werden.
-- Benefits vor Features: Was hat die Leserin davon? Nicht was das Thema ist.
-- Ein Gedanke pro Post. Nicht alles in einen Post packen.
-- Spezifisch statt generisch: "25% mehr Abschlüsse" schlägt "mehr Erfolg".
-- Schreibe wie du sprichst — professionell aber menschlich.
+Pro Outline: Kernparadox, Reformuliert (Lang/Mittel/Kurz), Schlüsselzitate, Transformation (Zweifel→Erkenntnis→Selbstbestimmung), 3 Alltagsprobleme, 2 Beispiele, Einwände, Aspirationsaussage, 3 Handlungsschritte, Große Idee, Abschließende Erkenntnis.
 
-PSYCHOLOGIE-HOOKS:
-- Loss Aversion: Was verliert die Leserin, wenn sie nicht handelt?
-- Social Proof: Wie machen es andere erfolgreiche Frauen in der Branche?
-- Curiosity Gap: Welche Wissenslücke wird aufgemacht?
-- Pattern Interrupt: Was bricht die Scroll-Gewohnheit?
+Am Ende: Analyse-Notizen. Du-Ansprache, warm, klar, empowernd. Keine Floskeln.`;
 
-Für jede Outline:
-- Kernparadox
-- Reformuliert (Lang / Mittel / Kurz)
-- Schlüsselzitate
-- Transformation (Zweifel → Erkenntnis → Selbstbestimmung)
-- Alltagsprobleme (3)
-- Beispiele (2)
-- Einwände / Zweifel
-- Aspirationsaussage
-- Handlungsschritte (3)
-- Große Idee
-- Abschließende Erkenntnis
+const POST_JSON_PROMPT = `FemSurance Post-Generator. Erstelle aus der Outline 2-5 Posts auf passenden Kanälen.
 
-Am Ende: Analyse-Notizen mit Themen, Sprachmuster, Empfehlung.
-Direkte Du-Ansprache. Warm, klar, empowernd. Keine Floskeln.`;
+Antworte NUR als JSON:
+{"posts":[{"kanal":"Company Page|LinkedIn Gruppe|WhatsApp","tag":"Dienstag|Mittwoch|Donnerstag|Freitag","uhrzeit":"10:00|08:00","begruendung":"1 Satz","text":"fertiger Post","grafikBriefing":"visuell auf Deutsch","canvaPrompt":"Englisch, FemSurance Pink #E91E8C + Lila, 1:1 LinkedIn, max 8 Wörter Text-Overlay"}],"geschichteDerWoche":"2-3 Sätze"}
 
-const POST_JSON_PROMPT = `Du bist der FemSurance Post & Storytelling Generator. Du bekommst eine Content-Outline und entscheidest selbst wie viele Posts du daraus machst und auf welchem Kanal sie am besten funktionieren. Es können 2, 3, 4 oder mehr Posts sein — je nachdem was der Inhalt hergibt.
+KANÄLE:
+- Company Page (Di/Do 10:00): 1000-1500 Zeichen. Hook → 3-5 Punkte mit → → Zitat → Reflexionsfrage → 5-7 Hashtags. Thought Leadership + Daten.
+- Gruppe (Mi/Fr 10:00): 600-800 Zeichen. Persönlich, endet IMMER mit offener leicht beantwortbarer Frage ("Was war dein...?"). Diskussion anstoßen.
+- WhatsApp (Mi 08:00): Max 250 Zeichen. Warm wie Mentorin, endet mit 🩷
 
-Antworte NUR im JSON-Format ohne weitere Erklärungen:
-{
-  "posts": [
-    {
-      "kanal": "Company Page" oder "LinkedIn Gruppe" oder "WhatsApp",
-      "tag": "Dienstag" oder "Mittwoch" oder "Donnerstag" oder "Freitag",
-      "uhrzeit": "10:00" oder "08:00",
-      "begruendung": "[1 Satz warum dieser Kanal für diesen Inhalt]",
-      "text": "[fertiger Post im richtigen Format für den Kanal]",
-      "grafikBriefing": "[kurze visuelle Beschreibung auf Deutsch]",
-      "canvaPrompt": "[detaillierter Bildprompt auf Englisch für Canva Magic Media: style, subject, mood, colors FemSurance Pink #E91E8C and purple, elements, text overlay max 8 words, format 1:1 square LinkedIn]"
-    }
-  ],
-  "geschichteDerWoche": "[2-3 Sätze wie die Posts zusammenhängen]"
-}
+LINKEDIN: Hook in Zeile 1-2 entscheidet. Zeilenumbrüche großzügig. Keine externen Links. Carousel 2-3x mehr Engagement.
 
-KANAL-REGELN:
-Company Page (Di oder Do · 10:00): 1.000-1.500 Zeichen, starker Hook, 3-5 Punkte mit →, Zitat, Reflexionsfrage, 5-7 Hashtags, professionell empowernd
-LinkedIn Gruppe (Mi oder Fr · 10:00): 600-800 Zeichen, bezieht sich auf Company Page, zeigt tiefere Wahrheit, endet IMMER mit offener Frage, persönlich ehrlich
-WhatsApp (Mi · 08:00): max. 250 Zeichen, kurz warm wie von einer Freundin, endet mit 🩷
+FORMELN: Text=Hook→Problem→Punkte→Frage→CTA→Hashtags | Carousel=Hook-Slide→5 Punkte→CTA | Story=Situation→Konflikt→Wendepunkt→Erkenntnis | Listicle=Zahl→Punkte→Bonus | Meinung=These→Begründung→Gegenargument | Daten=Statistik→Kontext→Handlung
 
-SOCIAL-CONTENT-REGELN:
-- LinkedIn-Algorithmus bevorzugt: Verweildauer (lange Texte die fesseln), Kommentare in den ersten 60 Min., Saves und Shares
-- Erste 2 Zeilen = Hook. Wenn der Hook nicht sitzt, wird der Rest nie gelesen.
-- Nutze Zeilenumbrüche großzügig — Textwände werden überscrollt
-- Vermeide externe Links im Post-Text (senkt Reichweite). Link in Kommentar oder gar nicht.
-- Company Page: Thought Leadership + Daten. Gruppe: Persönliche Geschichten + Diskussion. WhatsApp: Schnelle Impulse.
-- Carousel-Posts (Document Posts) performen auf LinkedIn 2-3x besser für Engagement
+REPURPOSING: Company Page=volle Story → Gruppe=persönliche Perspektive → WhatsApp=Kernsatz. Top-Posts nach 8-12 Wochen recyceln. Max 2x pro Kanal.
 
-POST-FORMELN JE FORMAT:
-- Text-Post (Standard): Hook → Problem → Perspektivwechsel → 3-5 Punkte → Reflexionsfrage → CTA → Hashtags
-- Carousel/Document: Slide 1 = Hook-Frage, Slide 2-6 = je 1 Punkt mit Beispiel, letzte Slide = CTA + Zusammenfassung. Max 8 Slides.
-- Story-Post: Situation → Konflikt → Wendepunkt → Erkenntnis → Lesson learned → Frage an Community
-- Listicle: Zahl im Hook → durchnummerierte Punkte (je 1-2 Sätze) → Bonus-Tipp → "Welcher Punkt war für dich neu?"
-- Meinungs-Post: Kontroverse These → Begründung mit Erfahrung → Gegenargument entkräften → "Sehe ich das falsch?"
-- Daten-Post: Überraschende Statistik → Kontext → Was das für die Branche bedeutet → Handlungsempfehlung
-
-REPURPOSING-STRATEGIE:
-- Jeder Inhalt sollte über mehrere Kanäle adaptiert werden — nicht kopiert, sondern neu gedacht:
-  → Company Page: Die komplette Analyse/Story mit allen Details
-  → LinkedIn Gruppe: Die persönliche Perspektive oder kontroverse Frage daraus
-  → WhatsApp: Der eine Kernsatz der hängen bleibt
-- Aus einem starken Company Page Post können werden: 1 Gruppen-Diskussion + 1 WhatsApp-Impuls + 1 Carousel mit den Kernpunkten
-- Aus Performance-Daten: Top-Posts recyceln nach 8-12 Wochen mit neuem Hook
-
-COMMUNITY-MARKETING:
-- Jeder Gruppen-Post sollte eine echte Diskussion anstoßen, nicht nur informieren
-- Stelle offene Fragen die leicht zu beantworten sind ("Was war dein...?" statt "Was denkst du über...?")
-- Beziehe dich auf vorherige Diskussionen wenn möglich — das schafft Zusammengehörigkeit
-- WhatsApp-Nachrichten sollen sich anfühlen wie von einer Mentorin, nicht wie Marketing
-
-COPYWRITING-STIL:
-- Ein Satz, ein Gedanke. Kurze Sätze gewinnen.
-- Starte mit dem stärksten Argument, nicht mit Kontext.
-- Nutze konkrete Zahlen statt vager Aussagen.
-- Vermeide Passiv — schreibe aktiv und direkt.
-- Call-to-Action: Klar, spezifisch, niedrigschwellig.
-
-COPY-EDITING (Qualitätsprüfung — wende diese 7 Checks auf jeden Post an):
-1. Klarheit: Versteht die Leserin sofort worum es geht?
-2. Tonalität: Passt der Ton zum Kanal (professionell/persönlich/warm)?
-3. So What: Beantwortet jede Aussage "Warum sollte mich das interessieren?"
-4. Beweise: Ist jede Behauptung mit Beispiel, Zitat oder Zahl belegt?
-5. Spezifität: Sind alle Aussagen konkret genug? (keine "viele", "oft", "mehr")
-6. Emotion: Löst der Text etwas aus? (Inspiration, Neugier, Zugehörigkeit)
-7. Barrierefrei: Gibt es Hindernisse für die gewünschte Aktion? Entferne sie.
-
-ENTSCHEIDUNGSLOGIK:
-- Ist der Inhalt faktenreich? → Company Page
-- Gibt es eine kontroverse Perspektive? → LinkedIn Gruppe
-- Ist es ein kurzer Impuls oder eine Frage? → WhatsApp
-- Hat der Inhalt mehrere Aspekte? → mehrere Posts auf verschiedenen Kanälen
-- Nutze jeden Kanal max. 2x pro Outline
-- Minimum 2 Posts, Maximum 5 Posts
-
-CANVA PROMPT REGELN:
-- Immer auf Englisch
-- FemSurance Pink (#E91E8C) und Lila als Hauptfarben
-- Professionell, clean, modern, B2B
-- 1:1 Format für LinkedIn
-- Passend zum Post-Inhalt und Tonfall
-- Konkrete visuelle Elemente beschreiben
-
-Direkte Du-Ansprache. Warm, klar, empowernd. Zitate nur aus dem Quellmaterial.`;
+QUALITÄT: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Konkrete Zahlen. Klar, spezifisch, emotional, barrierefrei? CTA niedrigschwellig. Du-Ansprache, warm, empowernd. Zitate nur aus Quellmaterial.`;
 
 
 
@@ -1256,7 +1157,7 @@ async function generateOutline(cardId, btnEl) {
     if (card.refmaterial) userPrompt += `\n\nReferenzmaterial:\n${card.refmaterial}`;
     // Nicht posten
     try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.length) userPrompt += `\n\n## Diese Woche nicht posten:\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`; } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
-    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text : x).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text : x).join(', '); userPrompt += s; } } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+    try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert || pb.regeln) { let s = '\n\n## FemSurance Playbook'; if (pb.was_funktioniert) s += '\nWas funktioniert: ' + pb.was_funktioniert.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); if (pb.was_nicht) s += '\nWas nicht: ' + pb.was_nicht.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); if (pb.regeln) s += '\nRegeln: ' + pb.regeln.map(x => typeof x === 'object' ? x.text || x : x).filter(Boolean).join(', '); userPrompt += s; } } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
     // Strategie
     try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.positionierung?.nichtWirken) sp.push('Nicht wirken: ' + strat.positionierung.nichtWirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) userPrompt += '\n\n## FemSurance Strategie\n' + sp.join('\n'); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
@@ -1440,38 +1341,10 @@ async function generatePostsFromOutline(cardId, btnEl) {
 }
 
 // ── Score Calculator ──
-const SCORE_SYSTEM_PROMPT = `Du bist der FemSurance Content-Scorer. Bewerte diese Content-Idee auf einer Skala von 1-10.
+const SCORE_SYSTEM_PROMPT = `FemSurance Content-Scorer. Bewerte 1-10. Kriterien (je 0-2.5): 1.Trend-Stärke 2.Eigene Performance 3.Konkurrenz-Lücke (was bieten Wettbewerber NICHT?) 4.Ziel-Relevanz. Zusätzlich: Searchable/Shareable? JTBD? Psychologie-Hook? Qualität (Hook/Copywriting/CTA/Format-Fit je 1-10, Verbesserung wenn <6)?
 
-Analysiere:
-1. Trend-Stärke (0-2.5 Punkte): Ist das Thema aktuell trending?
-2. Eigene Performance (0-2.5 Punkte): Hat FemSurance mit ähnlichen Themen gut performt?
-3. Konkurrenz-Lücke (0-2.5 Punkte): Machen Wettbewerber das noch nicht? Nutze das "Competitor Alternatives"-Framework: Was bieten Wettbewerber NICHT? Wo ist die Lücke zwischen dem was Wettbewerber sagen und was die Zielgruppe wirklich braucht?
-4. Ziel-Relevanz (0-2.5 Punkte): Passt es zu den FemSurance Fokus-Themen?
-
-Zusätzlich bewerte:
-- Ist der Content "Searchable" (löst konkretes Problem) oder "Shareable" (überrascht/inspiriert)?
-- Welchen "Job to Be Done" erfüllt er für die Zielgruppe?
-- Gibt es ein psychologisches Muster (Loss Aversion, Social Proof, Curiosity Gap) das den Inhalt verstärkt?
-- Copy-Editing Quick-Check: Ist der Text klar, spezifisch, emotional und barrierefrei?
-
-POST-QUALITÄTSPRÜFUNG (bei fertigen Posts zusätzlich bewerten):
-- Hook-Stärke (1-10): Stoppt der erste Satz den Scroll?
-- Copywriting-Score (1-10): Klarheit, Spezifität, aktive Sprache, ein Gedanke?
-- CTA-Qualität (1-10): Gibt es eine klare, niedrigschwellige Handlungsaufforderung?
-- Format-Fit (1-10): Passt die Post-Formel zum Inhalt? (Text/Carousel/Story/Listicle/Meinung/Daten)
-- Wenn ein Post unter 6 bei einem Check liegt, schlage eine konkrete Verbesserung vor.
-
-Antworte NUR im JSON-Format:
-{
-  "score": 8,
-  "trend": { "punkte": 2, "begruendung": "Thema trending" },
-  "performance": { "punkte": 2.5, "begruendung": "Ähnliche Posts hatten gute Engagement" },
-  "luecke": { "punkte": 2, "begruendung": "Wettbewerber kaum aktiv" },
-  "relevanz": { "punkte": 1.5, "begruendung": "Passt zu Fokusthema" },
-  "qualitaet": { "hook": 8, "copywriting": 7, "cta": 9, "format_fit": 8, "verbesserungen": ["Konkreter Vorschlag falls nötig"] },
-  "empfehlung": "Diese Woche posten!",
-  "beste_plattform": "Company Page"
-}`;
+Antworte NUR als JSON:
+{"score":8,"trend":{"punkte":2,"begruendung":"..."},"performance":{"punkte":2.5,"begruendung":"..."},"luecke":{"punkte":2,"begruendung":"..."},"relevanz":{"punkte":1.5,"begruendung":"..."},"qualitaet":{"hook":8,"copywriting":7,"cta":9,"format_fit":8,"verbesserungen":["..."]},"empfehlung":"...","beste_plattform":"Company Page"}`;
 
 async function calculateScore(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
@@ -1593,41 +1466,7 @@ function renderBoard() {
         ${cardStatus}
       `;
 
-      // Click card → open modal (all actions are inside the modal now)
-      el.addEventListener('click', e => {
-        if (e.target.closest('.pub-meta a')) return; // Allow link clicks
-        openCardModal(card.id);
-      });
-
-      // Drag events
-      el.addEventListener('dragstart', e => {
-        el.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', card.id);
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      el.addEventListener('dragend', () => el.classList.remove('dragging'));
       zone.appendChild(el);
-    });
-
-    // Drop zone events
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const cardId = parseInt(e.dataTransfer.getData('text/plain'));
-      const card = cards.find(c => c.id === cardId);
-      if (!card || card.col === col.id) return;
-      if (col.id === 'geplant') {
-        pendingCard = card;
-        pendingTargetCol = col.id;
-        document.getElementById('modalCardName').textContent = `„${card.title}" wird nach „Geplant" verschoben.`;
-        document.getElementById('scheduleModal').classList.add('open');
-      } else {
-        card.col = col.id;
-        saveCards();
-        renderBoard();
-      }
     });
 
     // "+ Neue Idee" button for Ideen column
@@ -1685,6 +1524,72 @@ function renderBoard() {
     board.appendChild(colEl);
   });
 }
+
+// ── Delegated Board Events (set up once) ──
+(function setupBoardDelegation() {
+  const board = document.getElementById('kanbanBoard');
+  if (!board) return;
+
+  // Card click → open modal
+  board.addEventListener('click', e => {
+    if (e.target.closest('.pub-meta a')) return; // Allow link clicks
+    const cardEl = e.target.closest('.kanban-card');
+    if (!cardEl) return;
+    const cardId = parseInt(cardEl.dataset.id);
+    if (cardId) openCardModal(cardId);
+  });
+
+  // Drag start
+  board.addEventListener('dragstart', e => {
+    const cardEl = e.target.closest('.kanban-card');
+    if (!cardEl) return;
+    cardEl.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', cardEl.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  // Drag end
+  board.addEventListener('dragend', e => {
+    const cardEl = e.target.closest('.kanban-card');
+    if (cardEl) cardEl.classList.remove('dragging');
+  });
+
+  // Drop zone: dragover
+  board.addEventListener('dragover', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+
+  // Drop zone: dragleave
+  board.addEventListener('dragleave', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (zone) zone.classList.remove('drag-over');
+  });
+
+  // Drop zone: drop
+  board.addEventListener('drop', e => {
+    const zone = e.target.closest('.kanban-drop-zone');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const colId = zone.dataset.col;
+    const cardId = parseInt(e.dataTransfer.getData('text/plain'));
+    const card = cards.find(c => c.id === cardId);
+    if (!card || card.col === colId) return;
+    if (colId === 'geplant') {
+      pendingCard = card;
+      pendingTargetCol = colId;
+      document.getElementById('modalCardName').textContent = `„${card.title}" wird nach „Geplant" verschoben.`;
+      document.getElementById('scheduleModal').classList.add('open');
+    } else {
+      card.col = colId;
+      saveCards();
+      renderBoard();
+    }
+  });
+})();
 
 // ── Schedule Modal ──
 let pendingCard = null;
@@ -1872,6 +1777,7 @@ function openCardModal(cardId) {
   }
 
   document.getElementById('cardModal').classList.add('open');
+  document.getElementById('cardModal').querySelector('input,textarea,select,button')?.focus();
 }
 
 document.getElementById('cmSave').addEventListener('click', () => {

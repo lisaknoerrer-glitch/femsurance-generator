@@ -523,11 +523,11 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
 <script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html">
@@ -835,6 +835,7 @@ function renderScreenshotSlots() {
 
 function handleSSFile(category, file) {
   if (!file || !file.type.match(/image\/(png|jpeg)/)) return;
+  if (screenshots.length >= 10) { alert('Maximal 10 Screenshots. Bitte lösche ältere Screenshots zuerst.'); return; }
   if (file.size > 5 * 1024 * 1024) { alert('Datei zu groß (max. 5 MB)'); return; }
   const reader = new FileReader();
   reader.onload = e => {
@@ -1830,7 +1831,7 @@ function collectPrompt() {
   // Nicht posten
   try { const np = JSON.parse(localStorage.getItem('fem_nicht_posten') || '[]'); if (np.filter(Boolean).length) parts.push(`## Diese Woche nicht posten\n${np.filter(Boolean).map(i => '— ' + i).join('\n')}`); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
   // Playbook
-  try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); const pbParts = []; if (pb.was_funktioniert) pbParts.push('Was funktioniert: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.was_nicht) pbParts.push('Was nicht: ' + pb.was_nicht.map(x => typeof x==='object'?x.text:x).join(', ')); if (pb.regeln) pbParts.push('Regeln: ' + pb.regeln.map(x => typeof x==='object'?x.text:x).join(', ')); if (pbParts.length) parts.push('## FemSurance Playbook\n' + pbParts.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+  try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); const pbParts = []; if (pb.was_funktioniert) pbParts.push('Was funktioniert: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text||x:x).filter(Boolean).join(', ')); if (pb.was_nicht) pbParts.push('Was nicht: ' + pb.was_nicht.map(x => typeof x==='object'?x.text||x:x).filter(Boolean).join(', ')); if (pb.regeln) pbParts.push('Regeln: ' + pb.regeln.map(x => typeof x==='object'?x.text||x:x).filter(Boolean).join(', ')); if (pbParts.length) parts.push('## FemSurance Playbook\n' + pbParts.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
   // Strategie
   try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.contentPrinzip?.prinzip) sp.push('Content-Prinzip: ' + strat.contentPrinzip.prinzip); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (strat.brandVoice?.badges) sp.push('Brand Voice: ' + strat.brandVoice.badges.join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
@@ -1859,38 +1860,21 @@ function collectPrompt() {
 }
 
 // ══════════ SYSTEM PROMPT ══════════
-const WP_SYSTEM_PROMPT = `Du bist der FemSurance Wochenplan-Generator.
+const WP_SYSTEM_PROMPT = `FemSurance Wochenplan-Generator. Screenshots analysieren: Reichweite, Engagement, Klicks, Follower-Trends extrahieren. Keine Zahlen erfinden.
 
-Wenn ein Screenshot der Wochenstatistik mitgesendet wurde, analysiere ihn aktiv. Extrahiere daraus soweit sichtbar: Reichweite, Impressionen, Engagement, Klicks, Follower-Entwicklung, auffällige Trends. Falls Daten unleserlich sind, kennzeichne das kurz. Erfinde keine Zahlen.
+STRATEGIE: Mischung Searchable (löst Probleme) + Shareable (überrascht). JTBD-Framework. Hooks variieren: Loss Aversion → Social Proof → Curiosity Gap → Pattern Interrupt. Mind. 1 Diskussions-Post/Woche. Company Page setzt Thema → Gruppe vertieft → WhatsApp gibt Impuls.
 
-CONTENT-STRATEGIE FÜR DEN WOCHENPLAN:
-- Plane eine Mischung aus "Searchable Content" (löst Probleme, wird gesucht) und "Shareable Content" (überrascht, wird geteilt)
-- Nutze das "Jobs to Be Done"-Framework: Jeder Post muss einen konkreten Job für die Leserin erfüllen
-- Variiere die psychologischen Hooks über die Woche: Loss Aversion → Social Proof → Curiosity Gap → Pattern Interrupt
-- Baue Community-Engagement ein: Mindestens 1 Post pro Woche der eine echte Diskussion anstößt (offene, leicht beantwortbare Frage)
-- Verknüpfe Posts thematisch: Company Page setzt das Thema, Gruppe vertieft die Diskussion, WhatsApp gibt den persönlichen Impuls
+QUALITÄT: Hook in Zeile 1-2. Benefits>Features. Konkrete Zahlen. Ein Gedanke/Post. CTA niedrigschwellig. Klar/spezifisch/emotional/barrierefrei.
 
-COPYWRITING-CHECKLISTE:
-- Jeder Hook muss in den ersten 2 Zeilen fesseln
-- Benefits vor Features: Was hat die Leserin davon?
-- Spezifische Zahlen statt vager Aussagen
-- Ein Gedanke pro Post — nicht überladen
-- Call-to-Action: Klar, spezifisch, niedrigschwellig
-- Copy-Editing: Prüfe jeden Text auf Klarheit, Tonalität, Spezifität und Emotion
-
-ANALYTICS-FOKUS:
-- Bewerte die vergangene Woche nach Metriken die Entscheidungen informieren, nicht nach Vanity Metrics
-- Engagement-Rate > Impressionen, Kommentare > Likes, Saves > Shares
-- Identifiziere klare Trends und leite daraus konkrete Handlungen für nächste Woche ab
+ANALYTICS: Engagement-Rate > Impressionen. Kommentare > Likes. Klare Trends → konkrete Handlungen ableiten.
 
 Erstelle auf Deutsch:
 1. Auswertung der vergangenen Woche (inkl. Screenshot-Analyse)
-2. Posting-Plan für die kommende Woche (Di 10:00 Company Page, Mi 08:00 WhatsApp, Mi 10:00 Gruppe, Do 10:00 Company Page, Fr 10:00 Gruppe)
-3. Fünf Content-Outlines im FemSurance-Stil (Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis)
+2. Posting-Plan (Di 10:00 Company Page, Mi 08:00 WhatsApp, Mi 10:00 Gruppe, Do 10:00 Company Page, Fr 10:00 Gruppe)
+3. Fünf Content-Outlines (Kernparadox, Reformulierungen, Schlüsselzitate, Transformation, Alltagsprobleme, Beispiele, Einwände, Aspirationsaussage, Handlungsschritte, Große Idee, Abschließende Erkenntnis)
 4. Aktualisierten Lernstand — beginne mit: AKTUALISIERTER LERNSTAND:
 
-Marke: FemSurance – Visibility. Network. Impact.
-Stil: warm, empowernd, praxisnah. Schreibe auf Deutsch.`;
+Marke: FemSurance – Visibility. Network. Impact. Stil: warm, empowernd, praxisnah.`;
 
 // ══════════ GENERATE ══════════
 document.getElementById('btnGenerate').addEventListener('click', async () => {

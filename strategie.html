@@ -107,10 +107,10 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
 <script>if(localStorage.getItem("fem_dark_mode")==="true"){document.body.classList.add("dark-mode");document.getElementById("dmToggle").textContent="\u2600\ufe0f";}document.getElementById("dmToggle").addEventListener("click",function(){document.body.classList.toggle("dark-mode");var on=document.body.classList.contains("dark-mode");localStorage.setItem("fem_dark_mode",on);this.textContent=on?"\u2600\ufe0f":"\ud83c\udf19";});</script>
 
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Übersicht</a>

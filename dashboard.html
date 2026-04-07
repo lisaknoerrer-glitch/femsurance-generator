@@ -501,11 +501,11 @@ body.dark-mode .sidebar-right { background:var(--bg-card); }
 </style>
 </head>
 <body>
-<button class="dm-toggle" id="dmToggle" title="Dark Mode">🌙</button>
+<button class="dm-toggle" id="dmToggle" title="Dark Mode" aria-label="Dark Mode umschalten">🌙</button>
 <script>if(localStorage.getItem('fem_dark_mode')==='true'){document.body.classList.add('dark-mode');document.getElementById('dmToggle').textContent='☀️';}document.getElementById('dmToggle').addEventListener('click',function(){document.body.classList.toggle('dark-mode');const on=document.body.classList.contains('dark-mode');localStorage.setItem('fem_dark_mode',on);this.textContent=on?'☀️':'🌙';});</script>
 
 <!-- ══════════ Left Navigation ══════════ -->
-<nav class="nav-left">
+<nav class="nav-left" role="navigation" aria-label="Hauptnavigation">
   <div class="nav-logo">F</div>
   <ul class="nav-links">
     <a href="dashboard.html" class="active">
@@ -967,9 +967,7 @@ function getStrategieContext() {
 
 // ── Load cached data from localStorage ──
 (function() {
-  // Record refresh timestamp
   const now = new Date();
-  localStorage.setItem('fem_last_refresh', now.toISOString());
   const meta = document.getElementById('headerMeta');
   const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   const months = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
@@ -1376,7 +1374,7 @@ Basiere alles auf den gelieferten Daten. Keine generischen Aussagen. Jeder Punkt
           return `${c.title} (${c.format || '–'}) · Imp: ${p.impressions||'–'}, Eng: ${p.reaktionen||0}+${p.kommentare||0}`;
         }).join('\n'));
       }
-      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text||x:x).filter(Boolean).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
       try { const t = JSON.parse(localStorage.getItem('fem_research_themes') || '[]'); if (t.length) parts.push('Themen: ' + t.slice(0,5).map(x=>x.thema).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
 
       try { const strat = JSON.parse(localStorage.getItem('fem_strategie') || '{}'); const sp = []; if (strat.fokusThemen) sp.push('Fokus: ' + strat.fokusThemen.map(f => f.thema || f).filter(Boolean).join(', ')); if (strat.positionierung?.wirken) sp.push('Wirken: ' + strat.positionierung.wirken); if (strat.zielgruppe) sp.push('Zielgruppe: ' + strat.zielgruppe.filter(Boolean).join(', ')); if (sp.length) parts.push('## FemSurance Strategie\n' + sp.join('\n')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
@@ -1461,7 +1459,7 @@ Sei ehrlich und direkt. Keine generischen Aussagen.`,
         return engB - engA;
       }).slice(0, 10);
       if (topPosts.length) parts.push('## Top 10 Posts\n' + topPosts.map(([,v]) => `Imp: ${v.impressions}, Reak: ${v.reaktionen||0}, Komm: ${v.kommentare||0}`).join('\n'));
-      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text:x).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
+      try { const pb = JSON.parse(localStorage.getItem('fem_playbook') || '{}'); if (pb.was_funktioniert) parts.push('Playbook: ' + pb.was_funktioniert.map(x => typeof x==='object'?x.text||x:x).filter(Boolean).join(', ')); } catch(e) { console.warn('Daten-Ladefehler:', e.message); }
       const ls = localStorage.getItem('fem_lernstand'); if (ls) parts.push('Lernstand: ' + ls.slice(0, 300));
       const hp = JSON.parse(localStorage.getItem('fem_hook_performance') || '{}');
       if (Object.keys(hp).length) parts.push('Hook-Performance: ' + Object.entries(hp).map(([t,d]) => `${t}: Ø ${(d.total/d.count).toFixed(1)}% (${d.count}x)`).join(', '));
