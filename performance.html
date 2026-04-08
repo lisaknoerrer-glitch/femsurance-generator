@@ -10,18 +10,6 @@
 <link rel="stylesheet" href="shared.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
-.fade-up:nth-child(1) { animation-delay: 0.04s; }
-.fade-up:nth-child(2) { animation-delay: 0.10s; }
-.fade-up:nth-child(3) { animation-delay: 0.16s; }
-.fade-up:nth-child(4) { animation-delay: 0.22s; }
-.fade-up:nth-child(5) { animation-delay: 0.28s; }
-.fade-up:nth-child(6) { animation-delay: 0.34s; }
-
 /* ── Main ── */
 .main {
   margin-left: 62px;
@@ -284,7 +272,6 @@
 .fem-toast { position:fixed; bottom:20px; right:20px; padding:12px 20px; border-radius:var(--radius-sm); background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.15); font-size:var(--text-md); z-index:999; animation:fadeUp 0.3s ease; }
 .fem-toast.success { border-left:4px solid var(--color-success); }
 .fem-toast.warn { border-left:4px solid var(--color-warning); }
-@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
 .analyse-result { margin-top:12px; padding:14px; background:var(--fem-purple-light); border-radius:var(--radius-sm); font-size:var(--text-md); line-height:1.6; white-space:pre-wrap; }
 
