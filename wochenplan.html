@@ -6,7 +6,7 @@
 <title>FemSurance – Wochenplan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -47,7 +47,7 @@
 .block-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 20px; height: 20px; border-radius: 50%;
-  background: var(--fem-pink); color: #fff;
+  background: var(--fem-pink); color: var(--text-on-accent);
   font-size: var(--text-xs); font-weight: 700; margin-right: 6px;
 }
 
@@ -60,7 +60,7 @@ input[type="text"], input[type="number"], input[type="url"], input[type="date"],
   width: 100%; padding: 9px 12px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
   color: var(--text-primary); background: var(--bg-card);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 input:focus, select:focus, textarea:focus {
   outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
@@ -77,7 +77,7 @@ textarea { resize: vertical; line-height: 1.6; }
   border-radius: var(--radius-md);
   padding: 28px 20px; text-align: center;
   color: var(--text-secondary); font-size: var(--text-md);
-  transition: all 0.2s; cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); cursor: pointer;
   margin-bottom: var(--space-md);
 }
 .drop-zone:hover, .drop-zone.drag-over {
@@ -101,14 +101,14 @@ textarea { resize: vertical; line-height: 1.6; }
   width: 30px; height: 30px; border: none; border-radius: var(--radius-sm);
   background: none; color: var(--text-secondary); cursor: pointer;
   font-size: 18px; display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
+  transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-remove-row:hover { background: var(--color-danger-bg); color: var(--color-danger); }
 .btn-add-url {
   padding: 6px 14px; border: 1px dashed var(--border);
   border-radius: var(--radius-sm); background: none;
   cursor: pointer; font-family: inherit; font-size: var(--text-base);
-  font-weight: 500; color: var(--text-secondary); transition: all 0.2s;
+  font-weight: 500; color: var(--text-secondary); transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-add-url:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
 
@@ -124,7 +124,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .collapsible-arrow {
   font-size: var(--text-base); color: var(--text-secondary);
-  transition: transform 0.2s;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .collapsible-header.open .collapsible-arrow { transform: rotate(180deg); }
 .collapsible-body {
@@ -161,8 +161,8 @@ textarea { resize: vertical; line-height: 1.6; }
   display: block; width: 100%;
   padding: 14px 24px; border: none; border-radius: var(--radius-md);
   background: var(--fem-pink);
-  color: #fff; font-family: inherit; font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: opacity 0.2s;
+  color: var(--text-on-accent); font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   letter-spacing: 0.01em;
 }
 .btn-generate:hover { opacity: 0.9; }
@@ -204,7 +204,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .progress-fill {
   height: 100%; width: 0%; border-radius: 2px;
   background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
-  transition: width 0.4s ease;
+  transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 @keyframes progressAnim {
   0% { width: 5%; }
@@ -215,7 +215,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .progress-fill.animating {
   animation: progressAnim 70s ease-out forwards;
 }
-.progress-fill.complete { width: 100% !important; animation: none; transition: width 0.3s; }
+.progress-fill.complete { width: 100% !important; animation: none; transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
 
 /* Output area */
 .output-textarea {
@@ -237,7 +237,7 @@ textarea { resize: vertical; line-height: 1.6; }
   border-radius: var(--radius-sm); background: var(--bg-card);
   cursor: pointer; font-family: inherit; font-size: var(--text-base);
   font-weight: 600; color: var(--text-secondary);
-  transition: all 0.2s; white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); white-space: nowrap;
 }
 .btn-action:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
 .btn-action.success { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); }
@@ -268,7 +268,7 @@ textarea { resize: vertical; line-height: 1.6; }
 .ss-slot {
   background: var(--bg-secondary); border: 1px dashed var(--border);
   border-radius: var(--radius-sm); padding: 10px; text-align: center;
-  cursor: pointer; transition: all 0.2s; position: relative;
+  cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); position: relative;
 }
 .ss-slot:hover { border-color: var(--fem-pink); }
 .ss-slot.has-file { border-style: solid; border-color: var(--fem-pink); }
@@ -287,8 +287,8 @@ textarea { resize: vertical; line-height: 1.6; }
   display: block; width: 100%; padding: 10px; border: none;
   border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
-  color: #fff; font-family: inherit; font-size: var(--text-md); font-weight: 600;
-  cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+  color: var(--text-on-accent); font-family: inherit; font-size: var(--text-md); font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-top: 8px;
 }
 .btn-extract:hover { opacity: 0.9; }
 .btn-extract:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -340,28 +340,28 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-kpi-field input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .b2-section { font-size:var(--text-sm); font-weight:600; color:var(--fem-pink); text-transform:uppercase; letter-spacing:0.03em; margin:10px 0 6px; padding-top:8px; border-top:1px solid var(--border); }
 .b2-section:first-of-type { border-top:none; padding-top:0; }
-.btn-load-last { padding:7px 16px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:var(--text-base); font-weight:600; cursor:pointer; transition:all 0.2s; margin-bottom: var(--space-md); }
-.btn-load-last:hover { background:var(--fem-pink); color:#fff; }
+.btn-load-last { padding:7px 16px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:var(--text-base); font-weight:600; cursor:pointer; transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-bottom: var(--space-md); }
+.btn-load-last:hover { background:var(--fem-pink); color:var(--text-on-accent); }
 .b2-top-posts { font-size:var(--text-base); color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
 .b2-top-posts strong { color:var(--text-primary); }
 /* Post-Performance rows */
 .b2-post-header { display:flex; align-items:center; gap: var(--space-sm); padding:8px 0; cursor:pointer; border-bottom:1px solid var(--border); user-select:none; }
 .b2-post-header:hover { color:var(--fem-pink); }
-.b2-post-header .b2p-arrow { font-size:var(--text-sm); color:var(--text-secondary); transition:transform 0.2s; }
+.b2-post-header .b2p-arrow { font-size:var(--text-sm); color:var(--text-secondary); transition:transform 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
 .b2-post-header.open .b2p-arrow { transform:rotate(180deg); }
 .b2-post-header .b2p-title { flex:1; font-size:12.5px; font-weight:600; }
 .b2-post-header .b2p-remove { width:22px; height:22px; border:none; background:none; color:var(--text-secondary); cursor:pointer; font-size:var(--text-lg); border-radius:50%; display:flex; align-items:center; justify-content:center; }
 .b2-post-header .b2p-remove:hover { background:var(--color-danger-bg); color:var(--color-danger); }
 .b2-post-body { display:none; padding:8px 0; }
 .b2-post-body.open { display:block; }
-.btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-base); font-weight:500; color:var(--text-secondary); transition:all 0.2s; margin-top:8px; }
+.btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-base); font-weight:500; color:var(--text-secondary); transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-top:8px; }
 .btn-add-post:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 
 /* ── Collapsible Blocks ── */
 .block-title { cursor:pointer; display:flex; align-items:center; user-select:none; }
 .block-title .block-chevron {
   margin-left:auto; font-size:var(--text-base); color:var(--text-secondary);
-  transition:transform 0.25s; flex-shrink:0;
+  transition:transform 0.25s cubic-bezier(0.32, 0.72, 0, 1); flex-shrink:0;
 }
 .block-title.collapsed .block-chevron { transform:rotate(-90deg); }
 .block-title .block-content-badge {
@@ -371,7 +371,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .block-title.collapsed .block-content-badge { display:inline-block; }
 .block-body {
-  overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s ease;
+  overflow:hidden; transition:max-height 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   max-height:3000px; opacity:1;
 }
 .block-body.collapsed {
@@ -409,7 +409,7 @@ textarea { resize: vertical; line-height: 1.6; }
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   border: 1px solid var(--border);
   pointer-events: none; opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 50; white-space: normal;
 }
 .info-tip:hover::after { opacity: 1; }
@@ -425,7 +425,7 @@ textarea { resize: vertical; line-height: 1.6; }
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   border: 1px solid var(--border);
   pointer-events: none; opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 50; white-space: normal;
 }
 [data-tip]:hover::before { opacity: 1; }
@@ -1038,7 +1038,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
   const btn = document.getElementById('btnExtract');
   btn.disabled = true;
-  btn.textContent = 'Wird extrahiert...';
+  btn.classList.add('btn-loading');
 
   let merged = { posts: [], content_summary: {}, search_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
 
@@ -1051,7 +1051,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
       for (let fi = 0; fi < exportFiles.length; fi++) {
         const ef = exportFiles[fi];
-        btn.textContent = `Datei ${fi + 1}/${exportFiles.length} wird analysiert...`;
+        // btn-loading spinner is already active
 
         // Detect columns via API if not already mapped
         if (!ef.columnMap) {
@@ -1096,7 +1096,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       saveExportFiles();
       const mappedCount = exportFiles.filter(f => f.columnMap).length;
       statusEl.innerHTML = `<span class="extract-badge">✓ ${exportFiles.length} Dateien verarbeitet · ${totalDatasets} Datensätze erkannt</span>`;
-      btn.textContent = 'Wird extrahiert...';
+      // btn-loading spinner is still active
     }
 
     // 2. Extract from screenshots via API
@@ -1181,12 +1181,12 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
     // Clear screenshot base64 from localStorage
     localStorage.removeItem('fem_wp_screenshots');
 
-    btn.textContent = '📊 Daten extrahieren';
-    btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = '📊 Daten extrahieren <span class="extract-badge">✓ Extrahiert</span>';
 
   } catch (err) {
     alert('Fehler: ' + err.message);
-    btn.textContent = '📊 Daten extrahieren';
+    btn.classList.remove('btn-loading');
   }
   btn.disabled = false;
 });
@@ -1781,7 +1781,7 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
 
   // UI: loading state
   btn.disabled = true;
-  btn.textContent = 'Wird generiert...';
+  btn.classList.add('btn-loading');
   setStatus('loading');
   enableOutputButtons(false);
   outputArea.value = '';
@@ -1827,8 +1827,8 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
     outputArea.readOnly = false;
   }
 
+  btn.classList.remove('btn-loading');
   btn.disabled = false;
-  btn.textContent = '▶ Wochenplan generieren';
 });
 
 // ══════════ SAVE BUTTON ══════════

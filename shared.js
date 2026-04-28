@@ -38,8 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.toggle('dark-mode');
     const on = document.body.classList.contains('dark-mode');
     localStorage.setItem('fem_dark_mode', on);
+    this.classList.add('icon-swap');
     this.textContent = on ? '\u2600\ufe0f' : '\ud83c\udf19';
-    // Notify other tabs
+    this.addEventListener('animationend', () => this.classList.remove('icon-swap'), { once: true });
     if (window._femChannel) window._femChannel.postMessage({ type: 'dark-mode', value: on });
   });
 });
