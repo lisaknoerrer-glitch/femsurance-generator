@@ -41,6 +41,8 @@
   .api-row input { flex: 1; min-height: unset; height: 42px; }
   .save-btn { padding: 10px 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: var(--text-md); color: var(--text-secondary); cursor: pointer; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1); white-space: nowrap; }
   .save-btn:hover { background: white; color: var(--text-primary); }
+  .save-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .api-hint { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 5px; }
  
   .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
@@ -59,11 +61,13 @@
   .count-row { display: flex; gap: var(--space-sm); }
   .count-btn { width: 44px; height: 44px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: white; color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
   .count-btn:hover { border-color: var(--fem-pink-mid); }
+  .count-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
   .count-btn.active { border-color: var(--fem-pink); background: var(--fem-pink); color: white; font-weight: 500; }
  
   .primary-btn { width: 100%; padding: 15px; font-family: 'DM Serif Display', serif; font-size: 18px; background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple)); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-top: 1.5rem; }
   .primary-btn:hover { background: linear-gradient(135deg, var(--pink-dark), var(--purple-dark)); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(233,30,140,0.28); }
   .primary-btn:active { transform: translateY(0); }
+  .primary-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
   .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
  
   .loading-bar { height: 2px; background: var(--border-light); border-radius: 2px; margin-bottom: 1rem; overflow: hidden; display: none; }
@@ -81,6 +85,8 @@
   .output-title { font-family: 'DM Serif Display', serif; font-size: var(--text-2xl); color: var(--text-primary); }
   .copy-all-btn { padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: white; font-family: 'DM Sans', sans-serif; font-size: var(--text-md); color: var(--text-secondary); cursor: pointer; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
   .copy-all-btn:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+  .copy-all-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+  .copy-all-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .output-box { background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; font-size: var(--text-lg); line-height: 1.8; color: var(--text-primary); white-space: pre-wrap; min-height: 200px; }
  
   .paste-hint { font-size: var(--text-md); color: var(--text-secondary); background: var(--bg-surface); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 1.5rem; line-height: 1.6; }
@@ -96,6 +102,8 @@
   .platform-hint { font-size: var(--text-sm); color: var(--text-tertiary); }
   .copy-post-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-surface); font-family: 'DM Sans', sans-serif; font-size: var(--text-base); color: var(--text-secondary); cursor: pointer; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
   .copy-post-btn:hover { border-color: var(--fem-pink); color: var(--fem-pink); background: white; }
+  .copy-post-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+  .copy-post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .platform-body { padding: 16px 18px; font-size: var(--text-lg); line-height: 1.8; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; }
   .platform-body.loading { color: var(--text-tertiary); font-style: italic; }
  

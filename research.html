@@ -147,6 +147,7 @@
 .potenzial { cursor:pointer; user-select:none; font-size:var(--text-lg); }
 .hook-delete { position:absolute; top:8px; right:8px; border:none; background:none; cursor:pointer; font-size:var(--text-md); color:var(--text-secondary); opacity:0; transition:opacity 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
 .hook-item:hover .hook-delete { opacity:1; }
+.hook-delete:focus-visible { opacity:1; outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .hook-item { position:relative; }
 .add-hook-form { display:flex; gap: var(--space-sm); margin-top:10px; }
 .add-hook-form input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); }
