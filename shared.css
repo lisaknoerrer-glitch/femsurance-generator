@@ -132,6 +132,7 @@ body.dark-mode::before {
 .btn-outline { background: none; color: var(--fem-pink); border: 1px solid var(--fem-pink); }
 .btn-outline:hover { background: var(--fem-pink); color: var(--text-on-accent); }
 .btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .btn:disabled, .btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 /* ── Button Press Feedback (all buttons) ── */
@@ -160,6 +161,7 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
   box-shadow: var(--shadow); transition: all 0.2s;
 }
 .dm-toggle:hover { border-color: var(--fem-pink); }
+.dm-toggle:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 
 /* ── Icon Swap Animation ── */
 @keyframes iconSwap {
@@ -227,7 +229,9 @@ input:focus, select:focus, textarea:focus {
 
 /* ── Progress Bar GPU Hint ── */
 .progress-fill, .hero-fill, .comp-bar-fill, .trend-bar-fill {
-  will-change: width;
+  will-change: transform;
+  transform-origin: left center;
+  width: 100%;
 }
 
 /* ── Collapsible Sections ── */

@@ -202,20 +202,22 @@ textarea { resize: vertical; line-height: 1.6; }
   border-radius: 2px; overflow: hidden; margin-bottom: 14px;
 }
 .progress-fill {
-  height: 100%; width: 0%; border-radius: 2px;
+  height: 100%; width: 100%; border-radius: 2px;
   background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
-  transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
 @keyframes progressAnim {
-  0% { width: 5%; }
-  50% { width: 70%; }
-  90% { width: 88%; }
-  100% { width: 95%; }
+  0% { transform: scaleX(0.05); }
+  50% { transform: scaleX(0.70); }
+  90% { transform: scaleX(0.88); }
+  100% { transform: scaleX(0.95); }
 }
 .progress-fill.animating {
   animation: progressAnim 70s ease-out forwards;
 }
-.progress-fill.complete { width: 100% !important; animation: none; transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+.progress-fill.complete { transform: scaleX(1) !important; animation: none; transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
 
 /* Output area */
 .output-textarea {

@@ -237,7 +237,8 @@
   height: 100%;
   background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple));
   border-radius: 5px;
-  transition: width 1s cubic-bezier(0.32, 0.72, 0, 1);
+  transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .goal-diff {
   font-size: 12.5px;
@@ -542,7 +543,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         </div>
       </div>
       <div class="progress-track">
-        <div class="progress-fill" style="width: 73.9%;"></div>
+        <div class="progress-fill" style="transform: scaleX(0.739);"></div>
       </div>
       <div class="goal-diff">Noch <strong>653 Follower</strong> bis zum Ziel · 73,9 % erreicht</div>
     </div>
@@ -572,7 +573,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         </div>
       </div>
       <div class="progress-track">
-        <div class="progress-fill" id="dashGruppeBar" style="width:0%;"></div>
+        <div class="progress-fill" id="dashGruppeBar" style="transform:scaleX(0);"></div>
       </div>
       <div class="goal-diff" id="dashGruppeDiff">–</div>
     </div>
@@ -602,7 +603,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         </div>
       </div>
       <div class="progress-track">
-        <div class="progress-fill" id="dashWhatsappBar" style="width:0%;"></div>
+        <div class="progress-fill" id="dashWhatsappBar" style="transform:scaleX(0);"></div>
       </div>
       <div class="goal-diff" id="dashWhatsappDiff">–</div>
     </div>
@@ -630,7 +631,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         </div>
       </div>
       <div class="progress-track">
-        <div class="progress-fill" id="dashNewsletterBar" style="width:0%;"></div>
+        <div class="progress-fill" id="dashNewsletterBar" style="transform:scaleX(0);"></div>
       </div>
       <div class="goal-diff" id="dashNewsletterDiff">–</div>
     </div>
@@ -931,7 +932,7 @@ const INSIGHT_API_KEY = ANTHROPIC_API_KEY;
       document.querySelector('.goal-target .goal-value').textContent = goal.toLocaleString('de-DE');
       const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
       const remaining = Math.max(goal - f, 0);
-      document.querySelector('.progress-fill').style.width = pct.toFixed(1) + '%';
+      document.querySelector('.progress-fill').style.transform = 'scaleX(' + (pct / 100) + ')';
       document.querySelector('.goal-diff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')} Follower</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`;
     }
 
@@ -943,7 +944,7 @@ const INSIGHT_API_KEY = ANTHROPIC_API_KEY;
       document.getElementById(goalValId).textContent = g > 0 ? g.toLocaleString('de-DE') : '–';
       const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
       const remaining = Math.max(g - c, 0);
-      document.getElementById(barId).style.width = pct.toFixed(1) + '%';
+      document.getElementById(barId).style.transform = 'scaleX(' + (pct / 100) + ')';
       document.getElementById(diffId).innerHTML = g > 0
         ? `Noch <strong>${remaining.toLocaleString('de-DE')} ${label}</strong> bis zum Ziel · ${pct.toFixed(1)} % erreicht`
         : '–';
