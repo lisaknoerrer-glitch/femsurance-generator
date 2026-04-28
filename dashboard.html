@@ -28,7 +28,7 @@
 .sidebar-right.collapsed .activity-feed { display: none; }
 .feed-toggle {
   width: 28px; height: 28px; border: 1px solid var(--border);
-  border-radius: 50%; background: var(--fem-pink); color: #fff;
+  border-radius: 50%; background: var(--fem-pink); color: var(--text-on-accent);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   font-size: var(--text-lg); margin-bottom: var(--space-md); transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   flex-shrink: 0;
@@ -134,7 +134,7 @@
   background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
   border-radius: var(--radius-md);
   padding: 20px 22px;
-  color: #fff;
+  color: var(--text-on-accent);
 }
 .banner-item .label {
   font-size: var(--text-base);
@@ -324,7 +324,7 @@
   border-radius: 50%;
   margin: 0 auto 10px;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 15px; color: #fff;
+  font-weight: 700; font-size: 15px; color: var(--text-on-accent);
 }
 .team-card:nth-child(1) .team-avatar { background: var(--fem-pink); }
 .team-card:nth-child(2) .team-avatar { background: var(--fem-purple); }
@@ -361,7 +361,7 @@
 .insight-timestamp { font-size:var(--text-sm); color:var(--text-secondary); margin-left:10px; }
 .insight-body { overflow:hidden; transition:max-height 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1); max-height:2000px; opacity:1; }
 .insight-body.collapsed { max-height:0; opacity:0; padding:0; }
-.insight-btn { padding:10px 22px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:#fff; font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
+.insight-btn { padding:10px 22px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
 .insight-btn:hover { opacity:0.9; }
 .insight-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .insight-btn-outline { padding:8px 16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); font-family:inherit; font-size:var(--text-base); font-weight:600; color:var(--text-secondary); cursor:pointer; transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); }

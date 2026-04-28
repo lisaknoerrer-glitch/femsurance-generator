@@ -116,7 +116,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--fem-pink), var(--fem-purple));
-  color: #fff;
+  color: var(--text-on-accent);
   font-family: inherit;
   font-size: var(--text-base);
   font-weight: 600;
@@ -192,7 +192,7 @@
 }
 .btn-save-draft:hover {
   background: var(--fem-pink);
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 /* ── Format Badges ── */
@@ -282,7 +282,7 @@
   cursor: pointer; border: none; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .new-idea-btns .btn-create {
-  background: var(--fem-pink); color: #fff;
+  background: var(--fem-pink); color: var(--text-on-accent);
 }
 .new-idea-btns .btn-create:hover { opacity: 0.9; }
 .new-idea-btns .btn-abort {
@@ -340,7 +340,7 @@
 }
 .cm-actions .btn-save-modal {
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
-  background: var(--fem-pink); color: #fff;
+  background: var(--fem-pink); color: var(--text-on-accent);
   font-family: inherit; font-size: var(--text-md); font-weight: 600;
   cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -355,7 +355,7 @@
 .cm-actions .btn-delete-modal {
   margin-left: auto;
   padding: 9px 18px; border: 1px solid var(--color-danger);
-  border-radius: var(--radius-sm); background: #fff;
+  border-radius: var(--radius-sm); background: var(--bg-card);
   font-family: inherit; font-size: var(--text-base); font-weight: 600;
   color: var(--color-danger); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -388,7 +388,7 @@
 .gen-prep-btns { display: flex; gap: var(--space-sm); margin-top: 16px; }
 .gen-prep-btns .btn-gen-go {
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
-  background: var(--fem-pink); color: #fff;
+  background: var(--fem-pink); color: var(--text-on-accent);
   font-family: inherit; font-size: var(--text-md); font-weight: 600;
   cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -426,7 +426,7 @@
   font-size: var(--text-base); font-weight: 600; cursor: pointer; white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: #fff; }
+.cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: var(--text-on-accent); }
 .cm-drop-zone {
   border: 2px dashed var(--border); border-radius: var(--radius-sm);
   padding: 16px; text-align: center; color: var(--text-secondary);
@@ -484,7 +484,7 @@
   background: var(--fem-pink-light); font-weight: 600;
 }
 .mini-cal-grid .day-cell.selected {
-  background: var(--fem-pink); color: #fff; font-weight: 700;
+  background: var(--fem-pink); color: var(--text-on-accent); font-weight: 700;
 }
 .mini-cal-grid .day-cell.today {
   outline: 2px solid var(--fem-purple); outline-offset: -2px;
@@ -497,7 +497,7 @@
 .plan-selected .plan-date { font-weight: 600; color: var(--fem-pink); }
 .plan-selected .btn-plan-save {
   padding: 6px 16px; border: none; border-radius: var(--radius-sm);
-  background: var(--fem-pink); color: #fff; font-family: inherit;
+  background: var(--fem-pink); color: var(--text-on-accent); font-family: inherit;
   font-size: var(--text-base); font-weight: 600; cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .plan-selected .btn-plan-save:hover { opacity: 0.9; }
@@ -514,7 +514,7 @@
 .pub-modal .pub-field input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .pub-modal-btns { display:flex; gap: var(--space-sm); margin-top:16px; }
 .pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
-.pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:#fff; }
+.pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:var(--text-on-accent); }
 .pub-modal-btns .pub-cancel { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
 /* Published card extras */
 .pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
@@ -1660,7 +1660,7 @@ function openCardModal(cardId) {
     });
   } else if (card.col === 'grafik') {
     actionsDiv.innerHTML = `
-      <button class="btn-save-modal" id="cmCanvaPromptBtn2" style="width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:#fff;">Canva-Prompt generieren</button>
+      <button class="btn-save-modal" id="cmCanvaPromptBtn2" style="width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent);">Canva-Prompt generieren</button>
       <button class="btn-save-modal" id="cmPlanBtn" style="width:100%;">Post planen</button>
     `;
     document.getElementById('cmCanvaPromptBtn2').addEventListener('click', async () => {
