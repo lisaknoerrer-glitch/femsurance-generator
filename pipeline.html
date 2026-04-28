@@ -124,6 +124,8 @@
   transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-generate:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-generate.loading {
   opacity: 0.6;
   cursor: not-allowed;
@@ -194,6 +196,8 @@
   background: var(--fem-pink);
   color: var(--text-on-accent);
 }
+.btn-save-draft:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-save-draft:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Format Badges ── */
 .format-badges {
@@ -241,6 +245,8 @@
 .slot-btn:hover {
   border-color: var(--fem-pink); background: var(--fem-pink-light);
 }
+.slot-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.slot-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .slot-btn .slot-day { font-weight: 600; }
 .slot-btn .slot-ch { font-size: var(--text-sm); color: var(--text-secondary); margin-top: 1px; }
 .modal-actions {
@@ -253,6 +259,8 @@
   color: var(--text-secondary); transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
+.btn-cancel:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
 /* ── New Idea Button + Form ── */
 .btn-new-idea {
   display: block; width: 100%; margin-top: 8px;
@@ -263,6 +271,8 @@
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-new-idea:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.btn-new-idea:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-new-idea:disabled { opacity: 0.5; cursor: not-allowed; }
 .new-idea-form {
   background: var(--bg-card); border: 1px solid var(--fem-pink);
   border-radius: var(--radius-sm); padding: 12px; margin-top: 8px;
@@ -285,11 +295,15 @@
   background: var(--fem-pink); color: var(--text-on-accent);
 }
 .new-idea-btns .btn-create:hover { opacity: 0.9; }
+.new-idea-btns .btn-create:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.new-idea-btns .btn-create:disabled { opacity: 0.5; cursor: not-allowed; }
 .new-idea-btns .btn-abort {
   background: var(--bg-secondary); color: var(--text-secondary);
   border: 1px solid var(--border);
 }
 .new-idea-btns .btn-abort:hover { background: var(--border); }
+.new-idea-btns .btn-abort:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.new-idea-btns .btn-abort:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Card Detail Modal ── */
 .card-modal-overlay {
@@ -345,6 +359,8 @@
   cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-save-modal:hover { opacity: 0.9; }
+.cm-actions .btn-save-modal:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.cm-actions .btn-save-modal:disabled { opacity: 0.5; cursor: not-allowed; }
 .cm-actions .btn-close-modal {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
@@ -352,6 +368,8 @@
   color: var(--text-secondary); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-close-modal:hover { background: var(--bg-secondary); }
+.cm-actions .btn-close-modal:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.cm-actions .btn-close-modal:disabled { opacity: 0.5; cursor: not-allowed; }
 .cm-actions .btn-delete-modal {
   margin-left: auto;
   padding: 9px 18px; border: 1px solid var(--color-danger);
@@ -360,6 +378,8 @@
   color: var(--color-danger); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-delete-modal:hover { background: var(--color-danger-bg); }
+.cm-actions .btn-delete-modal:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.cm-actions .btn-delete-modal:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Generate Prep Modal ── */
 .gen-prep-overlay {
@@ -393,6 +413,8 @@
   cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .gen-prep-btns .btn-gen-go:hover { opacity: 0.9; }
+.gen-prep-btns .btn-gen-go:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.gen-prep-btns .btn-gen-go:disabled { opacity: 0.5; cursor: not-allowed; }
 .gen-prep-btns .btn-gen-cancel {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
@@ -400,6 +422,8 @@
   cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
+.gen-prep-btns .btn-gen-cancel:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.gen-prep-btns .btn-gen-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Grafik Preview on Cards ── */
 .card-begruendung {
@@ -427,6 +451,8 @@
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: var(--text-on-accent); }
+.cm-canva-row .btn-canva-open:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.cm-canva-row .btn-canva-open:disabled { opacity: 0.5; cursor: not-allowed; }
 .cm-drop-zone {
   border: 2px dashed var(--border); border-radius: var(--radius-sm);
   padding: 16px; text-align: center; color: var(--text-secondary);
@@ -451,6 +477,7 @@
 }
 .plan-tab.active { border-bottom-color: var(--fem-pink); color: var(--fem-pink); }
 .plan-tab:hover { color: var(--text-primary); }
+.plan-tab:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .plan-panel { display: none; }
 .plan-panel.active { display: block; }
 .mini-cal-header {
@@ -465,6 +492,8 @@
   justify-content: center; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .mini-cal-header button:hover { background: var(--fem-pink-light); color: var(--fem-pink); }
+.mini-cal-header button:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.mini-cal-header button:disabled { opacity: 0.5; cursor: not-allowed; }
 .mini-cal-grid {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
   text-align: center; margin-bottom: var(--space-md);
@@ -501,6 +530,8 @@
   font-size: var(--text-base); font-weight: 600; cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .plan-selected .btn-plan-save:hover { opacity: 0.9; }
+.plan-selected .btn-plan-save:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.plan-selected .btn-plan-save:disabled { opacity: 0.5; cursor: not-allowed; }
 .plan-selected .btn-plan-save.saved {
   background: var(--color-success-bg); color: var(--color-success);
 }
@@ -515,7 +546,13 @@
 .pub-modal-btns { display:flex; gap: var(--space-sm); margin-top:16px; }
 .pub-modal-btns button { flex:1; padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
 .pub-modal-btns .pub-confirm { border:none; background:var(--fem-pink); color:var(--text-on-accent); }
+.pub-modal-btns .pub-confirm:hover { opacity:0.9; }
+.pub-modal-btns .pub-confirm:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.pub-modal-btns .pub-confirm:disabled { opacity:0.5; cursor:not-allowed; }
 .pub-modal-btns .pub-cancel { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
+.pub-modal-btns .pub-cancel:hover { background:var(--bg-secondary); }
+.pub-modal-btns .pub-cancel:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.pub-modal-btns .pub-cancel:disabled { opacity:0.5; cursor:not-allowed; }
 /* Published card extras */
 .pub-meta { font-size:10.5px; color:var(--text-secondary); margin-top:4px; }
 .pub-meta a { color:var(--fem-pink); text-decoration:none; }
@@ -529,6 +566,7 @@
 .score-red { background:var(--color-danger-bg); color:var(--color-danger); }
 .score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-sm); font-weight:500; color:var(--text-secondary); transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
 .score-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.score-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .score-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .score-detail { margin-top:6px; padding:8px 10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:var(--text-sm); line-height:1.5; display:none; }
 .score-detail.open { display:block; }
@@ -560,17 +598,32 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
 /* ── Extracted utility classes ── */
 .btn-full { width:100%; }
 .btn-full-secondary { width:100%; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border); }
+.btn-full-secondary:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.btn-full-secondary:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-full-secondary:disabled { opacity:0.5; cursor:not-allowed; }
 .mb-10-pink { margin-bottom:10px; color:var(--fem-pink); }
 .mb-12 { margin-bottom:12px; }
-.canva-copy-btn { padding:5px 12px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
+.canva-copy-btn { padding:5px 12px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; }
+.canva-copy-btn:hover { background:var(--fem-pink); color:var(--text-on-accent); }
+.canva-copy-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.canva-copy-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .btn-gradient-full { width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); }
 .btn-gradient-full-accent { width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent); }
+.btn-gradient-full:hover { opacity:0.9; }
+.btn-gradient-full:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-gradient-full:disabled { opacity:0.5; cursor:not-allowed; }
+.btn-gradient-full-accent:hover { opacity:0.9; }
+.btn-gradient-full-accent:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-gradient-full-accent:disabled { opacity:0.5; cursor:not-allowed; }
 .modal-subtitle { margin-bottom:12px; font-size:13px; color:var(--text-secondary); }
 .modal-footer-right { margin-top:14px; text-align:right; }
 .cm-status-text { font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px; }
 .cm-actions-divider { margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
 .cm-canva-textarea { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; background:var(--bg-secondary); resize:vertical; }
-.cm-canva-copy-btn { margin-top:6px; padding:5px 14px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
+.cm-canva-copy-btn { margin-top:6px; padding:5px 14px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; }
+.cm-canva-copy-btn:hover { background:var(--fem-pink); color:var(--text-on-accent); }
+.cm-canva-copy-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.cm-canva-copy-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .cm-checkbox { width:auto; accent-color:var(--fem-pink); }
 .cm-checkbox-label { font-size:12.5px; cursor:pointer; }
 .cm-gen-btn-full { width:100%; margin-top:10px; }

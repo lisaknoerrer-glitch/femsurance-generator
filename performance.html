@@ -42,7 +42,7 @@
 .goal-target { text-align: right; }
 .goal-target .goal-value { font-size: 22px; font-weight: 700; color: var(--text-primary); }
 .progress-track { width: 100%; height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden; margin-bottom: var(--space-sm); }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple)); border-radius: 5px; transition: width 1s cubic-bezier(0.32, 0.72, 0, 1); }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--fem-pink), var(--fem-purple)); border-radius: 5px; transform-origin: left center; transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1); }
 .goal-diff { font-size: 12.5px; color: var(--text-secondary); text-align: center; }
 .goal-diff strong { color: var(--fem-pink); font-weight: 600; }
 
@@ -56,6 +56,7 @@
 .filter-btn.active, .filter-btn:hover {
   background: var(--fem-pink); color: var(--text-on-accent); border-color: var(--fem-pink);
 }
+.filter-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 
 /* ── Chart ── */
 .chart-container { width: 100%; height: 220px; position: relative; }
@@ -107,6 +108,8 @@
   white-space: nowrap;
 }
 .btn-to-pipeline:hover { background: var(--fem-pink); color: var(--text-on-accent); }
+.btn-to-pipeline:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-to-pipeline:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-to-pipeline.sent { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); pointer-events: none; }
 
 /* ── KPI Center ── */
@@ -124,9 +127,12 @@
 .kpi-upload-row { display:flex; gap: var(--space-sm); align-items:center; margin-bottom: var(--space-md); }
 .kpi-upload-btn { padding:7px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-base); color:var(--text-secondary); transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
 .kpi-upload-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.kpi-upload-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.kpi-upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .kpi-upload-btn.has-file { border-style:solid; border-color:var(--fem-pink); color:var(--fem-pink); font-weight:600; }
 .kpi-extract { display:block; width:100%; padding:9px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); margin-bottom: var(--space-md); }
 .kpi-extract:hover { opacity:0.9; }
+.kpi-extract:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .kpi-extract:disabled { opacity:0.5; cursor:not-allowed; }
 .kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
 .kpi-field label { display:block; font-size:var(--text-xs); color:var(--text-secondary); margin-bottom:2px; }
@@ -139,6 +145,8 @@
 .kpi-save-row input:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
 .kpi-save-btn { padding:8px 20px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
 .kpi-save-btn:hover { opacity:0.9; }
+.kpi-save-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.kpi-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .kpi-history { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
 .kpi-history-card { background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px 12px; font-size:var(--text-sm); }
 .kpi-history-card .kpi-hw { font-weight:700; color:var(--text-primary); margin-bottom:4px; font-size:var(--text-base); }
@@ -206,13 +214,20 @@
 .pp-modal .pp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap: var(--space-sm); }
 .pp-modal-actions { display:flex; gap: var(--space-sm); margin-top:16px; }
 .pp-modal-actions button { padding:9px 20px; border-radius:var(--radius-sm); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; }
-.pp-modal-actions .pp-save { border:none; background:var(--fem-pink); color:var(--text-on-accent); }
-.pp-modal-actions .pp-close { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); }
+.pp-modal-actions .pp-save { border:none; background:var(--fem-pink); color:var(--text-on-accent); transition:opacity 0.15s; }
+.pp-modal-actions .pp-save:hover { opacity:0.9; }
+.pp-modal-actions .pp-save:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.pp-modal-actions .pp-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.pp-modal-actions .pp-close { border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); transition:all 0.15s; }
+.pp-modal-actions .pp-close:hover { background:var(--bg-secondary); }
+.pp-modal-actions .pp-close:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.pp-modal-actions .pp-close:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Tabs ── */
 .perf-tabs { display:flex; gap:0; margin-bottom: var(--space-xl); border-bottom:2px solid var(--border); position:relative; z-index:5; }
 .tab-btn { flex:1; padding:12px 16px; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; background:none; font-family:inherit; font-size:var(--text-lg); font-weight:600; color:var(--text-secondary); cursor:pointer; text-align:center; transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
 .tab-btn:hover { color:var(--text-primary); background:var(--bg-secondary); }
+.tab-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .tab-btn.active { border-bottom-color:var(--fem-pink); color:var(--fem-pink); background:none; }
 .tab-content { display:none; }
 /* Report cards */
@@ -234,6 +249,7 @@
 .report-btn.pink { background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent); }
 .report-btn.outline { background:var(--bg-card); border:1px solid var(--border); color:var(--text-secondary); }
 .report-btn:hover { opacity:0.9; }
+.report-btn:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .report-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .report-textarea { width:100%; min-height:120px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:'Courier New',monospace; font-size:var(--text-base); line-height:1.5; resize:vertical; margin-top:10px; }
 .report-textarea:focus { outline:none; border-color:var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
@@ -484,7 +500,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
             <div class="stat-value-md" id="perfGoal">2.500</div>
           </div>
         </div>
-        <div class="progress-track"><div class="progress-fill" id="perfFill" style="width:73.9%;"></div></div>
+        <div class="progress-track"><div class="progress-fill" id="perfFill" style="transform:scaleX(0.739);"></div></div>
         <div class="meta-text-center" id="perfDiff">Noch <strong>653</strong> · 73,9 % erreicht</div>
       </div>
 
@@ -501,7 +517,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
             <div class="stat-value-md" id="perfGruppeGoalVal">–</div>
           </div>
         </div>
-        <div class="progress-track"><div class="progress-fill" id="perfGruppeFill" style="width:0%;"></div></div>
+        <div class="progress-track"><div class="progress-fill" id="perfGruppeFill" style="transform:scaleX(0);"></div></div>
         <div class="meta-text-center" id="perfGruppeDiff">–</div>
       </div>
 
@@ -518,7 +534,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
             <div class="stat-value-md" id="perfWhatsappGoalVal">–</div>
           </div>
         </div>
-        <div class="progress-track"><div class="progress-fill" id="perfWhatsappFill" style="width:0%;"></div></div>
+        <div class="progress-track"><div class="progress-fill" id="perfWhatsappFill" style="transform:scaleX(0);"></div></div>
         <div class="meta-text-center" id="perfWhatsappDiff">–</div>
       </div>
 
@@ -1299,7 +1315,7 @@ try {
     document.getElementById('perfGoal').textContent = goal.toLocaleString('de-DE');
     const pct = goal > 0 ? Math.min((f / goal) * 100, 100) : 0;
     const remaining = Math.max(goal - f, 0);
-    document.getElementById('perfFill').style.width = pct.toFixed(1) + '%';
+    document.getElementById('perfFill').style.transform = 'scaleX(' + (pct / 100) + ')';
     document.getElementById('perfDiff').innerHTML = `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> · ${pct.toFixed(1)} % erreicht`;
   }
 
@@ -1310,7 +1326,7 @@ try {
     document.getElementById(goalValId).textContent = g > 0 ? g.toLocaleString('de-DE') : '–';
     const pct = g > 0 ? Math.min((c / g) * 100, 100) : 0;
     const remaining = Math.max(g - c, 0);
-    document.getElementById(fillId).style.width = pct.toFixed(1) + '%';
+    document.getElementById(fillId).style.transform = 'scaleX(' + (pct / 100) + ')';
     document.getElementById(diffId).innerHTML = g > 0
       ? `Noch <strong>${remaining.toLocaleString('de-DE')}</strong> · ${pct.toFixed(1)} % erreicht`
       : '–';
@@ -1891,7 +1907,7 @@ function renderQuarter() {
         <span class="goal-progress-label">${g.label}</span>
         <span class="goal-progress-value">${g.current ? g.current.toLocaleString('de-DE') : '–'} / ${g.target.toLocaleString('de-DE')}</span>
       </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${pct.toFixed(1)}%;"></div></div>
+      <div class="progress-track"><div class="progress-fill" style="transform:scaleX(${(pct / 100).toFixed(4)});"></div></div>
     </div>`;
   }).join('');
 
