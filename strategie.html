@@ -70,6 +70,11 @@ textarea { resize:vertical; line-height:1.6; }
 .btn-export { display:block; margin-top:20px; padding:10px 24px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); font-family:inherit; font-size:var(--text-md); font-weight:600; cursor:pointer; transition:opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
 .btn-export:hover { opacity:0.9; }
 
+/* ── Extracted utility classes ── */
+.mt-12 { margin-top:12px; }
+.flex-center-gap { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.text-hint { font-size:11px; color:var(--text-secondary); }
+
 </style>
 </head>
 <body>
@@ -105,7 +110,7 @@ textarea { resize:vertical; line-height:1.6; }
         <div class="field"><label class="fl">Newsletter-Ziel</label><input type="number" id="zNewsletter" placeholder="z.B. 500"></div>
       </div>
       <div class="field"><label class="fl">Zeitraum</label><select id="zZeitraum"><option>Q1 2026</option><option>Q2 2026</option><option selected>Q3 2026</option><option>Q4 2026</option><option>Q1 2027</option></select></div>
-      <label class="fl" style="margin-top:12px;">Weitere Business-Ziele</label>
+      <label class="fl mt-12">Weitere Business-Ziele</label>
       <div id="weitereZiele"></div>
       <button class="btn-add" id="addZiel">+ Weiteres Ziel hinzufügen</button>
     </div>
@@ -172,9 +177,9 @@ textarea { resize:vertical; line-height:1.6; }
   <div class="card fade-up">
     <div class="card-header collapsed" data-card="8"><div class="card-title">🧠 Strategie-Check</div><span class="chevron">▼</span></div>
     <div class="card-body collapsed" data-body="8">
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <div class="flex-center-gap">
         <button class="btn-check" id="stratCheckBtn">Strategie prüfen</button>
-        <span style="font-size:11px; color:var(--text-secondary);" id="checkTs"></span>
+        <span class="text-hint" id="checkTs"></span>
       </div>
       <div id="checkOutput"></div>
       <div class="check-actions" id="checkActions" style="display:none;">

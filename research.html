@@ -201,6 +201,32 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
 .mb-10 { margin-bottom:10px; }
 .clickable { cursor:pointer; }
 
+/* ── Extracted utility classes ── */
+.flex-wrap-center { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.flex-wrap-gap14 { display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+.flex-wrap-gap6 { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+.td-meta { font-size:12px; color:var(--text-secondary); }
+.td-small { font-size:12px; }
+.td-small-center { font-size:12px; text-align:center; }
+.badge-xs { font-size:9px; }
+.badge-sm { font-size:10px; }
+.ki-section-flex { flex:1; min-width:200px; }
+.empty-state-box { padding:16px; color:var(--text-secondary); font-size:13px; line-height:1.6; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:10px; }
+.mt-10 { margin-top:10px; }
+.hookperf-form { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; }
+.hookperf-form-field { flex:1; min-width:120px; }
+.btn-pink-sm { padding:7px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+.select-input-sm { padding:7px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.flex-center-gap8 { display:flex; gap:8px; align-items:center; }
+.status-text-sm { font-size:12px; margin-top:6px; color:var(--text-secondary); }
+.auto-push-panel { margin-top:12px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); }
+.hookperf-form-panel { margin-top:8px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); }
+.success-text { color:var(--color-success); font-weight:600; }
+.pb-inline-row { display:flex; gap:6px; margin-top:6px; }
+.pb-inline-input-field { flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; }
+.pb-inline-save-btn { padding:4px 10px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); cursor:pointer; font-size:12px; font-weight:600; }
+.pb-inline-cancel-btn { padding:4px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-size:12px; color:var(--text-secondary); }
+
 /* ── Responsive (page-specific) ── */
 @media (max-width: 768px) {
   .hook-grid { grid-template-columns: 1fr; }
@@ -255,18 +281,18 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
   </div>
 
   <!-- KI-Empfehlungen -->
-  <div style="margin-bottom:18px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+  <div class="flex-wrap-center">
     <button class="ki-btn" id="kiBtn">🧠 KI-Empfehlungen aktualisieren</button>
     <span class="ki-timestamp" id="kiTimestamp"></span>
   </div>
   <div id="kiLearnings"></div>
-  <div id="kiSections" style="display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;"></div>
+  <div id="kiSections" class="flex-wrap-gap14"></div>
 
   <!-- Trending-Themen (dynamic) -->
   <div class="card fade-up">
     <div class="card-title">Trending-Themen FemSurance</div>
     <div id="perfSuggestions"></div>
-    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;" id="twFilter">
+    <div class="flex-wrap-gap6" id="twFilter">
       <button class="filter-btn filter-btn-research active" data-tw="all">Alle</button>
       <button class="filter-btn filter-btn-research" data-tw="Business & Vertrieb">Business & Vertrieb</button>
       <button class="filter-btn filter-btn-research" data-tw="Marketing & Sichtbarkeit">Marketing & Sichtbarkeit</button>
@@ -309,7 +335,7 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
   <div class="card fade-up">
     <div class="card-title clickable" id="insightsToggle">📊 Wissenschaftliche Insights <span class="meta-float-right">▼</span></div>
     <div id="insightsBody">
-      <div id="insightsList" style="margin-bottom:10px;"></div>
+      <div id="insightsList" class="mb-10"></div>
       <button class="btn-add-row" id="btnAddInsight">+ Eigenen Insight hinzufügen</button>
     </div>
   </div>
@@ -345,16 +371,16 @@ body.dark-mode .ki-section { background: rgba(124,58,237,0.1); }
       </div>
     </div>
     <div class="outline-results" id="outlineResults"></div>
-    <div id="autoPushSection" style="display:none; margin-top:12px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
-      <div style="display:flex; gap:8px; align-items:center;">
-        <select id="autoPushCount" style="padding:7px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
+    <div id="autoPushSection" class="auto-push-panel" style="display:none;">
+      <div class="flex-center-gap8">
+        <select id="autoPushCount" class="select-input-sm">
           <option value="1">Top 1 übernehmen</option>
           <option value="3" selected>Top 3 übernehmen</option>
           <option value="5">Alle 5 übernehmen</option>
         </select>
         <button class="btn-generate" id="autoPushBtn" style="white-space:nowrap;">🚀 Zur Pipeline</button>
       </div>
-      <div id="autoPushStatus" style="font-size:12px; margin-top:6px; color:var(--text-secondary);"></div>
+      <div id="autoPushStatus" class="status-text-sm"></div>
     </div>
   </div>
 
@@ -426,12 +452,12 @@ function renderThemes() {
     const engCls = tp.avgEng >= 5 ? 'trend-up' : tp.avgEng >= 3 ? 'trend-stable' : tp.posts ? 'trend-new' : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="trend-name">${t.thema}${t.badge ? ` <span class="trend-badge trend-up" style="font-size:9px;">${t.badge}</span>` : ''}</td>
-      <td style="font-size:12px; color:var(--text-secondary);">${t.hook || '–'}</td>
-      <td style="font-size:12px;">${t.format || '–'}</td>
+      <td class="trend-name">${t.thema}${t.badge ? ` <span class="trend-badge trend-up badge-xs">${t.badge}</span>` : ''}</td>
+      <td class="td-meta">${t.hook || '–'}</td>
+      <td class="td-small">${t.format || '–'}</td>
       <td><span class="potenzial" data-i="${i}">${stars}</span></td>
-      <td style="font-size:12px; text-align:center;">${tp.posts || '–'}</td>
-      <td>${tp.posts ? `<span class="trend-badge ${engCls}" style="font-size:10px;">${tp.avgEng.toFixed(1)}%</span>` : '–'}</td>
+      <td class="td-small-center">${tp.posts || '–'}</td>
+      <td>${tp.posts ? `<span class="trend-badge ${engCls} badge-sm">${tp.avgEng.toFixed(1)}%</span>` : '–'}</td>
       <td class="trend-actions">
         <button title="Bearbeiten" data-edit="${i}">✏️</button>
         <button title="Löschen" data-del="${i}">🗑️</button>
@@ -666,10 +692,10 @@ function renderKiResults(data) {
   const sectionsEl = document.getElementById('kiSections');
   let html = '';
   if (data.was_testen && data.was_testen.length) {
-    html += `<div class="ki-section testen" style="flex:1; min-width:200px;"><div class="ki-section-title">✅ Was testen</div><ul>${data.was_testen.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+    html += `<div class="ki-section testen ki-section-flex"><div class="ki-section-title">✅ Was testen</div><ul>${data.was_testen.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
   }
   if (data.was_vermeiden && data.was_vermeiden.length) {
-    html += `<div class="ki-section vermeiden" style="flex:1; min-width:200px;"><div class="ki-section-title">⛔ Was vermeiden</div><ul>${data.was_vermeiden.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+    html += `<div class="ki-section vermeiden ki-section-flex"><div class="ki-section-title">⛔ Was vermeiden</div><ul>${data.was_vermeiden.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
   }
   sectionsEl.innerHTML = html;
   // Timestamp
@@ -857,7 +883,7 @@ function renderHookPerf() {
   let html = '';
 
   if (!Object.keys(hookPerf).length) {
-    html += `<div style="padding:16px; color:var(--text-secondary); font-size:13px; line-height:1.6; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-bottom:10px;">
+    html += `<div class="empty-state-box">
       <strong>Noch keine Daten vorhanden.</strong><br>
       So funktioniert es: Öffne eine Pipeline-Karte → wähle einen Hook-Typ → veröffentliche den Post → trage die Performance ein → Hook-Daten erscheinen hier automatisch.
     </div>`;
@@ -866,17 +892,17 @@ function renderHookPerf() {
     html += '<table class="trend-table"><thead><tr><th>Hook-Typ</th><th>Posts</th><th>Ø Engagement</th></tr></thead><tbody>';
     sorted.forEach((h, i) => {
       const cls = h.avg >= 5 ? 'trend-up' : h.avg >= 3 ? 'trend-stable' : 'trend-new';
-      html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up" style="font-size:9px;">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
+      html += `<tr><td class="trend-name">${h.typ}${i === 0 ? ' <span class="trend-badge trend-up badge-xs">⭐ Bester Hook</span>' : ''}</td><td>${h.count}</td><td><span class="trend-badge ${cls}">${h.avg.toFixed(1)}%</span></td></tr>`;
     });
     html += '</tbody></table>';
   }
 
   // Manual entry form
-  html += `<div style="margin-top:10px;">
+  html += `<div class="mt-10">
     <button class="btn-add-row" id="hookManualToggle">+ Hook-Performance manuell eintragen</button>
-    <div id="hookManualForm" style="display:none; margin-top:8px; padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
-      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end;">
-        <div style="flex:1; min-width:120px;">
+    <div id="hookManualForm" class="hookperf-form-panel" style="display:none;">
+      <div class="hookperf-form">
+        <div class="hookperf-form-field">
           <div class="field-label-sm">Hook-Typ</div>
           <select id="hookManualTyp" class="form-input-sm">
             <option>Provokation</option><option>Story</option><option>Frage</option><option>Statistik</option><option>Zitat</option><option>Persönlich</option>
@@ -886,7 +912,7 @@ function renderHookPerf() {
           <div class="field-label-sm">Eng.-Rate %</div>
           <input type="number" id="hookManualEng" placeholder="z.B. 5.2" step="0.1" class="form-input-sm">
         </div>
-        <button id="hookManualSave" style="padding:7px 16px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;">Speichern</button>
+        <button id="hookManualSave" class="btn-pink-sm">Speichern</button>
       </div>
     </div>
   </div>`;
@@ -978,7 +1004,7 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
     });
     localStorage.setItem('fem_pipeline_board', JSON.stringify(pipeCards));
 
-    status.innerHTML = `<span style="color:var(--color-success); font-weight:600;">✓ ${selected.length} Outlines zur Pipeline hinzugefügt</span> (Scores: ${selected.map(s=>s.score+'/10').join(', ')})`;
+    status.innerHTML = `<span class="success-text">✓ ${selected.length} Outlines zur Pipeline hinzugefügt</span> (Scores: ${selected.map(s=>s.score+'/10').join(', ')})`;
   } catch (err) {
     status.textContent = 'Fehler: ' + err.message;
   }
@@ -1019,10 +1045,10 @@ function renderPlaybook() {
         return `<div class="pb-item"><span>${text}</span>${isNew ? '<span class="pb-new">🆕 Diese Woche</span>' : ''}<button data-pb-del="${sec.key}_${i}">×</button></div>`;
       }).join('')}
       <div class="pb-inline-add" data-pb-sec-add="${sec.key}" style="display:none;">
-        <div style="display:flex; gap:6px; margin-top:6px;">
-          <input type="text" class="pb-inline-input" placeholder="Neuer Eintrag..." style="flex:1; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px;">
-          <button class="pb-inline-save" style="padding:4px 10px; border:none; border-radius:var(--radius-sm); background:var(--fem-pink); color:var(--text-on-accent); cursor:pointer; font-size:12px; font-weight:600;">✓</button>
-          <button class="pb-inline-cancel" style="padding:4px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); cursor:pointer; font-size:12px; color:var(--text-secondary);">×</button>
+        <div class="pb-inline-row">
+          <input type="text" class="pb-inline-input pb-inline-input-field" placeholder="Neuer Eintrag...">
+          <button class="pb-inline-save pb-inline-save-btn">✓</button>
+          <button class="pb-inline-cancel pb-inline-cancel-btn">×</button>
         </div>
       </div>
       <button class="pb-add" data-pb-add="${sec.key}">+ Hinzufügen</button>

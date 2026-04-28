@@ -153,6 +153,28 @@ body.dark-mode .ca-result { background: rgba(124,58,237,0.15); }
 
 /* ── Extracted utility classes ── */
 .mt-10 { margin-top:10px; }
+.mt-12 { margin-top:12px; }
+.w-full { width:100%; }
+.text-hint { font-size:11px; color:var(--text-secondary); }
+.text-muted-sm { font-size:12px; color:var(--text-secondary); }
+.text-muted-xs { font-size:10px; color:var(--text-secondary); margin:4px 0; }
+.section-label-pink { font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin-bottom:8px; }
+.section-label-muted { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; }
+.separator { border-top:2px solid var(--border); margin:16px 0; padding-top:4px; }
+.empty-state { padding:10px; color:var(--text-secondary); font-size:12px; }
+.flex-center-gap { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.flex-gap-sm { display:flex; gap:8px; margin-bottom:8px; }
+.flex-gap-sm-flat { display:flex; gap:8px; }
+.input-inline { padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; }
+.input-narrow-60 { width:60px; }
+.input-narrow-120 { width:120px; }
+.inline-form-box { padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-top:8px; }
+.btn-remove-inline { border:none; background:none; cursor:pointer; color:var(--text-secondary); }
+.chart-wrapper { height:120px; background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px; }
+.legend-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+.legend-item { font-size:11px; display:flex; align-items:center; gap:4px; }
+.svg-full { width:100%; height:100%; }
+.actions-inline { margin-top:6px; }
 
 </style>
 </head>
@@ -212,9 +234,9 @@ body.dark-mode .ca-result { background: rgba(124,58,237,0.15); }
   <!-- Gap-Analyse -->
   <div class="card fade-up">
     <div class="card-title">🔍 Gap-Analyse</div>
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+    <div class="flex-center-gap">
       <button class="ca-btn-pink" id="gapBtn">🔍 Gap-Analyse starten</button>
-      <span style="font-size:11px; color:var(--text-secondary);" id="gapTimestamp"></span>
+      <span class="text-hint" id="gapTimestamp"></span>
     </div>
     <div id="gapOutput"></div>
     <div class="gap-actions" id="gapActions" style="display:none;">
@@ -362,7 +384,7 @@ function renderGrowth() {
           <span>${latest ? latest.toLocaleString('de-DE') : '–'} ${growthBadge}</span>
         </div>
         <div class="growth-spark">${sparkGrowth(entries)}</div>
-        <div style="font-size:10px; color:var(--text-secondary); margin:4px 0;">${entries.length} Einträge</div>
+        <div class="text-muted-xs">${entries.length} Einträge</div>
         <div class="growth-add">
           <input type="date" class="ga-date" value="${new Date().toISOString().split('T')[0]}">
           <input type="number" class="ga-fol" placeholder="Aktuelle Zahl" style="width:90px;">
@@ -378,7 +400,7 @@ function renderGrowth() {
   });
 
   // Separator
-  html += '<div style="border-top:2px solid var(--border); margin:16px 0; padding-top:4px;"><span style="font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase;">Wettbewerber</span></div>';
+  html += '<div class="separator"><span class="section-label-muted">Wettbewerber</span></div>';
 
   // Competitor accounts
   if (compAccounts.length) {
@@ -387,17 +409,17 @@ function renderGrowth() {
       html += renderRow(acc, ai, false);
     });
   } else {
-    html += '<div style="padding:10px; color:var(--text-secondary); font-size:12px;">Noch keine Wettbewerber-Accounts.</div>';
+    html += '<div class="empty-state">Noch keine Wettbewerber-Accounts.</div>';
   }
 
   // Add account button
   html += `<div id="growthAddForm" class="mt-10">
-    <button class="btn-add" id="growthAddBtn" style="width:100%;">+ Account zum Wachstumsvergleich hinzufügen</button>
+    <button class="btn-add w-full" id="growthAddBtn">+ Account zum Wachstumsvergleich hinzufügen</button>
   </div>`;
 
   // Compare button
   if (growthData.accounts.length >= 2) {
-    html += `<button class="ca-btn-pink" id="growthCompare" style="margin-top:12px; width:100%;">📊 Wachstum vergleichen</button>`;
+    html += `<button class="ca-btn-pink mt-12 w-full" id="growthCompare">📊 Wachstum vergleichen</button>`;
     html += `<div id="growthCompareChart" class="mt-10"></div>`;
   }
 
@@ -438,12 +460,12 @@ function renderGrowth() {
   document.getElementById('growthAddBtn')?.addEventListener('click', () => {
     const form = document.getElementById('growthAddForm');
     form.innerHTML = `
-      <div style="padding:12px; background:var(--bg-secondary); border-radius:var(--radius-sm); margin-top:8px;">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <input type="text" id="gaNewName" placeholder="Account-Name" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
-          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" style="width:120px; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px;">
+      <div class="inline-form-box">
+        <div class="flex-gap-sm">
+          <input type="text" id="gaNewName" placeholder="Account-Name" class="input-inline" style="flex:1;">
+          <input type="number" id="gaNewFol" placeholder="Aktuelle Follower" class="input-inline input-narrow-120">
         </div>
-        <div style="display:flex; gap:8px;">
+        <div class="flex-gap-sm-flat">
           <button class="ca-btn-pink" id="gaNewSave">Hinzufügen</button>
           <button class="ca-btn" id="gaNewCancel">Abbrechen</button>
         </div>
@@ -466,9 +488,9 @@ function renderGrowth() {
     const colors = ['#E91E8C', '#f4afd4', '#7C3AED', '#EEEDFE', 'var(--color-info)', '#f59e0b', 'var(--color-success)', 'var(--color-danger)'];
     let allVals = [];
     growthData.accounts.forEach(a => a.entries.forEach(e => allVals.push(e.followers)));
-    if (!allVals.length) { chart.innerHTML = '<div style="color:var(--text-secondary); font-size:12px;">Noch keine Daten.</div>'; return; }
+    if (!allVals.length) { chart.innerHTML = '<div class="text-muted-sm">Noch keine Daten.</div>'; return; }
     const gMin = Math.min(...allVals), gMax = Math.max(...allVals), gRange = gMax - gMin || 1;
-    let svg = '<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:100%;">';
+    let svg = '<svg viewBox="0 0 300 100" preserveAspectRatio="none" class="svg-full">';
     growthData.accounts.forEach((acc, i) => {
       const entries = (acc.entries || []).sort((a,b) => new Date(a.date) - new Date(b.date));
       if (entries.length < 2) return;
@@ -476,8 +498,8 @@ function renderGrowth() {
       svg += `<polyline points="${pts}" fill="none" stroke="${colors[i % colors.length]}" stroke-width="2.5" stroke-linecap="round"/>`;
     });
     svg += '</svg>';
-    let legend = growthData.accounts.map((a, i) => `<span style="font-size:11px; display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:${colors[i % colors.length]}; border-radius:2px; display:inline-block;"></span>${a.name}</span>`).join('');
-    chart.innerHTML = `<div style="height:120px; background:var(--bg-secondary); border-radius:var(--radius-sm); padding:10px;">${svg}</div><div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">${legend}</div>`;
+    let legend = growthData.accounts.map((a, i) => `<span class="legend-item"><span style="width:12px; height:3px; background:${colors[i % colors.length]}; border-radius:2px; display:inline-block;"></span>${a.name}</span>`).join('');
+    chart.innerHTML = `<div class="chart-wrapper">${svg}</div><div class="legend-row">${legend}</div>`;
   });
 }
 renderGrowth();
@@ -493,7 +515,7 @@ function renderCompAnalyse(container, accName) {
   function save() { content[accName] = accData; localStorage.setItem('fem_konkurrenz_content', JSON.stringify(content)); }
 
   function render() {
-    let html = '<div style="font-size:11px; font-weight:600; color:var(--fem-pink); text-transform:uppercase; margin-bottom:8px;">Top-Posts diese Woche</div>';
+    let html = '<div class="section-label-pink">Top-Posts diese Woche</div>';
     posts.forEach((p, i) => {
       html += `<div class="ca-post" data-pi="${i}">
         <textarea placeholder="Post-Text / Titel...">${p.text || ''}</textarea>
@@ -501,9 +523,9 @@ function renderCompAnalyse(container, accName) {
           <select data-f="hook"><option value="">Hook</option><option${p.hook==='Provokation'?' selected':''}>Provokation</option><option${p.hook==='Story'?' selected':''}>Story</option><option${p.hook==='Frage'?' selected':''}>Frage</option><option${p.hook==='Statistik'?' selected':''}>Statistik</option><option${p.hook==='Zitat'?' selected':''}>Zitat</option></select>
           <select data-f="format"><option value="">Format</option><option${p.format==='Carousel'?' selected':''}>Carousel</option><option${p.format==='Text'?' selected':''}>Text</option><option${p.format==='Bild'?' selected':''}>Bild</option><option${p.format==='Video'?' selected':''}>Video</option></select>
           <select data-f="ton"><option value="">Ton</option><option${p.ton==='sachlich'?' selected':''}>sachlich</option><option${p.ton==='emotional'?' selected':''}>emotional</option><option${p.ton==='motivierend'?' selected':''}>motivierend</option><option${p.ton==='fachlich'?' selected':''}>fachlich</option></select>
-          <input type="number" data-f="reaktionen" value="${p.reaktionen||''}" placeholder="Reak." style="width:60px;">
-          <input type="number" data-f="kommentare" value="${p.kommentare||''}" placeholder="Komm." style="width:60px;">
-          <button style="border:none;background:none;cursor:pointer;color:var(--text-secondary);" data-remove="${i}">×</button>
+          <input type="number" data-f="reaktionen" value="${p.reaktionen||''}" placeholder="Reak." class="input-narrow-60">
+          <input type="number" data-f="kommentare" value="${p.kommentare||''}" placeholder="Komm." class="input-narrow-60">
+          <button class="btn-remove-inline" data-remove="${i}">×</button>
         </div>
       </div>`;
     });
@@ -532,7 +554,7 @@ function renderCompAnalyse(container, accName) {
         <strong>Erfolgsrezept:</strong> ${a.muster?.was_funktioniert || '–'}<br>
         <strong>Top-Post:</strong> ${a.top_post?.titel || '–'} — ${a.top_post?.warum_erfolgreich || ''}<br>
         <strong>FemSurance-Chance:</strong> ${a.femsurance_chance || '–'}
-        <div style="margin-top:6px;">
+        <div class="actions-inline">
           <button class="ca-btn" data-to-research="${accName}">→ Research</button>
           <button class="ca-btn" data-to-playbook="${accName}">→ Playbook</button>
         </div>

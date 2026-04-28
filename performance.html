@@ -321,6 +321,27 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   .kpi-ss-grid { grid-template-columns: repeat(2, 1fr); }
   .kpi-history { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Extracted utility classes ── */
+.input-readonly { background:var(--bg-secondary); }
+.chart-label-sm { font-size:8px; }
+.badge-ml { margin-left:4px; }
+.badge-warning { margin-left:4px; background:var(--color-warning-bg); color:var(--color-warning); cursor:pointer; }
+.td-small { font-size:11px; }
+.ac-sub-small { font-size:10px; margin-top:4px; }
+.section-label-pink-mb { margin-bottom:8px; }
+.mt-16 { margin-top:16px; }
+.trend-up-icon { color:var(--color-success); }
+.trend-down-icon { color:var(--color-danger); }
+.trend-neutral-icon { color:var(--text-secondary); }
+.empty-state { padding:14px; color:var(--text-secondary); font-size:13px; }
+.themenwelten-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.goal-progress-row { margin-bottom:12px; }
+.goal-progress-header { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+.goal-progress-label { font-weight:600; }
+.goal-progress-value { color:var(--text-secondary); }
+.section-label-pink-sm-mt { margin-top:10px; }
+.link-icon-pink { color:var(--fem-pink); text-decoration:none; }
 </style>
 </head>
 <body>
@@ -580,7 +601,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <!-- Themenwelten-Analyse -->
   <div class="card fade-up">
     <div class="card-title">🌍 Themenwelten-Analyse</div>
-    <div id="themenweltenGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;"></div>
+    <div id="themenweltenGrid" class="themenwelten-grid"></div>
   </div>
 
   <!-- Themen & Format Analyse -->
@@ -618,7 +639,7 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
   <div class="pp-modal-overlay" id="ppModal">
     <div class="pp-modal">
       <h3 id="ppModalTitle">Post-Performance</h3>
-      <div class="section-label-pink-sm" style="margin-top:10px;">Organisches Engagement</div>
+      <div class="section-label-pink-sm section-label-pink-sm-mt">Organisches Engagement</div>
       <div class="pp-row">
         <div class="pp-field"><label>Reaktionen</label><input id="ppd_reaktionen"></div>
         <div class="pp-field"><label>Kommentare</label><input id="ppd_kommentare"></div>
@@ -626,11 +647,11 @@ body.dark-mode .analyse-result { background: rgba(124,58,237,0.15); }
       </div>
       <div class="pp-row">
         <div class="pp-field"><label>Engagements</label><input id="ppd_engagements"></div>
-        <div class="pp-field"><label>Engagement-Rate %</label><input id="ppd_eng_rate" readonly style="background:var(--bg-secondary);"></div>
+        <div class="pp-field"><label>Engagement-Rate %</label><input id="ppd_eng_rate" readonly class="input-readonly"></div>
         <div class="pp-field"><label>Klicks</label><input id="ppd_klicks"></div>
       </div>
       <div class="pp-row">
-        <div class="pp-field"><label>Click-Through-Rate %</label><input id="ppd_ctr" readonly style="background:var(--bg-secondary);"></div>
+        <div class="pp-field"><label>Click-Through-Rate %</label><input id="ppd_ctr" readonly class="input-readonly"></div>
       </div>
       <div class="section-label-pink-sm">Organische Aktivitäten auf der Seite</div>
       <div class="pp-row">
@@ -776,7 +797,7 @@ function drawRealChart(svgId, gradId, dataPoints, days) {
     const v = minV + range * (i / gridSteps);
     const y = yScale(v);
     gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" class="chart-grid"/>`;
-    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label" style="font-size:8px">${Math.round(v)}</text>`;
+    gridLines += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" class="chart-label chart-label-sm">${Math.round(v)}</text>`;
   }
   // X labels
   const labelCount = Math.min(filtered.length, 4);
@@ -784,7 +805,7 @@ function drawRealChart(svgId, gradId, dataPoints, days) {
   for (let i = 0; i < filtered.length; i += labelStep) {
     const x = padL + i * xStep;
     const d = filtered[i].date;
-    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label" style="font-size:8px">${d.getDate()}.${d.getMonth() + 1}.</text>`;
+    gridLines += `<text x="${x}" y="${H - 4}" text-anchor="middle" class="chart-label chart-label-sm">${d.getDate()}.${d.getMonth() + 1}.</text>`;
   }
 
   const pts = filtered.map((p, i) => `${padL + i * xStep},${yScale(p.value)}`);
@@ -936,10 +957,10 @@ function renderPostTable() {
 
     // Link + performance badge
     const postUrl = item.card?.postUrl || '';
-    const linkIcon = postUrl ? ` <a href="${postUrl}" target="_blank" style="color:var(--fem-pink); text-decoration:none;" title="Post öffnen">🔗</a>` : '';
+    const linkIcon = postUrl ? ` <a href="${postUrl}" target="_blank" class="link-icon-pink" title="Post öffnen">🔗</a>` : '';
     const perfBadge = hasKPIs
-      ? '<span class="extract-badge" style="margin-left:4px;">✓ KPIs</span>'
-      : `<span class="extract-badge" style="margin-left:4px; background:var(--color-warning-bg); color:var(--color-warning); cursor:pointer;" data-perf-open="${cardId}">📊 Performance</span>`;
+      ? '<span class="extract-badge badge-ml">✓ KPIs</span>'
+      : `<span class="extract-badge badge-warning" data-perf-open="${cardId}">📊 Performance</span>`;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1132,11 +1153,11 @@ function renderAnalyse() {
     if (!k.best || d.imp > k.best.imp) k.best = d;
   });
 
-  let kanalHtml = '<div class="section-label-pink" style="margin-bottom:8px;">Kanal-Vergleich</div><div class="analyse-grid">';
+  let kanalHtml = '<div class="section-label-pink section-label-pink-mb">Kanal-Vergleich</div><div class="analyse-grid">';
   ['Company Page', 'Gruppe', 'WhatsApp'].forEach(fmt => {
     const k = kanale[fmt];
     if (k) {
-      kanalHtml += `<div class="analyse-card"><div class="ac-title">${fmt}</div><div class="ac-val">${Math.round(k.impSum / k.posts).toLocaleString('de-DE')}</div><div class="ac-sub">Ø Impressions · ${k.posts} Posts</div><div class="ac-sub">Ø ${(k.engSum / k.posts).toFixed(1)}% Engagement</div><div class="ac-sub" style="font-size:10px; margin-top:4px;">Best: ${k.best.title.slice(0,30)}...</div></div>`;
+      kanalHtml += `<div class="analyse-card"><div class="ac-title">${fmt}</div><div class="ac-val">${Math.round(k.impSum / k.posts).toLocaleString('de-DE')}</div><div class="ac-sub">Ø Impressions · ${k.posts} Posts</div><div class="ac-sub">Ø ${(k.engSum / k.posts).toFixed(1)}% Engagement</div><div class="ac-sub ac-sub-small">Best: ${k.best.title.slice(0,30)}...</div></div>`;
     } else {
       kanalHtml += `<div class="analyse-card"><div class="ac-title">${fmt}</div><div class="ac-val">–</div><div class="ac-sub">Keine Posts</div></div>`;
     }
@@ -1149,7 +1170,7 @@ function renderAnalyse() {
   Object.entries(kanale).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([fmt, k], i) => {
     const avgEng = k.engSum / k.posts;
     const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
-    formatHtml += `<tr><td class="at-name">${fmt}${i === 0 ? ' <span class="at-badge at-green">⭐ Bestes Format</span>' : ''}</td><td>${k.posts}</td><td>${Math.round(k.impSum/k.posts).toLocaleString('de-DE')}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td style="font-size:11px;">${k.best.title.slice(0,35)}</td></tr>`;
+    formatHtml += `<tr><td class="at-name">${fmt}${i === 0 ? ' <span class="at-badge at-green">⭐ Bestes Format</span>' : ''}</td><td>${k.posts}</td><td>${Math.round(k.impSum/k.posts).toLocaleString('de-DE')}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td class="td-small">${k.best.title.slice(0,35)}</td></tr>`;
   });
   formatHtml += '</tbody></table>';
 
@@ -1174,7 +1195,7 @@ function renderAnalyse() {
   themenHtml += '</tbody></table>';
 
   // ── KI-Analyse Button ──
-  const analyseBtn = `<div style="margin-top:16px;"><button class="report-btn pink" id="formatAnalyseBtn">🧠 Format-Analyse generieren</button></div><div id="formatAnalyseResult"></div>`;
+  const analyseBtn = `<div class="mt-16"><button class="report-btn pink" id="formatAnalyseBtn">🧠 Format-Analyse generieren</button></div><div id="formatAnalyseResult"></div>`;
 
   // ── Hook-Analyse ──
   const hookTypes = {};
@@ -1192,7 +1213,7 @@ function renderAnalyse() {
     Object.entries(hookTypes).sort((a,b) => (b[1].engSum/b[1].posts) - (a[1].engSum/a[1].posts)).forEach(([typ, h]) => {
       const avgEng = h.engSum / h.posts;
       const cls = avgEng >= 5 ? 'at-green' : avgEng >= 3 ? 'at-yellow' : 'at-red';
-      hookHtml += `<tr><td class="at-name">${typ}</td><td>${h.posts}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td style="font-size:11px;">${h.best ? h.best.title.slice(0,30) : '–'}</td></tr>`;
+      hookHtml += `<tr><td class="at-name">${typ}</td><td>${h.posts}</td><td><span class="at-badge ${cls}">${avgEng.toFixed(1)}%</span></td><td class="td-small">${h.best ? h.best.title.slice(0,30) : '–'}</td></tr>`;
     });
     hookHtml += '</tbody></table>';
   }
@@ -1631,9 +1652,9 @@ function renderKpiTrackingTable() {
 
     // Trend
     let trend = '–';
-    if (previous > 0 && current > previous) trend = '<span style="color:var(--color-success)">↑</span>';
-    else if (previous > 0 && current < previous) trend = '<span style="color:var(--color-danger)">↓</span>';
-    else if (previous > 0) trend = '<span style="color:var(--text-secondary)">→</span>';
+    if (previous > 0 && current > previous) trend = '<span class="trend-up-icon">↑</span>';
+    else if (previous > 0 && current < previous) trend = '<span class="trend-down-icon">↓</span>';
+    else if (previous > 0) trend = '<span class="trend-neutral-icon">→</span>';
 
     const suffix = def.pct ? '%' : '';
     const fmt = v => v > 0 ? (def.pct ? v.toFixed(1) : Math.round(v).toLocaleString('de-DE')) : '–';
@@ -1765,7 +1786,7 @@ function renderKanale(containerId, agg) {
 
 function renderTopPosts(containerId, posts) {
   const el = document.getElementById(containerId);
-  if (!posts.length) { el.innerHTML = '<div style="padding:14px; color:var(--text-secondary); font-size:13px;">Keine Posts in diesem Zeitraum.</div>'; return; }
+  if (!posts.length) { el.innerHTML = '<div class="empty-state">Keine Posts in diesem Zeitraum.</div>'; return; }
   el.innerHTML = posts.map((p, i) => `
     <div class="report-top-post">
       <div class="rtp-rank">${i + 1}</div>
@@ -1865,10 +1886,10 @@ function renderQuarter() {
   ];
   document.getElementById('quarterGoals').innerHTML = goalData.map(g => {
     const pct = g.target > 0 ? Math.min((g.current / g.target) * 100, 100) : 0;
-    return `<div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-        <span style="font-weight:600;">${g.label}</span>
-        <span style="color:var(--text-secondary);">${g.current ? g.current.toLocaleString('de-DE') : '–'} / ${g.target.toLocaleString('de-DE')}</span>
+    return `<div class="goal-progress-row">
+      <div class="goal-progress-header">
+        <span class="goal-progress-label">${g.label}</span>
+        <span class="goal-progress-value">${g.current ? g.current.toLocaleString('de-DE') : '–'} / ${g.target.toLocaleString('de-DE')}</span>
       </div>
       <div class="progress-track"><div class="progress-fill" style="width:${pct.toFixed(1)}%;"></div></div>
     </div>`;

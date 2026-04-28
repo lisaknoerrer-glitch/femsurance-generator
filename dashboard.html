@@ -402,6 +402,13 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
 .clickable { cursor:pointer; }
 .text-pink { color:var(--fem-pink); }
 .text-primary { color:var(--text-primary); }
+
+/* ── Extracted utility classes ── */
+.meta-posting-info { font-size:12.5px; color:var(--text-secondary); }
+.meta-posting-info-mb { font-size:12.5px; color:var(--text-secondary); margin-bottom:4px; }
+.meta-posting-info-mt { font-size:12.5px; color:var(--text-secondary); margin-top:8px; }
+.empty-state-center { padding:20px; text-align:center; color:var(--text-secondary); font-size:13px; }
+.mb-14 { margin-bottom:14px; }
 </style>
 </head>
 <body>
@@ -518,7 +525,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
           <path d="M0,38 L50,32 L100,35 L150,24 L200,18 L250,14 L300,8 L300,48 L0,48 Z" fill="url(#sparkGrad)"/>
         </svg>
       </div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:8px;">Posts/Woche: <strong class="text-primary" id="dashCompanyPpw">0</strong></div>
+      <div class="meta-posting-info-mt">Posts/Woche: <strong class="text-primary" id="dashCompanyPpw">0</strong></div>
     </div>
 
     <!-- Reichweiten-Ziel -->
@@ -549,8 +556,8 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         <div class="stat-value-hero" id="dashGruppeCount">–</div>
         <div class="meta-text-sm">Mitglieder</div>
       </div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:4px;">Posting: Mi &amp; Fr 10:00</div>
-      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong class="text-primary" id="dashGruppePpw">–</strong></div>
+      <div class="meta-posting-info-mb">Posting: Mi &amp; Fr 10:00</div>
+      <div class="meta-posting-info">Posts/Woche: <strong class="text-primary" id="dashGruppePpw">–</strong></div>
     </div>
     <div class="card fade-up">
       <div class="card-title">Gruppe – Mitglieder-Ziel</div>
@@ -579,8 +586,8 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
         <div class="stat-value-hero" id="dashWhatsappCount">–</div>
         <div class="meta-text-sm">Mitglieder</div>
       </div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:4px;">Posting: Mi 08:00</div>
-      <div style="font-size:12.5px; color:var(--text-secondary);">Posts/Woche: <strong class="text-primary" id="dashWhatsappPpw">–</strong></div>
+      <div class="meta-posting-info-mb">Posting: Mi 08:00</div>
+      <div class="meta-posting-info">Posts/Woche: <strong class="text-primary" id="dashWhatsappPpw">–</strong></div>
     </div>
     <div class="card fade-up">
       <div class="card-title">WhatsApp – Mitglieder-Ziel</div>
@@ -631,7 +638,7 @@ body.dark-mode .tag-gray { background: rgba(255,255,255,0.1); }
 
   <!-- ── Team-Aufgaben ── -->
   <div class="team-section fade-up">
-    <div class="card-title" style="margin-bottom: 14px;">Team-Aufgaben</div>
+    <div class="card-title mb-14">Team-Aufgaben</div>
     <div class="team-grid">
       <div class="team-card">
         <div class="team-avatar">N1</div>
@@ -1042,7 +1049,7 @@ const INSIGHT_API_KEY = ANTHROPIC_API_KEY;
     const feed = document.getElementById('activityFeed');
 
     if (!events.length) {
-      feed.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-secondary); font-size:13px;">Noch keine Aktivitäten — starte mit der Pipeline!</div>';
+      feed.innerHTML = '<div class="empty-state-center">Noch keine Aktivitäten — starte mit der Pipeline!</div>';
       return;
     }
 
