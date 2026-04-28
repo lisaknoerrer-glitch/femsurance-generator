@@ -397,7 +397,7 @@ if (savedCheck) {
 
 document.getElementById('stratCheckBtn').addEventListener('click', async () => {
   const btn = document.getElementById('stratCheckBtn');
-  btn.disabled = true; btn.textContent = '⏳ Wird geprüft...';
+  btn.disabled = true; btn.classList.add('btn-loading');
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -447,7 +447,7 @@ FAZIT:
     document.getElementById('checkActions').style.display = 'flex';
     document.getElementById('checkTs').textContent = 'Zuletzt: ' + new Date().toLocaleDateString('de-DE');
   } catch (err) { alert('Fehler: ' + err.message); }
-  btn.disabled = false; btn.textContent = 'Strategie prüfen';
+  btn.classList.remove('btn-loading'); btn.disabled = false;
 });
 
 document.getElementById('checkCopy').addEventListener('click', () => {

@@ -1038,7 +1038,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
   const btn = document.getElementById('btnExtract');
   btn.disabled = true;
-  btn.textContent = 'Wird extrahiert...';
+  btn.classList.add('btn-loading');
 
   let merged = { posts: [], content_summary: {}, search_summary: {}, visitor_summary: {}, follower_summary: {}, top_posts: [] };
 
@@ -1051,7 +1051,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
 
       for (let fi = 0; fi < exportFiles.length; fi++) {
         const ef = exportFiles[fi];
-        btn.textContent = `Datei ${fi + 1}/${exportFiles.length} wird analysiert...`;
+        // btn-loading spinner is already active
 
         // Detect columns via API if not already mapped
         if (!ef.columnMap) {
@@ -1096,7 +1096,7 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
       saveExportFiles();
       const mappedCount = exportFiles.filter(f => f.columnMap).length;
       statusEl.innerHTML = `<span class="extract-badge">✓ ${exportFiles.length} Dateien verarbeitet · ${totalDatasets} Datensätze erkannt</span>`;
-      btn.textContent = 'Wird extrahiert...';
+      // btn-loading spinner is still active
     }
 
     // 2. Extract from screenshots via API
@@ -1181,12 +1181,12 @@ document.getElementById('btnExtract').addEventListener('click', async () => {
     // Clear screenshot base64 from localStorage
     localStorage.removeItem('fem_wp_screenshots');
 
-    btn.textContent = '📊 Daten extrahieren';
-    btn.innerHTML += '<span class="extract-badge">✓ Extrahiert</span>';
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = '📊 Daten extrahieren <span class="extract-badge">✓ Extrahiert</span>';
 
   } catch (err) {
     alert('Fehler: ' + err.message);
-    btn.textContent = '📊 Daten extrahieren';
+    btn.classList.remove('btn-loading');
   }
   btn.disabled = false;
 });
@@ -1781,7 +1781,7 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
 
   // UI: loading state
   btn.disabled = true;
-  btn.textContent = 'Wird generiert...';
+  btn.classList.add('btn-loading');
   setStatus('loading');
   enableOutputButtons(false);
   outputArea.value = '';
@@ -1827,8 +1827,8 @@ document.getElementById('btnGenerate').addEventListener('click', async () => {
     outputArea.readOnly = false;
   }
 
+  btn.classList.remove('btn-loading');
   btn.disabled = false;
-  btn.textContent = '▶ Wochenplan generieren';
 });
 
 // ══════════ SAVE BUTTON ══════════

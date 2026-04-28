@@ -709,7 +709,7 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     return;
   }
   btn.disabled = true;
-  btn.textContent = '🧠 Wird analysiert...';
+  btn.classList.add('btn-loading');
 
   try {
     // Build user prompt from all data sources
@@ -752,14 +752,14 @@ document.getElementById('kiBtn').addEventListener('click', async () => {
     hooks = hooks.filter(h => !h.ki);
     renderKiResults(result);
 
-    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+    btn.classList.remove('btn-loading');
   } catch (err) {
     const msg = err.message || String(err);
     if (msg.includes('401')) alert('API-Schlüssel ungültig. Bitte prüfen.');
     else if (msg.includes('429')) alert('Zu viele Anfragen — bitte kurz warten.');
     else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) alert('Keine Internetverbindung.');
     else alert('Fehler: ' + msg);
-    btn.textContent = '🧠 KI-Empfehlungen aktualisieren';
+    btn.classList.remove('btn-loading');
   }
   btn.disabled = false;
 });
@@ -820,7 +820,7 @@ document.getElementById('insightsList').addEventListener('click', async e => {
   const convBtn = e.target.closest('[data-convert-ins]');
   if (convBtn) {
     const ins = sciInsights[parseInt(convBtn.dataset.convertIns)];
-    convBtn.textContent = '⏳...'; convBtn.disabled = true;
+    convBtn.classList.add('btn-loading'); convBtn.disabled = true;
     try {
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -830,7 +830,7 @@ document.getElementById('insightsList').addEventListener('click', async e => {
       const data = await resp.json();
       alert(data.content[0].text);
     } catch (err) { alert('Fehler: ' + err.message); }
-    convBtn.textContent = '✨ In Content umwandeln'; convBtn.disabled = false;
+    convBtn.classList.remove('btn-loading'); convBtn.disabled = false;
   }
 });
 
@@ -926,7 +926,7 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
   const outlines = document.querySelectorAll('.outline-item');
   if (!outlines.length) { status.textContent = 'Keine Outlines vorhanden.'; return; }
 
-  btn.disabled = true; btn.textContent = '⏳ Wird bewertet...';
+  btn.disabled = true; btn.classList.add('btn-loading');
   status.textContent = `${outlines.length} Outlines werden gescored...`;
 
   try {
@@ -982,7 +982,7 @@ document.getElementById('autoPushBtn').addEventListener('click', async () => {
   } catch (err) {
     status.textContent = 'Fehler: ' + err.message;
   }
-  btn.disabled = false; btn.textContent = '🚀 Zur Pipeline';
+  btn.classList.remove('btn-loading'); btn.disabled = false;
 });
 
 // ══════════ PLAYBOOK ══════════

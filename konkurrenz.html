@@ -22,7 +22,7 @@
 .card {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); box-shadow: var(--shadow);
-  padding: 20px 22px; margin-bottom: 22px; transition: box-shadow 0.2s;
+  padding: 20px 22px; margin-bottom: 22px; transition: box-shadow 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .card-title {
@@ -558,7 +558,7 @@ function renderCompAnalyse(container, accName) {
     // Scan button
     const scanBtn = container.querySelector(`#caScan_${CSS.escape(accName)}`);
     if (scanBtn) scanBtn.addEventListener('click', async () => {
-      scanBtn.disabled = true; scanBtn.textContent = '⏳ Wird analysiert...';
+      scanBtn.disabled = true; scanBtn.classList.add('btn-loading');
       try {
         const resp = await fetch('https://api.anthropic.com/v1/messages', {
           method:'POST', headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -573,7 +573,7 @@ function renderCompAnalyse(container, accName) {
         if (js.startsWith('```')) js = js.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'');
         accData.analyse = JSON.parse(js); save(); render();
       } catch (err) { alert('Fehler: ' + err.message); }
-      scanBtn.disabled = false; scanBtn.textContent = '🔬 Posts analysieren';
+      scanBtn.classList.remove('btn-loading'); scanBtn.disabled = false;
     });
 
     // Research/Playbook buttons
@@ -606,7 +606,7 @@ if (gapSaved) { try { const d = JSON.parse(gapSaved); document.getElementById('g
 
 document.getElementById('gapBtn').addEventListener('click', async () => {
   const btn = document.getElementById('gapBtn');
-  btn.disabled = true; btn.textContent = '🔍 Wird analysiert...';
+  btn.disabled = true; btn.classList.add('btn-loading');
   try {
     const parts = [];
     const data = loadData();
@@ -667,7 +667,7 @@ Basiere alles auf echten Daten.`,
     document.getElementById('gapActions').style.display = 'flex';
     document.getElementById('gapTimestamp').textContent = 'Zuletzt: ' + new Date().toLocaleDateString('de-DE');
   } catch (err) { alert('Fehler: ' + err.message); }
-  btn.disabled = false; btn.textContent = '🔍 Gap-Analyse starten';
+  btn.classList.remove('btn-loading'); btn.disabled = false;
 });
 
 document.getElementById('gapCopy').addEventListener('click', () => {

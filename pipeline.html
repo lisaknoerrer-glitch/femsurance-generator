@@ -1059,8 +1059,7 @@ async function generateOutline(cardId, btnEl) {
     return;
   }
 
-  btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
-  btnEl.classList.add('loading');
+  btnEl.classList.add('btn-loading');
   btnEl.disabled = true;
 
   try {
@@ -1078,14 +1077,13 @@ async function generateOutline(cardId, btnEl) {
 
     // Fetch article if URL provided
     if (card.url) {
-      btnEl.textContent = 'ARTIKEL WIRD GELADEN...';
+      // btn-loading spinner is already active
       const articleText = await fetchArticleText(card.url);
       if (articleText) {
         userPrompt += `\n\nArtikel-Inhalt (${card.url}):\n${articleText}`;
       } else {
         userPrompt += `\n\n[Artikel-URL konnte nicht geladen werden: ${card.url}]`;
       }
-      btnEl.textContent = 'ENTWURF WIRD GENERIERT...';
     }
 
     const resultText = await callAnthropic(OUTLINE_SYSTEM_PROMPT, userPrompt, 3000);
@@ -1135,16 +1133,14 @@ async function generateOutline(cardId, btnEl) {
 
   } catch (err) {
     alert(friendlyError(err));
-    btnEl.textContent = 'Entwurf generieren';
-    btnEl.classList.remove('loading');
+    btnEl.classList.remove('btn-loading');
     btnEl.disabled = false;
   }
 }
 
 // ── Generate Canva Prompt ──
 async function generateCanvaPrompt(card, btnEl, cardEl) {
-  btnEl.textContent = 'PROMPT WIRD GENERIERT...';
-  btnEl.classList.add('loading');
+  btnEl.classList.add('btn-loading');
   btnEl.disabled = true;
 
   try {
@@ -1178,14 +1174,12 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
       });
     });
 
-    btnEl.textContent = 'Canva-Prompt generieren';
-    btnEl.classList.remove('loading');
+    btnEl.classList.remove('btn-loading');
     btnEl.disabled = false;
 
   } catch (err) {
     alert(friendlyError(err));
-    btnEl.textContent = 'Canva-Prompt generieren';
-    btnEl.classList.remove('loading');
+    btnEl.classList.remove('btn-loading');
     btnEl.disabled = false;
   }
 }
@@ -1196,8 +1190,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
   if (!card) return;
 
   const outlineText = card.outline || card.body || card.title;
-  btnEl.textContent = 'POSTS WERDEN GENERIERT...';
-  btnEl.classList.add('loading');
+  btnEl.classList.add('btn-loading');
   btnEl.disabled = true;
 
   try {
@@ -1249,8 +1242,7 @@ async function generatePostsFromOutline(cardId, btnEl) {
 
   } catch (err) {
     alert(friendlyError(err));
-    btnEl.textContent = 'Post generieren';
-    btnEl.classList.remove('loading');
+    btnEl.classList.remove('btn-loading');
     btnEl.disabled = false;
   }
 }
@@ -1264,7 +1256,7 @@ Antworte NUR als JSON:
 async function calculateScore(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
   if (!card) return;
-  btnEl.disabled = true; btnEl.textContent = '⏳ Wird berechnet...';
+  btnEl.disabled = true; btnEl.classList.add('btn-loading');
 
   try {
     // Build context
@@ -1302,7 +1294,7 @@ async function calculateScore(cardId, btnEl) {
 
   } catch (err) {
     alert(friendlyError(err));
-    btnEl.disabled = false; btnEl.textContent = '🎯 Score berechnen';
+    btnEl.classList.remove('btn-loading'); btnEl.disabled = false;
   }
 }
 
@@ -1675,8 +1667,8 @@ function openCardModal(cardId) {
     `;
     document.getElementById('cmCanvaPromptBtn2').addEventListener('click', async () => {
       const btn = document.getElementById('cmCanvaPromptBtn2');
-      btn.textContent = '⏳...'; btn.disabled = true;
-      try { const result = await callAnthropic(CANVA_SYSTEM_PROMPT, 'Post-Text:\n' + (card.body || card.outline || card.title), 1024); card.canvaPrompt = result; saveCards(); btn.textContent = '✓ Generiert'; } catch(e) { btn.textContent = 'Fehler'; }
+      btn.classList.add('btn-loading'); btn.disabled = true;
+      try { const result = await callAnthropic(CANVA_SYSTEM_PROMPT, 'Post-Text:\n' + (card.body || card.outline || card.title), 1024); card.canvaPrompt = result; saveCards(); btn.classList.remove('btn-loading'); btn.textContent = '✓ Generiert'; } catch(e) { btn.classList.remove('btn-loading'); btn.textContent = 'Fehler'; }
       setTimeout(() => { btn.textContent = 'Canva-Prompt generieren'; btn.disabled = false; }, 1500);
     });
     document.getElementById('cmPlanBtn').addEventListener('click', () => {
@@ -1803,7 +1795,7 @@ document.getElementById('cmCanvaPromptBtn').addEventListener('click', async () =
   const card = cards.find(c => c.id === activeCardId);
   if (!card) return;
   const btn = document.getElementById('cmCanvaPromptBtn');
-  btn.textContent = 'WIRD GENERIERT...';
+  btn.classList.add('btn-loading');
   btn.disabled = true;
   try {
     const postText = card.body || card.outline || card.title;
@@ -1815,7 +1807,7 @@ document.getElementById('cmCanvaPromptBtn').addEventListener('click', async () =
   } catch (err) {
     alert(friendlyError(err));
   }
-  btn.textContent = '✨ Canva-Prompt generieren';
+  btn.classList.remove('btn-loading');
   btn.disabled = false;
 });
 
@@ -1991,7 +1983,7 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
   const btn = document.getElementById('cmGenPost');
   const status = document.getElementById('cmGenStatus');
   btn.disabled = true;
-  btn.textContent = 'WIRD GENERIERT...';
+  btn.classList.add('btn-loading');
   status.textContent = '';
 
   try {
@@ -2005,7 +1997,7 @@ document.getElementById('cmGenPost').addEventListener('click', async () => {
     await generatePostsFromOutline(card.id, btn);
 
   } catch (err) {
-    btn.textContent = 'Post generieren';
+    btn.classList.remove('btn-loading');
     btn.disabled = false;
     status.textContent = 'Fehler: ' + err.message;
     status.style.color = 'var(--color-danger)';
