@@ -55,18 +55,18 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(
 
 /* ── Fade-Up Animation ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
-.fade-up { opacity: 0; animation: fadeUp 0.5s ease forwards; }
-.fade-up:nth-child(1) { animation-delay: 0.04s; }
-.fade-up:nth-child(2) { animation-delay: 0.10s; }
-.fade-up:nth-child(3) { animation-delay: 0.16s; }
-.fade-up:nth-child(4) { animation-delay: 0.22s; }
-.fade-up:nth-child(5) { animation-delay: 0.28s; }
-.fade-up:nth-child(6) { animation-delay: 0.34s; }
-.fade-up:nth-child(7) { animation-delay: 0.40s; }
-.fade-up:nth-child(8) { animation-delay: 0.46s; }
+.fade-up { opacity: 0; animation: fadeUp 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.fade-up:nth-child(1) { animation-delay: 0.02s; }
+.fade-up:nth-child(2) { animation-delay: 0.05s; }
+.fade-up:nth-child(3) { animation-delay: 0.08s; }
+.fade-up:nth-child(4) { animation-delay: 0.11s; }
+.fade-up:nth-child(5) { animation-delay: 0.14s; }
+.fade-up:nth-child(6) { animation-delay: 0.17s; }
+.fade-up:nth-child(7) { animation-delay: 0.20s; }
+.fade-up:nth-child(8) { animation-delay: 0.23s; }
 
 /* ── Left Navigation ── */
 .nav-left {
@@ -110,7 +110,11 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(
 .btn-secondary:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
 .btn-outline { background: none; color: var(--fem-pink); border: 1px solid var(--fem-pink); }
 .btn-outline:hover { background: var(--fem-pink); color: #fff; }
-.btn:disabled, .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.btn:active { transform: scale(0.97); }
+.btn:disabled, .btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Button Press Feedback (all buttons) ── */
+button:active:not(:disabled) { transform: scale(0.97); }
 
 /* ── Dark Mode ── */
 body.dark-mode {
@@ -162,4 +166,14 @@ input:focus, select:focus, textarea:focus {
   .nav-left a { margin-bottom: 0; font-size: 16px; }
   .main { margin-left: 0 !important; padding-bottom: 68px !important; }
   .dm-toggle { top: 8px; right: 8px; }
+}
+
+/* ── Accessibility: Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
