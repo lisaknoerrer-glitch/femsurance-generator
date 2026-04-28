@@ -371,7 +371,7 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 .block-title.collapsed .block-content-badge { display:inline-block; }
 .block-body {
-  overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s ease;
+  overflow:hidden; transition:max-height 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   max-height:3000px; opacity:1;
 }
 .block-body.collapsed {
@@ -409,7 +409,7 @@ textarea { resize: vertical; line-height: 1.6; }
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   border: 1px solid var(--border);
   pointer-events: none; opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 50; white-space: normal;
 }
 .info-tip:hover::after { opacity: 1; }
@@ -425,7 +425,7 @@ textarea { resize: vertical; line-height: 1.6; }
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   border: 1px solid var(--border);
   pointer-events: none; opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 50; white-space: normal;
 }
 [data-tip]:hover::before { opacity: 1; }
