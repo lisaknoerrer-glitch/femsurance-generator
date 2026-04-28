@@ -66,7 +66,7 @@
   color: var(--text-primary);
   box-shadow: var(--shadow);
   cursor: grab;
-  transition: box-shadow 0.2s, transform 0.15s;
+  transition: box-shadow 0.2s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s cubic-bezier(0.32, 0.72, 0, 1);
   user-select: none;
 }
 .kanban-card:active { cursor: grabbing; }
@@ -121,7 +121,7 @@
   font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn-generate.loading {
@@ -188,7 +188,7 @@
   font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s cubic-bezier(0.32, 0.72, 0, 1), color 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-save-draft:hover {
   background: var(--fem-pink);
@@ -236,7 +236,7 @@
   border-radius: var(--radius-sm); background: var(--bg-card);
   cursor: pointer; font-family: inherit; font-size: var(--text-md);
   font-weight: 500; color: var(--text-primary);
-  transition: all 0.2s; text-align: left;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); text-align: left;
 }
 .slot-btn:hover {
   border-color: var(--fem-pink); background: var(--fem-pink-light);
@@ -250,7 +250,7 @@
   padding: 8px 18px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
   cursor: pointer; font-family: inherit; font-size: var(--text-md);
-  color: var(--text-secondary); transition: all 0.2s;
+  color: var(--text-secondary); transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-cancel:hover { background: var(--bg-secondary); }
 /* ── New Idea Button + Form ── */
@@ -260,7 +260,7 @@
   border-radius: var(--radius-sm); background: none;
   cursor: pointer; font-family: inherit; font-size: var(--text-base);
   font-weight: 600; color: var(--text-secondary);
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-new-idea:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
 .new-idea-form {
@@ -279,7 +279,7 @@
 .new-idea-btns button {
   flex: 1; padding: 7px 10px; border-radius: var(--radius-sm);
   font-family: inherit; font-size: var(--text-base); font-weight: 600;
-  cursor: pointer; border: none; transition: opacity 0.2s;
+  cursor: pointer; border: none; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .new-idea-btns .btn-create {
   background: var(--fem-pink); color: #fff;
@@ -293,11 +293,10 @@
 
 /* ── Card Detail Modal ── */
 .card-modal-overlay {
-  display: none; position: fixed; inset: 0;
+  display: flex; position: fixed; inset: 0;
   background: rgba(0,0,0,0.45); z-index: 600;
   align-items: center; justify-content: center;
 }
-.card-modal-overlay.open { display: flex; }
 .card-modal {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -324,7 +323,7 @@
 .card-modal select, .card-modal textarea {
   width: 100%; padding: 8px 12px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
-  color: var(--text-primary); background: var(--bg-card); transition: border-color 0.2s;
+  color: var(--text-primary); background: var(--bg-card); transition: border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .card-modal input:focus, .card-modal select:focus, .card-modal textarea:focus {
   outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
@@ -343,14 +342,14 @@
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff;
   font-family: inherit; font-size: var(--text-md); font-weight: 600;
-  cursor: pointer; transition: opacity 0.2s;
+  cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-save-modal:hover { opacity: 0.9; }
 .cm-actions .btn-close-modal {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
   font-family: inherit; font-size: var(--text-md); font-weight: 500;
-  color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-close-modal:hover { background: var(--bg-secondary); }
 .cm-actions .btn-delete-modal {
@@ -358,7 +357,7 @@
   padding: 9px 18px; border: 1px solid var(--color-danger);
   border-radius: var(--radius-sm); background: #fff;
   font-family: inherit; font-size: var(--text-base); font-weight: 600;
-  color: var(--color-danger); cursor: pointer; transition: all 0.2s;
+  color: var(--color-danger); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-actions .btn-delete-modal:hover { background: var(--color-danger-bg); }
 
@@ -382,7 +381,7 @@
 .gen-prep textarea, .gen-prep input[type="url"] {
   width: 100%; padding: 8px 12px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); font-family: inherit; font-size: var(--text-md);
-  color: var(--text-primary); transition: border-color 0.2s;
+  color: var(--text-primary); transition: border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .gen-prep textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
 .gen-prep textarea:focus, .gen-prep input:focus { outline: none; border-color: var(--fem-pink); box-shadow: 0 0 0 3px rgba(233,30,140,0.08); }
@@ -391,14 +390,14 @@
   padding: 9px 22px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff;
   font-family: inherit; font-size: var(--text-md); font-weight: 600;
-  cursor: pointer; transition: opacity 0.2s;
+  cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .gen-prep-btns .btn-gen-go:hover { opacity: 0.9; }
 .gen-prep-btns .btn-gen-cancel {
   padding: 9px 22px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg-card);
   font-family: inherit; font-size: var(--text-md); color: var(--text-secondary);
-  cursor: pointer; transition: all 0.2s;
+  cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .gen-prep-btns .btn-gen-cancel:hover { background: var(--bg-secondary); }
 
@@ -425,13 +424,13 @@
   padding: 8px 14px; border: 1px solid var(--fem-pink); border-radius: var(--radius-sm);
   background: var(--bg-card); color: var(--fem-pink); font-family: inherit;
   font-size: var(--text-base); font-weight: 600; cursor: pointer; white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-canva-row .btn-canva-open:hover { background: var(--fem-pink); color: #fff; }
 .cm-drop-zone {
   border: 2px dashed var(--border); border-radius: var(--radius-sm);
   padding: 16px; text-align: center; color: var(--text-secondary);
-  font-size: var(--text-base); cursor: pointer; transition: all 0.2s;
+  font-size: var(--text-base); cursor: pointer; transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .cm-drop-zone:hover, .cm-drop-zone.drag-over {
   border-color: var(--fem-pink); background: var(--fem-pink-light); color: var(--fem-pink);
@@ -448,7 +447,7 @@
   flex: 1; padding: 10px 8px; border: none; border-bottom: 2px solid var(--border);
   background: none; font-family: inherit; font-size: var(--text-base); font-weight: 600;
   color: var(--text-secondary); cursor: pointer; text-align: center;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .plan-tab.active { border-bottom-color: var(--fem-pink); color: var(--fem-pink); }
 .plan-tab:hover { color: var(--text-primary); }
@@ -463,7 +462,7 @@
   width: 28px; height: 28px; border: none; border-radius: 50%;
   background: var(--bg-secondary); cursor: pointer; font-size: var(--text-lg);
   color: var(--text-secondary); display: flex; align-items: center;
-  justify-content: center; transition: all 0.15s;
+  justify-content: center; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .mini-cal-header button:hover { background: var(--fem-pink-light); color: var(--fem-pink); }
 .mini-cal-grid {
@@ -476,7 +475,7 @@
 }
 .mini-cal-grid .day-cell {
   padding: 6px 0; font-size: var(--text-base); border-radius: var(--radius-sm);
-  cursor: pointer; transition: all 0.15s; color: var(--text-primary);
+  cursor: pointer; transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1); color: var(--text-primary);
 }
 .mini-cal-grid .day-cell:hover { background: var(--fem-pink-light); }
 .mini-cal-grid .day-cell.empty { cursor: default; }
@@ -499,15 +498,14 @@
 .plan-selected .btn-plan-save {
   padding: 6px 16px; border: none; border-radius: var(--radius-sm);
   background: var(--fem-pink); color: #fff; font-family: inherit;
-  font-size: var(--text-base); font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  font-size: var(--text-base); font-weight: 600; cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .plan-selected .btn-plan-save:hover { opacity: 0.9; }
 .plan-selected .btn-plan-save.saved {
   background: var(--color-success-bg); color: var(--color-success);
 }
 /* Publish Modal */
-.pub-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
-.pub-modal-overlay.open { display:flex; }
+.pub-modal-overlay { display:flex; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:600; align-items:center; justify-content:center; }
 .pub-modal { background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 20px 60px rgba(0,0,0,0.2); padding:24px 28px; width:400px; max-width:92vw; }
 .pub-modal h3 { font-size:15px; font-weight:700; margin-bottom:14px; }
 .pub-modal .pub-field { margin-bottom: var(--space-md); }
@@ -529,7 +527,7 @@
 .score-green { background:var(--color-success-bg); color:var(--color-success); }
 .score-yellow { background:var(--color-warning-bg); color:var(--color-warning); }
 .score-red { background:var(--color-danger-bg); color:var(--color-danger); }
-.score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-sm); font-weight:500; color:var(--text-secondary); transition:all 0.15s; }
+.score-btn { display:block; width:100%; margin-top:4px; padding:5px 10px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-sm); font-weight:500; color:var(--text-secondary); transition:all 0.15s cubic-bezier(0.32, 0.72, 0, 1); }
 .score-btn:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
 .score-btn:disabled { opacity:0.5; cursor:not-allowed; }
 .score-detail { margin-top:6px; padding:8px 10px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:var(--text-sm); line-height:1.5; display:none; }
