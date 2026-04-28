@@ -14,7 +14,7 @@
   --text-secondary: #6b7280;
   --border: rgba(0,0,0,0.08);
   --border-light: rgba(0,0,0,0.04);
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.06), 0 4px 8px -2px rgba(0,0,0,0.04);
   --nav-bg: #1a1a2e;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -51,7 +51,34 @@
 
 /* ── Base ── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(--text-primary); font-size: var(--text-md); line-height: 1.5; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  line-height: 1.5;
+}
+
+/* ── Display Typography ── */
+h1, h2, .page-header h1 {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Background Atmosphere ── */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 15% 85%, rgba(233,30,140,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(124,58,237,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(233,30,140,0.015) 0%, transparent 70%);
+}
+body.dark-mode::before {
+  background:
+    radial-gradient(ellipse at 15% 85%, rgba(233,30,140,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(124,58,237,0.05) 0%, transparent 50%);
+}
 
 /* ── Fade-Up Animation ── */
 @keyframes fadeUp {
