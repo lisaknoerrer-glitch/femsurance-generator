@@ -66,18 +66,18 @@ h1, h2, .page-header h1 {
   letter-spacing: -0.02em;
 }
 
-/* ── Background Atmosphere ── */
+/* ── Background Atmosphere (oklch gradients) ── */
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(ellipse at 15% 85%, rgba(233,30,140,0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 15%, rgba(124,58,237,0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(233,30,140,0.015) 0%, transparent 70%);
+    radial-gradient(ellipse at 15% 85% in oklch, oklch(0.65 0.25 350 / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15% in oklch, oklch(0.55 0.25 290 / 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50% in oklch, oklch(0.65 0.25 350 / 0.015) 0%, transparent 70%);
 }
 body.dark-mode::before {
   background:
-    radial-gradient(ellipse at 15% 85%, rgba(233,30,140,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 15%, rgba(124,58,237,0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at 15% 85% in oklch, oklch(0.65 0.25 350 / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15% in oklch, oklch(0.55 0.25 290 / 0.05) 0%, transparent 50%);
 }
 
 /* ── Fade-Up Animation ── */
@@ -85,7 +85,12 @@ body.dark-mode::before {
   from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
-.fade-up { opacity: 0; animation: fadeUp 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation-fill-mode: backwards;
+  will-change: transform, opacity, filter;
+}
 .fade-up:nth-child(1) { animation-delay: 0.02s; }
 .fade-up:nth-child(2) { animation-delay: 0.05s; }
 .fade-up:nth-child(3) { animation-delay: 0.08s; }
@@ -167,6 +172,15 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
 }
 .dm-toggle:hover { border-color: var(--fem-pink); }
 
+/* ── Icon Swap Animation ── */
+@keyframes iconSwap {
+  0% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+  40% { opacity: 0; transform: scale(0.8) rotate(-30deg); filter: blur(4px); }
+  60% { opacity: 0; transform: scale(0.8) rotate(30deg); filter: blur(4px); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+}
+.icon-swap { animation: iconSwap 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+
 /* ── Loading & Empty States ── */
 .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
 .btn-loading::after {
@@ -211,13 +225,20 @@ input:focus, select:focus, textarea:focus {
 .schedule-overlay .schedule-modal,
 .pp-modal-overlay .pp-modal {
   transform: translateY(8px) scale(0.98); filter: blur(2px);
+  transform-origin: top center;
   transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), filter 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform, filter;
 }
 .card-modal-overlay.open .card-modal,
 .pub-modal-overlay.open .pub-modal,
 .schedule-overlay.open .schedule-modal,
 .pp-modal-overlay.open .pp-modal {
   transform: translateY(0) scale(1); filter: blur(0);
+}
+
+/* ── Progress Bar GPU Hint ── */
+.progress-fill, .hero-fill, .comp-bar-fill, .trend-bar-fill {
+  will-change: width;
 }
 
 /* ── Collapsible Sections ── */
