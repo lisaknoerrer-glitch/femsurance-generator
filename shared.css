@@ -87,8 +87,7 @@ body.dark-mode::before {
 }
 .fade-up {
   opacity: 0;
-  animation: fadeUp 0.2s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  animation-fill-mode: backwards;
+  animation: fadeUp 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
   will-change: transform, opacity, filter;
 }
 
