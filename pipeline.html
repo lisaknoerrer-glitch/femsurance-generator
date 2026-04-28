@@ -563,6 +563,23 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
 .mb-10-pink { margin-bottom:10px; color:var(--fem-pink); }
 .mb-12 { margin-bottom:12px; }
 .canva-copy-btn { padding:5px 12px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
+.btn-gradient-full { width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); }
+.btn-gradient-full-accent { width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent); }
+.modal-subtitle { margin-bottom:12px; font-size:13px; color:var(--text-secondary); }
+.modal-footer-right { margin-top:14px; text-align:right; }
+.cm-status-text { font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px; }
+.cm-actions-divider { margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+.cm-canva-textarea { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:12px; background:var(--bg-secondary); resize:vertical; }
+.cm-canva-copy-btn { margin-top:6px; padding:5px 14px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
+.cm-checkbox { width:auto; accent-color:var(--fem-pink); }
+.cm-checkbox-label { font-size:12.5px; cursor:pointer; }
+.cm-gen-btn-full { width:100%; margin-top:10px; }
+.tag-hooktype { font-size:9px; margin-left:4px; }
+.canva-result-text { white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto; }
+.pub-badge-mb { margin-bottom:12px; }
+.cm-flex-center { display:flex; align-items:center; gap:8px; }
+.mt-12 { margin-top:12px; }
+.cm-plan-panel { margin-top:4px; padding:16px; background:var(--bg-secondary); border-radius:var(--radius-sm); }
 </style>
 </head>
 <body>
@@ -640,7 +657,7 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
 <div class="modal-overlay" id="planModal">
   <div class="modal" style="width:440px;">
     <h3>Post planen</h3>
-    <p id="planModalCardName" style="margin-bottom:12px; font-size:13px; color:var(--text-secondary);"></p>
+    <p id="planModalCardName" class="modal-subtitle"></p>
 
     <div class="plan-tabs">
       <button class="plan-tab active" data-ch="cp">🏢 Company Page</button>
@@ -687,7 +704,7 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
       </div>
     </div>
 
-    <div style="margin-top:14px; text-align:right;">
+    <div class="modal-footer-right">
       <button id="planCancel" class="btn-cancel">Schließen</button>
     </div>
   </div>
@@ -762,7 +779,7 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
       <div class="cm-label">Outline</div>
       <textarea id="cmOutline" rows="8"></textarea>
     </div>
-    <div id="cmPlanSection" style="display:none; margin-top:4px; padding:16px; background:var(--bg-secondary); border-radius:var(--radius-sm);">
+    <div id="cmPlanSection" class="cm-plan-panel" style="display:none;">
       <div class="cm-label mb-10-pink">Post planen</div>
       <div class="cm-field">
         <div class="cm-label">Posting-Woche</div>
@@ -784,12 +801,12 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
           </select>
         </div>
       </div>
-      <div class="cm-field" style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" id="cmWhatsapp" checked style="width:auto; accent-color:var(--fem-pink);">
-        <label for="cmWhatsapp" style="font-size:12.5px; cursor:pointer;">WhatsApp Community Mi 08:00</label>
+      <div class="cm-field cm-flex-center">
+        <input type="checkbox" id="cmWhatsapp" checked class="cm-checkbox">
+        <label for="cmWhatsapp" class="cm-checkbox-label">WhatsApp Community Mi 08:00</label>
       </div>
-      <button class="btn-save-modal" id="cmGenPost" style="width:100%; margin-top:10px;">Post generieren</button>
-      <div id="cmGenStatus" style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:6px;"></div>
+      <button class="btn-save-modal cm-gen-btn-full" id="cmGenPost">Post generieren</button>
+      <div id="cmGenStatus" class="cm-status-text"></div>
     </div>
     <div class="cm-grafik-section" id="cmGrafikSection">
       <div class="cm-label mb-10-pink">Grafik</div>
@@ -806,11 +823,11 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
       </div>
       <input type="file" id="cmGrafikFile" accept="image/png,image/jpeg" style="display:none;">
       <img id="cmGrafikPreview" class="cm-preview-img" style="display:none;">
-      <div style="margin-top:12px;">
-        <button class="btn-save-modal" id="cmCanvaPromptBtn" style="width:100%; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple));">✨ Canva-Prompt generieren</button>
+      <div class="mt-12">
+        <button class="btn-save-modal btn-gradient-full" id="cmCanvaPromptBtn">✨ Canva-Prompt generieren</button>
         <div id="cmCanvaPromptResult" style="display:none; margin-top:8px;">
-          <textarea id="cmCanvaPromptText" rows="6" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;background:var(--bg-secondary);resize:vertical;"></textarea>
-          <button id="cmCanvaPromptCopy" style="margin-top:6px;padding:5px 14px;border:1px solid var(--fem-pink);border-radius:var(--radius-sm);background:var(--bg-card);color:var(--fem-pink);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">📋 Kopieren</button>
+          <textarea id="cmCanvaPromptText" rows="6" class="cm-canva-textarea"></textarea>
+          <button id="cmCanvaPromptCopy" class="cm-canva-copy-btn">📋 Kopieren</button>
         </div>
       </div>
     </div>
@@ -818,7 +835,7 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
       <div class="cm-label">Post-Text</div>
       <textarea id="cmBody"></textarea>
     </div>
-    <div id="cmColumnActions" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);"></div>
+    <div id="cmColumnActions" class="cm-actions-divider"></div>
     <div class="cm-actions">
       <button class="btn-save-modal" id="cmSave">Speichern</button>
       <button class="btn-close-modal" id="cmClose">Schließen</button>
@@ -831,7 +848,7 @@ body.dark-mode .score-detail { background: rgba(255,255,255,0.05); }
 <div class="pub-modal-overlay" id="pubModal">
   <div class="pub-modal">
     <h3>Post veröffentlichen</h3>
-    <div id="pubBadge" style="margin-bottom:12px;"></div>
+    <div id="pubBadge" class="pub-badge-mb"></div>
     <div class="pub-field">
       <label>Veröffentlicht am</label>
       <input type="datetime-local" id="pubDate">
@@ -1157,7 +1174,7 @@ async function generateCanvaPrompt(card, btnEl, cardEl) {
       btnEl.after(resultArea);
     }
     resultArea.innerHTML = `
-      <div style="white-space:pre-wrap; line-height:1.5; color:var(--text-primary); margin-bottom:8px; max-height:120px; overflow-y:auto;">${resultText}</div>
+      <div class="canva-result-text">${resultText}</div>
       <button class="canva-prompt-copy canva-copy-btn">📋 Kopieren</button>
     `;
     resultArea.querySelector('.canva-prompt-copy').addEventListener('click', e => {
@@ -1356,7 +1373,7 @@ function renderBoard() {
       }
 
       const begruendungHtml = card.begruendung ? `<div class="card-begruendung">${card.begruendung}</div>` : '';
-      const hookBadge = card.hookType ? `<span class="kanban-tag tag-gray" style="font-size:9px; margin-left:4px;">${card.hookType}</span>` : '';
+      const hookBadge = card.hookType ? `<span class="kanban-tag tag-gray tag-hooktype">${card.hookType}</span>` : '';
 
       el.innerHTML = `
         <div class="kanban-card-title">${card.title}${formatBadgesHtml}</div>
@@ -1624,7 +1641,7 @@ function openCardModal(cardId) {
   if (card.col === 'ideen') {
     actionsDiv.innerHTML = `
       <button class="btn-save-modal btn-full-secondary" id="cmScoreBtn">🎯 Score berechnen</button>
-      <button class="btn-save-modal" id="cmOutlineBtn" style="width:100%;">Entwurf generieren</button>
+      <button class="btn-save-modal btn-full" id="cmOutlineBtn">Entwurf generieren</button>
     `;
     document.getElementById('cmScoreBtn').addEventListener('click', () => {
       const btn = document.getElementById('cmScoreBtn');
@@ -1637,7 +1654,7 @@ function openCardModal(cardId) {
       generateOutline(card.id, dummyBtn);
     });
   } else if (card.col === 'entwurf') {
-    actionsDiv.innerHTML = `<button class="btn-save-modal" id="cmPostGenBtn" style="width:100%;">Post generieren</button>`;
+    actionsDiv.innerHTML = `<button class="btn-save-modal btn-full" id="cmPostGenBtn">Post generieren</button>`;
     document.getElementById('cmPostGenBtn').addEventListener('click', () => {
       if (document.getElementById('cmOutlineField').style.display !== 'none') card.outline = document.getElementById('cmOutline').value;
       saveCards();
@@ -1660,8 +1677,8 @@ function openCardModal(cardId) {
     });
   } else if (card.col === 'grafik') {
     actionsDiv.innerHTML = `
-      <button class="btn-save-modal" id="cmCanvaPromptBtn2" style="width:100%; margin-bottom:6px; background:linear-gradient(135deg,var(--fem-pink),var(--fem-purple)); color:var(--text-on-accent);">Canva-Prompt generieren</button>
-      <button class="btn-save-modal" id="cmPlanBtn" style="width:100%;">Post planen</button>
+      <button class="btn-save-modal btn-gradient-full-accent" id="cmCanvaPromptBtn2">Canva-Prompt generieren</button>
+      <button class="btn-save-modal btn-full" id="cmPlanBtn">Post planen</button>
     `;
     document.getElementById('cmCanvaPromptBtn2').addEventListener('click', async () => {
       const btn = document.getElementById('cmCanvaPromptBtn2');
@@ -1674,7 +1691,7 @@ function openCardModal(cardId) {
       openPlanModal(card.id);
     });
   } else if (card.col === 'geplant') {
-    actionsDiv.innerHTML = `<button class="btn-save-modal" id="cmPublishBtn" style="width:100%;">✓ Post veröffentlichen</button>`;
+    actionsDiv.innerHTML = `<button class="btn-save-modal btn-full" id="cmPublishBtn">✓ Post veröffentlichen</button>`;
     document.getElementById('cmPublishBtn').addEventListener('click', () => {
       document.getElementById('cardModal').classList.remove('open');
       openPublishModal(card.id);
