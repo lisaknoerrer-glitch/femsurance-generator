@@ -116,6 +116,9 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-page); color: var(
 /* ── Button Press Feedback (all buttons) ── */
 button:active:not(:disabled) { transform: scale(0.97); }
 
+/* ── Dark Mode Transition ── */
+body { transition: background-color 0.2s, color 0.2s; }
+
 /* ── Dark Mode ── */
 body.dark-mode {
   --bg-page: #0f0f1a; --bg-card: #1a1a2e; --bg-secondary: #252540;
@@ -166,6 +169,34 @@ input:focus, select:focus, textarea:focus {
   .nav-left a { margin-bottom: 0; font-size: 16px; }
   .main { margin-left: 0 !important; padding-bottom: 68px !important; }
   .dm-toggle { top: 8px; right: 8px; }
+}
+
+/* ── Modal & Overlay Transitions ── */
+.card-modal-overlay, .pub-modal-overlay, .schedule-overlay, .pp-modal-overlay {
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.card-modal-overlay.open, .pub-modal-overlay.open, .schedule-overlay.open, .pp-modal-overlay.open {
+  opacity: 1; pointer-events: auto;
+}
+.card-modal-overlay .card-modal,
+.pub-modal-overlay .pub-modal,
+.schedule-overlay .schedule-modal,
+.pp-modal-overlay .pp-modal {
+  transform: translateY(8px) scale(0.98); filter: blur(2px);
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), filter 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.card-modal-overlay.open .card-modal,
+.pub-modal-overlay.open .pub-modal,
+.schedule-overlay.open .schedule-modal,
+.pp-modal-overlay.open .pp-modal {
+  transform: translateY(0) scale(1); filter: blur(0);
+}
+
+/* ── Collapsible Sections ── */
+.card-body-collapsible {
+  overflow: hidden;
+  transition: max-height 0.25s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s;
 }
 
 /* ── Accessibility: Reduced Motion ── */
