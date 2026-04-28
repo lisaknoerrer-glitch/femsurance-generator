@@ -104,6 +104,8 @@ textarea { resize: vertical; line-height: 1.6; }
   transition: all 0.15s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-remove-row:hover { background: var(--color-danger-bg); color: var(--color-danger); }
+.btn-remove-row:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-remove-row:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-add-url {
   padding: 6px 14px; border: 1px dashed var(--border);
   border-radius: var(--radius-sm); background: none;
@@ -111,6 +113,8 @@ textarea { resize: vertical; line-height: 1.6; }
   font-weight: 500; color: var(--text-secondary); transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-add-url:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.btn-add-url:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-add-url:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Collapsible ── */
 .collapsible-header {
@@ -166,6 +170,7 @@ textarea { resize: vertical; line-height: 1.6; }
   letter-spacing: 0.01em;
 }
 .btn-generate:hover { opacity: 0.9; }
+.btn-generate:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
 .generate-hint {
   text-align: center; font-size: var(--text-base); color: var(--text-secondary);
@@ -242,6 +247,7 @@ textarea { resize: vertical; line-height: 1.6; }
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1); white-space: nowrap;
 }
 .btn-action:hover { border-color: var(--fem-pink); color: var(--fem-pink); }
+.btn-action:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .btn-action.success { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); }
 .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -293,6 +299,7 @@ textarea { resize: vertical; line-height: 1.6; }
   cursor: pointer; transition: opacity 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-top: 8px;
 }
 .btn-extract:hover { opacity: 0.9; }
+.btn-extract:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .btn-extract:disabled { opacity: 0.5; cursor: not-allowed; }
 .extract-results {
   margin-top: 12px; padding: 14px; background: var(--bg-secondary);
@@ -344,6 +351,8 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-section:first-of-type { border-top:none; padding-top:0; }
 .btn-load-last { padding:7px 16px; border:1px solid var(--fem-pink); border-radius:var(--radius-sm); background:var(--bg-card); color:var(--fem-pink); font-family:inherit; font-size:var(--text-base); font-weight:600; cursor:pointer; transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-bottom: var(--space-md); }
 .btn-load-last:hover { background:var(--fem-pink); color:var(--text-on-accent); }
+.btn-load-last:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-load-last:disabled { opacity: 0.5; cursor: not-allowed; }
 .b2-top-posts { font-size:var(--text-base); color:var(--text-secondary); line-height:1.6; max-height:100px; overflow-y:auto; }
 .b2-top-posts strong { color:var(--text-primary); }
 /* Post-Performance rows */
@@ -354,10 +363,13 @@ textarea { resize: vertical; line-height: 1.6; }
 .b2-post-header .b2p-title { flex:1; font-size:12.5px; font-weight:600; }
 .b2-post-header .b2p-remove { width:22px; height:22px; border:none; background:none; color:var(--text-secondary); cursor:pointer; font-size:var(--text-lg); border-radius:50%; display:flex; align-items:center; justify-content:center; }
 .b2-post-header .b2p-remove:hover { background:var(--color-danger-bg); color:var(--color-danger); }
+.b2-post-header .b2p-remove:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
 .b2-post-body { display:none; padding:8px 0; }
 .b2-post-body.open { display:block; }
 .btn-add-post { padding:6px 14px; border:1px dashed var(--border); border-radius:var(--radius-sm); background:none; cursor:pointer; font-family:inherit; font-size:var(--text-base); font-weight:500; color:var(--text-secondary); transition:all 0.2s cubic-bezier(0.32, 0.72, 0, 1); margin-top:8px; }
 .btn-add-post:hover { border-color:var(--fem-pink); color:var(--fem-pink); }
+.btn-add-post:focus-visible { outline: 2px solid var(--fem-pink); outline-offset: 2px; }
+.btn-add-post:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Collapsible Blocks ── */
 .block-title { cursor:pointer; display:flex; align-items:center; user-select:none; }
