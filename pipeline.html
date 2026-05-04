@@ -950,6 +950,8 @@ Themenwelten: 1.Business&Vertrieb (klar,strategisch) 2.Marketing&Sichtbarkeit (i
 STRATEGIE: Jede Outline als Searchable (löst Problem) oder Shareable (überrascht) kennzeichnen. JTBD: Welchen Job erledigt der Content? Content-Serien denken.
 COPYWRITING: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Spezifisch ("25% mehr" statt "mehr Erfolg").
 HOOKS: Loss Aversion | Social Proof | Curiosity Gap | Pattern Interrupt
+BLICKWINKEL: Wähle den stärksten Winkel für jede Outline — Schmerzpunkt | Ergebnis/Transformation | Social Proof | Neugier | Dringlichkeit. Nicht immer den gleichen.
+SALES-ARC bei vertriebsnahen Themen: Problem → Kosten des Nichtstuns → Warum jetzt → Lösung → Beweis. Perfekt für Carousel-Format.
 
 Pro Outline: Kernparadox, Reformuliert (Lang/Mittel/Kurz), Schlüsselzitate, Transformation (Zweifel→Erkenntnis→Selbstbestimmung), 3 Alltagsprobleme, 2 Beispiele, Einwände, Aspirationsaussage, 3 Handlungsschritte, Große Idee, Abschließende Erkenntnis.
 
@@ -967,25 +969,32 @@ KANÄLE:
 
 LINKEDIN: Hook in Zeile 1-2 entscheidet. Zeilenumbrüche großzügig. Keine externen Links. Carousel 2-3x mehr Engagement.
 
-FORMELN: Text=Hook→Problem→Punkte→Frage→CTA→Hashtags | Carousel=Hook-Slide→5 Punkte→CTA | Story=Situation→Konflikt→Wendepunkt→Erkenntnis | Listicle=Zahl→Punkte→Bonus | Meinung=These→Begründung→Gegenargument | Daten=Statistik→Kontext→Handlung
+FORMELN: Text=Hook→Problem→Punkte→Frage→CTA→Hashtags | Carousel=Hook-Slide→5 Punkte→CTA | Story=Situation→Konflikt→Wendepunkt→Erkenntnis | Listicle=Zahl→Punkte→Bonus | Meinung=These→Begründung→Gegenargument | Daten=Statistik→Kontext→Handlung | Sales-Carousel=Problem→Kosten→Shift→Lösung→Beweis (5 Slides) | Video-Skript=Hook(3s)→Problem→Lösung→CTA (max 60s, Untertitel immer!)
 
 REPURPOSING: Company Page=volle Story → Gruppe=persönliche Perspektive → WhatsApp=Kernsatz. Top-Posts nach 8-12 Wochen recyceln. Max 2x pro Kanal.
 
-QUALITÄT: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Konkrete Zahlen. Klar, spezifisch, emotional, barrierefrei? CTA niedrigschwellig. Du-Ansprache, warm, empowernd. Zitate nur aus Quellmaterial.`;
+CONTENT-MIX: Persönliche Stories > Original-Daten > Kontroverse Takes > Carousels > Standard-Text (LinkedIn Engagement-Ranking). Mind. 1 Story-Post/Woche. Statistiken+Quellen zitieren erhöht Autorität.
+
+QUALITÄT: Klarheit>Cleverness. Benefits>Features. Ein Gedanke/Post. Konkrete Zahlen. Klar, spezifisch, emotional, barrierefrei? CTA niedrigschwellig. Schreibe wie eine Kollegin, nicht wie Marketing. Du-Ansprache, warm, empowernd. Zitate nur aus Quellmaterial.`;
 
 
 
-const CANVA_SYSTEM_PROMPT = `Du bist ein Canva Design-Experte für FemSurance. Erstelle einen präzisen Bildprompt für Canva Magic Media basierend auf dem Post-Text.
+const CANVA_SYSTEM_PROMPT = `Canva Design-Experte für FemSurance. Erstelle Bildprompt auf Englisch für Canva Magic Media.
 
-Format:
-Stil: Modern, clean, FemSurance Pink (#E91E8C) und Lila, professionell
-Motiv: [Hauptmotiv beschreiben]
+LINKEDIN BILD-FORMATE:
+- Feed-Post: 1200x627px (1.91:1) oder 1080x1080px (1:1 quadratisch)
+- Carousel/Document: 1080x1080px pro Slide
+- Banner: 1584x396px
+- Wähle das Format passend zum Post-Typ.
+
+PROMPT-STRUKTUR:
+Stil: Modern, clean, FemSurance Pink (#E91E8C) + Purple (#7C3AED), professional B2B
+Motiv: [Hauptmotiv]
 Stimmung: [Empowernd / Faktenbasiert / Dialogisch]
 Elemente: [2-3 visuelle Elemente]
 Text auf Bild: [Kernaussage max. 8 Wörter]
-Format: 1:1 quadratisch für LinkedIn
 
-Schreibe den Prompt auf Englisch da Canva Magic Media Englisch bevorzugt.`;
+Für Video-Thumbnails: Gesicht/Person im Fokus, Text-Overlay mit Hook, kontrastreich.`;
 
 // ── Default Card Data ──
 const defaultCards = [
@@ -1316,10 +1325,10 @@ async function generatePostsFromOutline(cardId, btnEl) {
 }
 
 // ── Score Calculator ──
-const SCORE_SYSTEM_PROMPT = `FemSurance Content-Scorer. Bewerte 1-10. Kriterien (je 0-2.5): 1.Trend-Stärke 2.Eigene Performance 3.Konkurrenz-Lücke (was bieten Wettbewerber NICHT?) 4.Ziel-Relevanz. Zusätzlich: Searchable/Shareable? JTBD? Psychologie-Hook? Qualität (Hook/Copywriting/CTA/Format-Fit je 1-10, Verbesserung wenn <6)?
+const SCORE_SYSTEM_PROMPT = `FemSurance Content-Scorer. Bewerte 1-10. Kriterien (je 0-2.5): 1.Trend-Stärke 2.Eigene Performance 3.Konkurrenz-Lücke (was bieten Wettbewerber NICHT?) 4.Ziel-Relevanz. Zusätzlich: Searchable/Shareable? JTBD? Psychologie-Hook? Blickwinkel (Schmerzpunkt/Ergebnis/Social Proof/Neugier/Dringlichkeit)? Qualität (Hook/Copywriting/CTA/Format-Fit je 1-10, Verbesserung wenn <6)? Bei vertriebsnahen Posts: Folgt es dem Sales-Arc (Problem→Kosten→Shift→Lösung→Beweis)? Enthält es Statistiken/Quellen (erhöht Autorität)? Eignet sich das Thema als Video (85% stumm → Hook in 3s)?
 
 Antworte NUR als JSON:
-{"score":8,"trend":{"punkte":2,"begruendung":"..."},"performance":{"punkte":2.5,"begruendung":"..."},"luecke":{"punkte":2,"begruendung":"..."},"relevanz":{"punkte":1.5,"begruendung":"..."},"qualitaet":{"hook":8,"copywriting":7,"cta":9,"format_fit":8,"verbesserungen":["..."]},"empfehlung":"...","beste_plattform":"Company Page"}`;
+{"score":8,"trend":{"punkte":2,"begruendung":"..."},"performance":{"punkte":2.5,"begruendung":"..."},"luecke":{"punkte":2,"begruendung":"..."},"relevanz":{"punkte":1.5,"begruendung":"..."},"qualitaet":{"hook":8,"copywriting":7,"cta":9,"format_fit":8,"verbesserungen":["..."]},"empfehlung":"...","beste_plattform":"Company Page","video_potenzial":"hoch|mittel|niedrig"}`;
 
 async function calculateScore(cardId, btnEl) {
   const card = cards.find(c => c.id === cardId);
